@@ -1,8 +1,0 @@
-* Passのコンパイル
-  g++ easypass.cpp `llvm-config --cflags --ldflags --libs` -c -o easypass.o
-  g++ -g -shared -o ./bin/easypass.so easypass.o
-* Fortranのコンパイル
-  gfortran-4.7 -O3 test.f -fplugin=/usr/lib/gcc/x86_64-linux-gnu/4.7/plugin/dragonegg.so -fplugin-arg-dragonegg-emit-ir -S -o test.ll
-  gfortran-4.7 -O3 test.f -fplugin=/usr/lib/gcc/x86_64-linux-gnu/4.7/plugin/dragonegg.so -fplugin-arg-dragonegg-emit-ir -S
-* パスの利用
-  opt -load bin/easypass.so -easypass test.s -S > /dev/null
