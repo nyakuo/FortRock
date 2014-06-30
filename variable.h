@@ -46,6 +46,7 @@ public:
     std::string ret_str;
 
     ret_str += "name: " + name;
+    ret_str += "\nasm_name: " + asm_name;
     ret_str += "\nbit_width: ";
     ret_str += std::to_string(bit_width);
     ret_str += "\nis_input: ";
