@@ -8,6 +8,15 @@ protected:
 
 public:
   FRObj(const std::string name, const std::string asm_name) : name(name), asm_name(asm_name) {}
+
+  void sanitize_name(const std::string prefix) {
+    int at;
+    while((at = name.find('.', 0)) != std::string::npos)
+      name.replace(at, 1, "_");
+
+    name = prefix + name;
+  }
+
   void set_name(const std::string name)         { this->name = name; }
   void set_asm_name(const std::string asm_name) { this->asm_name = asm_name; }
 
