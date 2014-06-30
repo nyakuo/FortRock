@@ -299,7 +299,7 @@ int FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
 
           label.set_name(bb->getName());
           label.set_asm_name(bb->getName());
-          label.set_num(labels.size());
+          //          label.set_num(labels.size());
 
           if(std::find(labels.begin(),
                        labels.end(),
@@ -340,8 +340,24 @@ int FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
         break;
       }
     }
-
   }
+
+  // reg名のサニタイジング
+  
+
+  // label名のサニタイジング
+  int bit_width = (int)round(sqrt(labels.size() + 1));
+  std::list<Label>::iterator l_it = labels.begin();
+  std::list<Label>::iterator l_end = labels.end();
+
+  for(int i=0; l_it != l_end; ++l_it, ++i) {
+    std::string label_name;
+    label_name = std::to_string(bit_width) + "'d" + std::to_string(i);
+    l_it->set_name(label_name);
+  }
+
+  // state管理用regの追加
+
   return num_variable;
 }
 
@@ -550,8 +566,9 @@ std::string FortRock::print_ICMP(const Instruction * inst) {
 
 std::string FortRock::print_PHI(const Instruction * inst) {
   std::string ret_str;
-  
 
+  ret_str += indent() + "case (prev_state)\n";
+  indent_right();
 
   return ret_str;
 }
@@ -713,14 +730,11 @@ std::string FortRock::print_always(const Module::FunctionListType::iterator &fun
   std::string ret_str = indent() + "always @(posedge clk)\n";  indent_right();
 
   ret_str += indent() + "begin\n";  indent_right();
+
+  // 初期化部の出力 --------------------
   ret_str += indent() + "if(res)\n";  indent_right();
   ret_str += indent() + "begin\n";  indent_right();
   ret_str += indent() + "fin = 1'b0;\n";
-
-  // 初期化部の出力
-  //  variables.
-
-  // 命令文の出力 --------------------
   inst_iterator it  = inst_begin(*funct);
   inst_iterator end = inst_end(*funct);
 
@@ -736,21 +750,18 @@ std::string FortRock::print_always(const Module::FunctionListType::iterator &fun
       ret_str += indent() + print_instruction(inst) + "\n";
     }
   }
-
   indent_left();
-
-  // todo: initialize
-
   ret_str += indent() + "end // if res\n";  indent_left();
+  // ----------------------------------------
 
+  // ステートの出力 --------------------
   ret_str += indent() + "else if(fin == 1'b0)\n";  indent_right();
   ret_str += indent() + "begin\n"; indent_right();
-  
-  // todo: some states
-
+  // todo: some states  
   indent_left();
   ret_str += indent() + "end // if fin\n"; indent_left();
-
+  // ----------------------------------------
+  
   indent_left();
 
   return ret_str + indent() + "end // always\n";
