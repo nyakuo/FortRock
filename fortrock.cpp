@@ -18,167 +18,73 @@
 #include "llvm/Support/FormattedStream.h"
 #include "llvm/Support/TargetRegistry.h"
 #include "llvm/Support/InstIterator.h"
+
 #include <iostream>
 #include <list>
+
+#include "label.h"
+#include "variable.h"
 using namespace llvm;
 
-namespace {
+/**
+ * LLVMのInstructionのOpcode
+ */
+enum inst_opcode {
+  RET    = 1,
+  BR     = 2,
+  LOAD   = 27,
+  STORE  = 28,
+  ICMP   = 46,
+  PHI    = 48,
+  SELECT = 50,
+  SREM   = 18,
+  MUL    = 12,
+  SDIV   = 15,
+};
 
-  /**
-   * LLVMのInstructionのOpcode
-   */
-  enum inst_opcode {
-    RET    = 1,
-    BR     = 2,
-    LOAD   = 27,
-    STORE  = 28,
-    ICMP   = 46,
-    PHI    = 48,
-    SELECT = 50,
-    SREM   = 18,
-    MUL    = 12,
-    SDIV   = 15,
-  };
+/**
+ * @class FortRock
+ * FortRockのメインのパスの実装
+ */
+class FortRock : public ModulePass  {
+  unsigned            indent_level;
+  const unsigned      indent_width;
+  std::list<Variable> variables;
+  std::list<Label>    labels;
 
-  enum variable_type {
-    REG = 0,
-    WIRE,
-    PARAMETER,
-  };
+public:
+  static char ID;
+  FortRock(void) : ModulePass(ID), indent_width(2),
+                   indent_level(0) {}
 
-  class Label {
-    std::string name;
-    unsigned num;
+  virtual const char *getPassName(void) const { return "FortRock: Fortran to Verilog backend"; }
+  bool runOnModule(Module &M);
 
-  public:
-    Label() : name("undefined"), num(0) {}
+private:
+  inline void indent_right(void) { ++indent_level; }
+  inline void indent_left(void) { if(indent_level > 0) --indent_level; }
+  inline std::string indent(void) {
+    return print_spaces(indent_level * indent_width);
+  }
 
-    // setter
-    void set_name(const std::string name) { this->name = name; }
-    void set_num(const unsigned num) { this->num = num; }
+  std::string print_header(const Module &M);
+  std::string print_arguments(const Module::FunctionListType::iterator &funct);
+  int grub_variables(const Module::FunctionListType::iterator &funct);
+  std::string print_varlist(void);
+  std::string print_always(const Module::FunctionListType::iterator &funct);
+  std::string print_spaces(const int num_space);
+  std::string print_bit_width(Variable var);
+  std::string print_instruction(const Instruction * inst);
 
-    // getter
-    std::string get_name(void) { return name; }
-    unsigned get_num(void) { return num; }
-
-    std::string to_string(void) {
-      std::string ret_str = "name: " + name;
-      ret_str += " num: " + std::to_string(num);
-
-      return ret_str;
-    }
-
-    bool operator==(const Label &b) { // for find
-      return this->name == b.name;
-    }
-  };
-
-  class Variable {
-    variable_type type;
-
-    bool _is_input; // input output が2つあるのは Verilog の inout に対応するため
-    bool _is_output;
-
-    std::string name;
-    std::string asm_name; // アセンブリ上での名前
-
-    unsigned bit_width;
-
-  public:
-    Variable(void) : _is_input(false), _is_output(false),
-                     type(REG), name("0null"), bit_width(0) {}
-
-    // setter
-    void set_name(const std::string name)    { this->name = name; }
-    void set_bit_width(const unsigned width) { this->bit_width = width; }
-    void set_type(const variable_type type)  { this->type = type; }
-    bool set_input(bool is_input)            { this->_is_input = is_input; }
-    bool set_output(bool is_output)          { this->_is_output = is_output; }
-
-    // getter
-    std::string get_name(void)        { return name;}
-    unsigned get_bit_width(void)      { return bit_width; }
-    variable_type get_type(void)      { return type; }
-
-    bool is_input(void)               { return _is_input; }
-    bool is_output(void)              { return _is_output; }
-
-    std::string to_string(void) {
-      std::string ret_str;
-
-      ret_str += "name: " + name;
-      ret_str += "\nbit_width: ";
-      ret_str += std::to_string(bit_width);
-      ret_str += "\nis_input: ";
-      ret_str += (_is_input ? "true" : "false");
-      ret_str += "\nis_output: ";
-      ret_str += (_is_output ? "true" : "false");
-      ret_str += "\ntype: ";
-      ret_str += type_to_string(type);
-      
-      return ret_str + "\n";
-    }
-
-    bool operator<(const Variable & b) { // for sort
-      return this->bit_width < b.bit_width;
-    }
-
-    bool operator==(const Variable &b) { // for cmp
-      return this->name == b.name;
-    }
-
-  private:
-    std::string type_to_string(variable_type type) {
-      switch(type) {
-      case REG:       return "reg";
-      case WIRE:      return "wire";
-      case PARAMETER: return "parameter";
-      }
-      
-      return "null";
-    }
-  };
-
-  class FortRock : public ModulePass  {
-    unsigned            indent_level;
-    const unsigned      indent_width;
-    std::list<Variable> variables;
-    std::list<Label>    labels;
-
-  public:
-    static char ID;
-    FortRock(void) : ModulePass(ID), indent_width(2),
-                     indent_level(0) {}
-
-    virtual const char *getPassName(void) const { return "FortRock: Fortran to Verilog backend"; }
-    bool runOnModule(Module &M);
-
-  private:
-    inline void indent_right(void) { ++indent_level; }
-    inline void indent_left(void) { if(indent_level > 0) --indent_level; }
-    inline std::string indent(void) {
-      return print_spaces(indent_level * indent_width);
-    }
-
-    std::string print_header(const Module &M);
-    std::string print_arguments(const Module::FunctionListType::iterator &funct);
-    int grub_variables(const Module::FunctionListType::iterator &funct);
-    std::string print_varlist(void);
-    std::string print_always(const Module::FunctionListType::iterator &funct);
-    std::string print_spaces(const int num_space);
-    std::string print_bit_width(Variable var);
-    std::string print_instruction(const Instruction * inst);
-
-    // print instruction functions
-    std::string print_LOAD(const Instruction * inst);
-    std::string print_ICMP(const Instruction * inst);
-    std::string print_PHI(const Instruction * inst);
-    std::string print_SELECT(const Instruction * inst);
-    std::string print_SREM(const Instruction * inst);
-    std::string print_MUL(const Instruction * inst);
-    std::string print_SDIV(const Instruction * inst);
-  };
-}
+  // print instruction functions
+  std::string print_LOAD(const Instruction * inst);
+  std::string print_ICMP(const Instruction * inst);
+  std::string print_PHI(const Instruction * inst);
+  std::string print_SELECT(const Instruction * inst);
+  std::string print_SREM(const Instruction * inst);
+  std::string print_MUL(const Instruction * inst);
+  std::string print_SDIV(const Instruction * inst);
+};
 
 /**
  * moduleのheader(固定であるclk, res, fin)を出力する
@@ -211,8 +117,9 @@ std::string FortRock::print_arguments(const Module::FunctionListType::iterator &
     
     if(type->isIntegerTy()) {
       var.set_name(arg_it->getName());
+      var.set_asm_name(arg_it->getName());
       var.set_bit_width(type->getPrimitiveSizeInBits());
-      var.set_type(REG);
+      var.set_type(Variable::REG);
 
       var.set_input(true);
 
@@ -261,6 +168,11 @@ bool FortRock::runOnModule(Module &M) {
 
   errs() << "endmodule\n";
 
+
+
+
+
+
   // -------------------- debug --------------------
   std::list<Variable>::iterator debit = variables.begin();
   std::list<Variable>::iterator debend = variables.end();
@@ -284,6 +196,7 @@ bool FortRock::runOnModule(Module &M) {
 /**
  * プログラムで使用するすべてのレジスタを取得し
  * variablesに格納する
+ * Labelについても列挙し，格納する 
  */
 int FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
   std::list<Instruction*> insts;
@@ -333,9 +246,13 @@ int FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
         if(type->isPointerTy())
           type = type->getPointerElementType();
 
+        if(!value->hasName()) // 定数はパス
+          continue;
+
         var.set_name(value->getName());
+        var.set_asm_name(value->getName());
         var.set_bit_width(type->getPrimitiveSizeInBits());
-        var.set_type(REG);
+        var.set_type(Variable::REG);
 
         var.set_input(false);
         var.set_output(false);
@@ -361,10 +278,11 @@ int FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
 
         if(type->isPointerTy())
           type = type->getPointerElementType();
-
+        
         var.set_name(value->getName());
+        var.set_asm_name(value->getName());
         var.set_bit_width(type->getPrimitiveSizeInBits());
-        var.set_type(REG);
+        var.set_type(Variable::REG);
 
         var.set_input(false);
         var.set_output(false);
@@ -378,8 +296,9 @@ int FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
 
         for(int i=0; i<2; ++i) {
           bb = binst->getSuccessor(i);
-          
+
           label.set_name(bb->getName());
+          label.set_asm_name(bb->getName());
           label.set_num(labels.size());
 
           if(std::find(labels.begin(),
@@ -399,8 +318,9 @@ int FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
             type = type->getPointerElementType();
 
           var.set_name(value->getName());
+          var.set_asm_name(value->getName());
           var.set_bit_width(type->getPrimitiveSizeInBits());
-          var.set_type(REG);
+          var.set_type(Variable::REG);
 
           var.set_input(false);
           var.set_output(false);
@@ -517,7 +437,7 @@ std::string FortRock::print_varlist(void) {
     now_width = -1;
 
     for(; it!=end; ++it) {
-      if(REG == it->get_type()) { // reg の場合
+      if(Variable::REG == it->get_type()) { // reg の場合
         printed = true;
 
         if(now_width != it->get_bit_width()) {
@@ -545,35 +465,225 @@ std::string FortRock::print_varlist(void) {
   return ret_str;
 }
 
-
+/**
+ * LOAD命令の出力
+ */
 std::string FortRock::print_LOAD(const Instruction * inst) {
   std::string ret_str;
   Value * operand;
+  Variable var;
+  std::list<Variable>::iterator var_it;
 
-  ret_str = inst->getName();
+  var.set_asm_name(inst->getName());
+  var_it = std::find(variables.begin(),
+                     variables.end(),
+                     var);
+  ret_str = var_it->get_name();
+
   operand = inst->getOperand(0);
+  var.set_asm_name(operand->getName());
 
-  //  ret_str += " " + inst->getOperand(0)->getName();
+  var_it = std::find(variables.begin(),
+                     variables.end(),
+                     var);
+  ret_str += " = " + var_it->get_name() + ";";
 
   return ret_str;
 }
+
+/**
+ * ICMP命令の出力
+ * @todo 定数を1に固定している
+ */
 std::string FortRock::print_ICMP(const Instruction * inst) {
-  return "none";
+  std::string ret_str;
+  Value * operand;
+  Variable var;
+  std::list<Variable>::iterator var_it;
+  CmpInst * cmp_inst;
+
+  var.set_asm_name(inst->getName());
+  var_it = std::find(variables.begin(),
+                     variables.end(),
+                     var);
+  ret_str = var_it->get_name() + " = (";
+
+  operand = inst->getOperand(0);
+  var.set_asm_name(operand->getName());
+
+  var_it = std::find(variables.begin(),
+                     variables.end(),
+                     var);
+
+  ret_str += var_it->get_name() + " ";
+
+  cmp_inst = dynamic_cast<CmpInst*>(const_cast<Instruction*>(inst));
+
+  switch(cmp_inst->getPredicate()) {
+  case CmpInst::ICMP_EQ: ret_str += "= "; break;
+  case CmpInst::ICMP_NE: ret_str += "!= "; break;	
+  case CmpInst::ICMP_UGT:
+  case CmpInst::ICMP_SGT: ret_str += "> "; break;	
+  case CmpInst::ICMP_UGE:
+  case CmpInst::ICMP_SGE: ret_str += ">= "; break;
+  case CmpInst::ICMP_ULT:
+  case CmpInst::ICMP_SLT: ret_str += "< "; break;
+  case CmpInst::ICMP_ULE:
+  case CmpInst::ICMP_SLE: ret_str += "<= "; break;
+  }
+
+  operand = inst->getOperand(1);
+  var.set_asm_name(operand->getName());
+
+  var_it = std::find(variables.begin(),
+                     variables.end(),
+                     var);
+
+  if(var_it == variables.end()) {
+    ret_str += "1)";
+  }
+  else
+    ret_str += var_it->get_name() + ");";
+
+  return ret_str;
 }
+
 std::string FortRock::print_PHI(const Instruction * inst) {
-  return "NONE";
+  std::string ret_str;
+  
+
+
+  return ret_str;
 }
+
+/**
+ * SELECT命令の出力
+ * @todo 条件を定数に固定している
+ */
 std::string FortRock::print_SELECT(const Instruction * inst) {
-  return "none";
+  // dist = (a == 1'b1) ? b : c;
+  //  %. = select i1 %2, i32 %1, i32 %0
+  std::string ret_str;
+  Value * operand;
+  Variable var;
+  std::list<Variable>::iterator var_it;
+
+  var.set_asm_name(inst->getName());
+  var_it = std::find(variables.begin(),
+                     variables.end(),
+                     var);
+  ret_str = var_it->get_name() + " = (";
+
+  for(int i=0; i<3; ++i) {
+    operand = inst->getOperand(i);
+    var.set_asm_name(operand->getName());
+  
+    var_it = std::find(variables.begin(),
+                       variables.end(),
+                       var);
+
+    ret_str += var_it->get_name();
+    switch(i) {
+    case 0: ret_str += " == 1'b1) ? "; break;
+    case 1: ret_str += " : ";  break;
+    case 2: ret_str += ";";    break;
+    }
+  }
+  
+  return ret_str;
 }
+
+/**
+ * SREM命令の出力 (剰余)
+ */
 std::string FortRock::print_SREM(const Instruction * inst) {
-  return "none";
+  // a = b % c
+  // %3 = srem i32 %., %.1
+  std::string ret_str;
+  Value * operand;
+  Variable var;
+  std::list<Variable>::iterator var_it;
+
+  var.set_asm_name(inst->getName());
+  var_it = std::find(variables.begin(),
+                     variables.end(),
+                     var);
+  ret_str = var_it->get_name() + " = ";
+
+  for(int i=0; i<2; ++i) {
+    operand = inst->getOperand(i);
+    var.set_asm_name(operand->getName());
+  
+    var_it = std::find(variables.begin(),
+                       variables.end(),
+                       var);
+
+    ret_str += var_it->get_name();
+    switch(i) {
+    case 0: ret_str += " % "; break;
+    case 1: ret_str += ";";  break;
+    }
+  }
+  
+  return ret_str;
 }
+
+/**
+ * MUL命令の出力
+ */
 std::string FortRock::print_MUL(const Instruction * inst) {
-  return "none";
+  std::string ret_str;
+  Value * operand;
+  Variable var;
+  std::list<Variable>::iterator var_it;
+
+  var.set_asm_name(inst->getName());
+  var_it = std::find(variables.begin(),
+                     variables.end(),
+                     var);
+  ret_str = var_it->get_name() + " =";
+
+  for(int i=0; i<2; ++i) {
+    operand = inst->getOperand(i);
+    var.set_asm_name(operand->getName());
+
+    var_it = std::find(variables.begin(),
+                       variables.end(),
+                       var);
+    if(i==0) ret_str += " " + var_it->get_name();
+    else ret_str += " * " + var_it->get_name() + ";";
+  }
+
+  return ret_str;
 }
+
+/**
+ * SDIV命令の出力
+ */
 std::string FortRock::print_SDIV(const Instruction * inst) {
-  return "none";
+  std::string ret_str;
+  Value * operand;
+  Variable var;
+  std::list<Variable>::iterator var_it;
+
+  var.set_asm_name(inst->getName());
+  var_it = std::find(variables.begin(),
+                     variables.end(),
+                     var);
+  ret_str = var_it->get_name() + " =";
+
+  for(int i=0; i<2; ++i) {
+    operand = inst->getOperand(i);
+    var.set_asm_name(operand->getName());
+
+    var_it = std::find(variables.begin(),
+                       variables.end(),
+                       var);
+    if(i==0) ret_str += " " + var_it->get_name();
+    else ret_str += " / " + var_it->get_name() + ";";
+  }
+
+  return ret_str;
 }
 
 /**
@@ -607,20 +717,23 @@ std::string FortRock::print_always(const Module::FunctionListType::iterator &fun
   ret_str += indent() + "begin\n";  indent_right();
   ret_str += indent() + "fin = 1'b0;\n";
 
+  // 初期化部の出力
+  //  variables.
+
+  // 命令文の出力 --------------------
   inst_iterator it  = inst_begin(*funct);
   inst_iterator end = inst_end(*funct);
 
   for(; it != end; ++it)
     insts.push_back(&*it);
 
-  // 命令文の出力
   Instruction *inst = NULL;
   while(!insts.empty()) {
     inst = insts.front();
     insts.pop_front();
 
     if(!inst->use_empty()) {
-      errs() << print_instruction(inst);
+      ret_str += indent() + print_instruction(inst) + "\n";
     }
   }
 
