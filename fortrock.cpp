@@ -70,6 +70,7 @@ private:
   std::string print_header(const Module &M);
   std::string print_arguments(const Module::FunctionListType::iterator &funct);
   int grub_variables(const Module::FunctionListType::iterator &funct);
+  int grub_labels(const Module::FunctionListType::iterator &funct);
   std::string print_varlist(void);
   std::string print_always(const Module::FunctionListType::iterator &funct);
   std::string print_spaces(const int num_space);
@@ -162,15 +163,13 @@ bool FortRock::runOnModule(Module &M) {
     errs() << print_arguments(it);
 
   grub_variables(it);
+  grub_labels(it);
 
   errs() << print_varlist();
   errs() << print_always(it);
 
   errs() << "endmodule\n";
-
-
-
-
+  // --------------------------------------------------
 
 
   // -------------------- debug --------------------
@@ -266,9 +265,8 @@ int FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
       }
     }
     else {
-      BasicBlock *bb;
       BranchInst *binst;
-      Label label;
+
       switch(inst->getOpcode()) {
       case RET:        break;
       case BR:
@@ -293,20 +291,6 @@ int FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
           variables.push_back(var);
           ++num_variable;
         }
-
-        for(int i=0; i<2; ++i) {
-          bb = binst->getSuccessor(i);
-
-          label.set_name(bb->getName());
-          label.set_asm_name(bb->getName());
-          //          label.set_num(labels.size());
-
-          if(std::find(labels.begin(),
-                       labels.end(),
-                       label) == labels.end()) {
-            labels.push_back(label);
-          }
-        }
         break;
 
       case STORE:
@@ -321,7 +305,6 @@ int FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
           var.set_asm_name(value->getName());
           var.set_bit_width(type->getPrimitiveSizeInBits());
           var.set_type(Variable::REG);
-
           var.set_input(false);
           var.set_output(false);
 
@@ -343,11 +326,57 @@ int FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
   }
 
   // reg名のサニタイジング
-  
+  std::list<Variable>::iterator v_it  = variables.begin();
+  std::list<Variable>::iterator v_end = variables.end();
 
-  // label名のサニタイジング
+  for(; v_it != v_end; ++v_it) {
+    v_it->sanitize_name("reg_");
+  }
+
+  // state管理用regの追加 --------------------
   int bit_width = (int)round(sqrt(labels.size() + 1));
-  std::list<Label>::iterator l_it = labels.begin();
+  var.set_name("prev_stat");
+  var.set_asm_name("prev_stat");
+  var.set_bit_width(bit_width);
+  var.set_type(Variable::REG);
+  var.set_input(false);
+  var.set_output(false);
+
+  variables.push_back(var);
+  ++num_variable;
+
+  var.set_name("current_state");
+  var.set_asm_name("current_state");
+
+  variables.push_back(var);
+  ++num_variable;
+  
+  return num_variable;
+}
+
+int FortRock::grub_labels(const Module::FunctionListType::iterator &funct) {
+  Function::BasicBlockListType::iterator bb_it = funct->begin();
+  Function::BasicBlockListType::iterator bb_end = funct->end();
+  Label label;
+  int num_label = 0;
+
+  // labelの追加
+  for(; bb_it!=bb_end; ++bb_it) {
+    label.set_name(bb_it->getName());
+    label.set_asm_name(bb_it->getName());
+    if(std::find(labels.begin(),
+                 labels.end(),
+                 label) == labels.end()) {
+      labels.push_back(label);
+      ++num_label;
+    }
+  }
+
+  // todo: labelのparameter追加
+
+  // label名に対応する値の定義 --------------------
+  int bit_width = (int)round(sqrt(labels.size() + 1));
+  std::list<Label>::iterator l_it  = labels.begin();
   std::list<Label>::iterator l_end = labels.end();
 
   for(int i=0; l_it != l_end; ++l_it, ++i) {
@@ -356,9 +385,7 @@ int FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
     l_it->set_name(label_name);
   }
 
-  // state管理用regの追加
-
-  return num_variable;
+  return num_label;
 }
 
 /**
@@ -556,7 +583,7 @@ std::string FortRock::print_ICMP(const Instruction * inst) {
                      var);
 
   if(var_it == variables.end()) {
-    ret_str += "1)";
+    ret_str += "1);";
   }
   else
     ret_str += var_it->get_name() + ");";
@@ -566,9 +593,49 @@ std::string FortRock::print_ICMP(const Instruction * inst) {
 
 std::string FortRock::print_PHI(const Instruction * inst) {
   std::string ret_str;
+  std::string destination;
+  PHINode * phinode;
+  BasicBlock * bb;
+  Value * value;
+  Variable var;
+  Label label;
+  std::list<Variable>::iterator v_it;
+  std::list<Label>::iterator l_it;
 
-  ret_str += indent() + "case (prev_state)\n";
+  var.set_asm_name(inst->getName());
+  v_it = std::find(variables.begin(),
+                   variables.end(),
+                   var);
+  destination = v_it->get_name();
+
+  phinode = dynamic_cast<PHINode*>(const_cast<Instruction*>(inst));
+
+  ret_str = "case (prev_state)\n";
   indent_right();
+  
+  for(int i=0; i<phinode->getNumIncomingValues(); ++i) {
+    bb = phinode->getIncomingBlock(i);
+    label.set_asm_name(bb->getName());
+
+    l_it = std::find(labels.begin(),
+                     labels.end(),
+                     label);
+
+    ret_str += indent() + l_it->get_name() + " : "
+      + destination + " = ";
+
+    value = phinode->getIncomingValue(i);
+    var.set_asm_name(value->getName());
+
+    v_it = std::find(variables.begin(),
+                     variables.end(),
+                     var);
+    ret_str += v_it->get_name() + ";\n";
+
+  }
+  
+  indent_left();
+  ret_str += indent() + "endcase";
 
   return ret_str;
 }
