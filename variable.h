@@ -1,9 +1,13 @@
 // -*- C++ -*-
+#ifndef __VARIABLE_H
+#define __VARIABLE_H
+#include "FRObj.h"
+
 /**
  * @class Variable
  * LLVMの変数を管理するクラス
  */
-class Variable {
+class Variable : public FRObj {
  public:
     enum variable_type {
     REG = 0,
@@ -17,27 +21,21 @@ class Variable {
   bool _is_input; // input output が2つあるのは Verilog の inout に対応するため
   bool _is_output;
 
-  std::string name;
-  std::string asm_name; // アセンブリ上での名前
-
   unsigned bit_width;
 
 public:
   Variable(void) : _is_input(false), _is_output(false),
-                   type(REG), name("0null"),
-                   asm_name("asm_null"), bit_width(0) {}
+                   type(REG),
+                   bit_width(0),
+                   FRObj("undefined", "asm_undefined") {}
 
   // setter
-  void set_name(const std::string name)    { this->name = name; }
-  void set_asm_name(const std::string asm_name) { this->asm_name = asm_name; }
   void set_bit_width(const unsigned width) { this->bit_width = width; }
   void set_type(const variable_type type)  { this->type = type; }
   bool set_input(bool is_input)            { this->_is_input = is_input; }
   bool set_output(bool is_output)          { this->_is_output = is_output; }
 
   // getter
-  std::string get_name(void)        { return name; }
-  std::string get_asm_name(void)    { return asm_name; }
   unsigned get_bit_width(void)      { return bit_width; }
   variable_type get_type(void)      { return type; }
 
@@ -64,10 +62,6 @@ public:
     return this->bit_width < b.bit_width;
   }
 
-  bool operator==(const Variable &b) { // for cmp
-    return this->asm_name == b.asm_name;
-  }
-
 private:
   std::string type_to_string(variable_type type) {
     switch(type) {
@@ -79,3 +73,4 @@ private:
     return "null";
   }
 };
+#endif
