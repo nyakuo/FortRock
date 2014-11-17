@@ -4,6 +4,7 @@ fortran/*
 gomi/*
 verilog/*
 
+*.s
 *.v
 *.o
 *.so
