@@ -21,10 +21,14 @@
 
 #include <iostream>
 #include <list>
+#include <regex>
 
 #include "label.h"
 #include "variable.h"
 using namespace llvm;
+
+#define PREV_STATE_STR "prev_state"
+#define CUR_STATE_STR "current_state"
 
 /**
  * LLVMのInstructionのOpcode
@@ -66,6 +70,9 @@ private:
   inline std::string indent(void) {
     return print_spaces(indent_level * indent_width);
   }
+  inline int state_bit_width(void) {
+    return (int)round(sqrt(labels.size() + 1));
+  }
 
   std::string print_header(const Module &M);
   std::string print_arguments(const Module::FunctionListType::iterator &funct);
@@ -78,6 +85,7 @@ private:
   std::string print_instruction(const Instruction * inst);
 
   // print instruction functions
+  std::string print_RET(const Instruction * inst);
   std::string print_LOAD(const Instruction * inst);
   std::string print_ICMP(const Instruction * inst);
   std::string print_PHI(const Instruction * inst);
@@ -85,15 +93,25 @@ private:
   std::string print_SREM(const Instruction * inst);
   std::string print_MUL(const Instruction * inst);
   std::string print_SDIV(const Instruction * inst);
+  std::string print_BR(const Instruction * inst);
 };
 
 /**
  * moduleのheader(固定であるclk, res, fin)を出力する
  */
 std::string FortRock::print_header(const Module &M) {
-  return  "// " + M.getModuleIdentifier() + ".v\n"
-         + "module " +  M.getModuleIdentifier()
-         + "(clk, res, fin";
+  std::string mod_name = M.getModuleIdentifier();
+  std::regex pattern(".*/(.*)\\.s");
+   std::smatch match;
+   std::regex_match(mod_name, match, pattern);
+
+   // ファイル名の抽出
+   mod_name = std::string(match[match.size()-1].str(),
+                          1,
+                          match[match.size()-1].str().length() - 3);
+
+  return  "// " + M.getModuleIdentifier() + "\n"
+    + "module " + mod_name + "(clk, res, fin";
 }
 
 /**
@@ -112,10 +130,10 @@ std::string FortRock::print_arguments(const Module::FunctionListType::iterator &
       arg_it != arg_end;
       ++num, ++arg_it) {
     type = arg_it->getType();
-    
+
     if(type->isPointerTy()) // ポインタならポインタの型を取得
       type = type->getPointerElementType();
-    
+
     if(type->isIntegerTy()) {
       var.set_name(arg_it->getName());
       var.set_asm_name(arg_it->getName());
@@ -130,7 +148,7 @@ std::string FortRock::print_arguments(const Module::FunctionListType::iterator &
       }
 
       variables.push_back(var);
-      
+
       ret_str += ", ";
       ret_str += arg_it->getName();
     }
@@ -151,7 +169,7 @@ bool FortRock::runOnModule(Module &M) {
   // -------------------- Functions --------------------
   Module::FunctionListType::iterator it = M.begin();
   Module::FunctionListType::iterator end = M.end();
-  
+
   if(++it != end) {
     errs() << "ERROR: 1つのファイルに記述できるのは1つのモジュールだけです\n";
     return true;
@@ -162,8 +180,8 @@ bool FortRock::runOnModule(Module &M) {
   if(it->getArgumentList().size() != 0)
     errs() << print_arguments(it);
 
-  grub_variables(it);
   grub_labels(it);
+  grub_variables(it);
 
   errs() << print_varlist();
   errs() << print_always(it);
@@ -195,7 +213,7 @@ bool FortRock::runOnModule(Module &M) {
 /**
  * プログラムで使用するすべてのレジスタを取得し
  * variablesに格納する
- * Labelについても列挙し，格納する 
+ * Labelについても列挙し，格納する
  */
 int FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
   std::list<Instruction*> insts;
@@ -215,7 +233,7 @@ int FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
 
   for(; it != end; ++it)
     insts.push_back(&*it);
-  
+
   while(!insts.empty()) {
     inst = insts.front();
     insts.pop_front();
@@ -276,7 +294,7 @@ int FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
 
         if(type->isPointerTy())
           type = type->getPointerElementType();
-        
+
         var.set_name(value->getName());
         var.set_asm_name(value->getName());
         var.set_bit_width(type->getPrimitiveSizeInBits());
@@ -330,14 +348,14 @@ int FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
   std::list<Variable>::iterator v_end = variables.end();
 
   for(; v_it != v_end; ++v_it) {
-    v_it->sanitize_name("reg_");
+    if(!v_it->is_input() && !v_it->is_output())
+      v_it->sanitize_name("reg_");
   }
 
   // state管理用regの追加 --------------------
-  int bit_width = (int)round(sqrt(labels.size() + 1));
-  var.set_name("prev_stat");
-  var.set_asm_name("prev_stat");
-  var.set_bit_width(bit_width);
+  var.set_name(PREV_STATE_STR);
+  var.set_asm_name(PREV_STATE_STR);
+  var.set_bit_width(state_bit_width());
   var.set_type(Variable::REG);
   var.set_input(false);
   var.set_output(false);
@@ -345,12 +363,12 @@ int FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
   variables.push_back(var);
   ++num_variable;
 
-  var.set_name("current_state");
-  var.set_asm_name("current_state");
+  var.set_name(CUR_STATE_STR);
+  var.set_asm_name(CUR_STATE_STR);
 
   variables.push_back(var);
   ++num_variable;
-  
+
   return num_variable;
 }
 
@@ -375,13 +393,12 @@ int FortRock::grub_labels(const Module::FunctionListType::iterator &funct) {
   // todo: labelのparameter追加
 
   // label名に対応する値の定義 --------------------
-  int bit_width = (int)round(sqrt(labels.size() + 1));
   std::list<Label>::iterator l_it  = labels.begin();
   std::list<Label>::iterator l_end = labels.end();
 
   for(int i=0; l_it != l_end; ++l_it, ++i) {
     std::string label_name;
-    label_name = std::to_string(bit_width) + "'d" + std::to_string(i);
+    label_name = std::to_string(state_bit_width()) + "'d" + std::to_string(i);
     l_it->set_name(label_name);
   }
 
@@ -480,7 +497,8 @@ std::string FortRock::print_varlist(void) {
     now_width = -1;
 
     for(; it!=end; ++it) {
-      if(Variable::REG == it->get_type()) { // reg の場合
+      if(Variable::REG == it->get_type() &&
+         !it->is_input() ) {
         printed = true;
 
         if(now_width != it->get_bit_width()) {
@@ -504,7 +522,68 @@ std::string FortRock::print_varlist(void) {
 
   // todo: wire
   // todo: parameter
-  
+
+  return ret_str;
+}
+
+std::string FortRock::print_RET(const Instruction * inst) {
+  std::string ret_str;
+
+  ret_str = PREV_STATE_STR;
+  ret_str += " = ";
+  ret_str += CUR_STATE_STR;
+  ret_str += ";\n";
+
+  ret_str += indent();
+  ret_str += CUR_STATE_STR;
+  ret_str += " = " + std::to_string(state_bit_width());
+  ret_str += "'d" + std::to_string(labels.size());
+  ret_str += ";";
+
+  return ret_str;
+}
+
+/**
+ * BR命令の出力
+ * ステートの保存と更新による分岐を行う
+ */
+std::string FortRock::print_BR(const Instruction * inst) {
+  std::string ret_str;
+  Value * value;
+  Variable var;
+  Label label;
+  std::list<Variable>::iterator v_it;
+  std::list<Label>::iterator l_it;
+  BasicBlock * bb;
+  BranchInst * bi;
+  bi = dynamic_cast<BranchInst*>(const_cast<Instruction*>(inst));
+
+  ret_str = PREV_STATE_STR;
+  ret_str += " = ";
+  ret_str += CUR_STATE_STR;
+  ret_str += ";\n";
+  ret_str += indent();
+  ret_str += CUR_STATE_STR;
+  ret_str += " = (1'b1 == ";
+  value = bi->getCondition();
+  var.set_asm_name(value->getName());
+  v_it = std::find(variables.begin(),
+                   variables.end(),
+                   var);
+  ret_str += v_it->get_name() + ") ? ";
+
+  for(int i=0; i<bi->getNumSuccessors(); ++i) {
+    bb = bi->getSuccessor(i);
+    label.set_asm_name(bb->getName());
+    l_it = std::find(labels.begin(),
+                     labels.end(),
+                     label);
+    ret_str += l_it->get_name();
+    if(i==0) ret_str += " : ";
+  }
+
+  ret_str += ";";
+
   return ret_str;
 }
 
@@ -564,9 +643,9 @@ std::string FortRock::print_ICMP(const Instruction * inst) {
 
   switch(cmp_inst->getPredicate()) {
   case CmpInst::ICMP_EQ: ret_str += "= "; break;
-  case CmpInst::ICMP_NE: ret_str += "!= "; break;	
+  case CmpInst::ICMP_NE: ret_str += "!= "; break;
   case CmpInst::ICMP_UGT:
-  case CmpInst::ICMP_SGT: ret_str += "> "; break;	
+  case CmpInst::ICMP_SGT: ret_str += "> "; break;
   case CmpInst::ICMP_UGE:
   case CmpInst::ICMP_SGE: ret_str += ">= "; break;
   case CmpInst::ICMP_ULT:
@@ -610,9 +689,11 @@ std::string FortRock::print_PHI(const Instruction * inst) {
 
   phinode = dynamic_cast<PHINode*>(const_cast<Instruction*>(inst));
 
-  ret_str = "case (prev_state)\n";
+  ret_str = "case(";
+  ret_str += PREV_STATE_STR;
+  ret_str += ")\n";
   indent_right();
-  
+
   for(int i=0; i<phinode->getNumIncomingValues(); ++i) {
     bb = phinode->getIncomingBlock(i);
     label.set_asm_name(bb->getName());
@@ -633,7 +714,7 @@ std::string FortRock::print_PHI(const Instruction * inst) {
     ret_str += v_it->get_name() + ";\n";
 
   }
-  
+
   indent_left();
   ret_str += indent() + "endcase";
 
@@ -661,7 +742,7 @@ std::string FortRock::print_SELECT(const Instruction * inst) {
   for(int i=0; i<3; ++i) {
     operand = inst->getOperand(i);
     var.set_asm_name(operand->getName());
-  
+
     var_it = std::find(variables.begin(),
                        variables.end(),
                        var);
@@ -673,7 +754,7 @@ std::string FortRock::print_SELECT(const Instruction * inst) {
     case 2: ret_str += ";";    break;
     }
   }
-  
+
   return ret_str;
 }
 
@@ -697,7 +778,7 @@ std::string FortRock::print_SREM(const Instruction * inst) {
   for(int i=0; i<2; ++i) {
     operand = inst->getOperand(i);
     var.set_asm_name(operand->getName());
-  
+
     var_it = std::find(variables.begin(),
                        variables.end(),
                        var);
@@ -708,7 +789,7 @@ std::string FortRock::print_SREM(const Instruction * inst) {
     case 1: ret_str += ";";  break;
     }
   }
-  
+
   return ret_str;
 }
 
@@ -775,13 +856,15 @@ std::string FortRock::print_SDIV(const Instruction * inst) {
  */
 std::string FortRock::print_instruction(const Instruction * inst) {
   switch(inst->getOpcode()) {
-  case LOAD:   return  print_LOAD(inst); 
-  case ICMP:   return  print_ICMP(inst); 
-  case PHI:    return  print_PHI(inst); 
-  case SELECT: return  print_SELECT(inst); 
-  case SREM:   return  print_SREM(inst); 
-  case MUL:    return  print_MUL(inst); 
-  case SDIV:   return  print_SDIV(inst); 
+  case RET:    return print_RET(inst);
+  case BR:     return print_BR(inst);
+  case LOAD:   return print_LOAD(inst);
+  case ICMP:   return print_ICMP(inst);
+  case PHI:    return print_PHI(inst);
+  case SELECT: return print_SELECT(inst);
+  case SREM:   return print_SREM(inst);
+  case MUL:    return print_MUL(inst);
+  case SDIV:   return print_SDIV(inst);
   default:
     errs() <<  "ERROR:" << inst->getOpcodeName() << " 未定義のオペランド\n";
     return "";
@@ -793,42 +876,91 @@ std::string FortRock::print_instruction(const Instruction * inst) {
  */
 std::string FortRock::print_always(const Module::FunctionListType::iterator &funct) {
   std::list<Instruction*> insts;
-
   std::string ret_str = indent() + "always @(posedge clk)\n";  indent_right();
 
   ret_str += indent() + "begin\n";  indent_right();
 
   // 初期化部の出力 --------------------
   ret_str += indent() + "if(res)\n";  indent_right();
-  ret_str += indent() + "begin\n";  indent_right();
+  ret_str += indent() + "begin\n";    indent_right();
+
   ret_str += indent() + "fin = 1'b0;\n";
-  inst_iterator it  = inst_begin(*funct);
-  inst_iterator end = inst_end(*funct);
+  ret_str += indent() + PREV_STATE_STR + " = "
+    + std::to_string(state_bit_width()) + "'b0;\n";
+  ret_str += indent() + CUR_STATE_STR + " = "
+    + std::to_string(state_bit_width()) + "'b0;\n";
 
-  for(; it != end; ++it)
-    insts.push_back(&*it);
-
-  Instruction *inst = NULL;
-  while(!insts.empty()) {
-    inst = insts.front();
-    insts.pop_front();
-
-    if(!inst->use_empty()) {
-      ret_str += indent() + print_instruction(inst) + "\n";
+  std::list<Variable>::iterator v_it = variables.begin();
+  std::list<Variable>::iterator v_end = variables.end();
+  for(; v_it != v_end; ++v_it) {
+    if(v_it->is_output()) {
+      ret_str += indent() + v_it->get_name()
+        + " = " + std::to_string(v_it->get_bit_width())
+        + "'b0;\n";
+      break;
     }
   }
+
   indent_left();
   ret_str += indent() + "end // if res\n";  indent_left();
-  // ----------------------------------------
 
   // ステートの出力 --------------------
   ret_str += indent() + "else if(fin == 1'b0)\n";  indent_right();
   ret_str += indent() + "begin\n"; indent_right();
-  // todo: some states  
+
+  Function::BasicBlockListType::iterator bb_it  = funct->begin();
+  Function::BasicBlockListType::iterator bb_end = funct->end();
+  ilist_iterator<Instruction> it;
+  ilist_iterator<Instruction> end;
+  Instruction *inst = NULL;
+  Label label;
+  std::list<Label>::iterator l_it;
+
+  ret_str += indent() + "case (" + CUR_STATE_STR + ")\n";
+  indent_right();
+  for(; bb_it!=bb_end; ++bb_it) {
+    it = bb_it->begin();
+    end = bb_it->end();
+
+    label.set_asm_name(bb_it->getName());
+    l_it = std::find(labels.begin(),
+                     labels.end(),
+                     label);
+    ret_str += indent() + l_it->get_name() + ":\n";
+    indent_right();
+    ret_str += indent() + "begin\n";
+
+    for(; it != end; ++it)
+      insts.push_back(&*it);
+
+    indent_right();
+    while(!insts.empty()) {
+      inst = insts.front();
+      insts.pop_front();
+
+      ret_str += indent() + print_instruction(inst) + "\n";
+    }
+    indent_left();
+    ret_str += indent() + "end\n";
+    indent_left();
+  }
+
+  // 終了ステートの出力
+  ret_str += indent() + std::to_string(state_bit_width());
+  ret_str += "'d" + std::to_string(labels.size()) + ":\n";
+
+  indent_right();
+  ret_str += indent() + "begin\n";
+
+  indent_right();
+  ret_str += indent() + "fin = 1'b1;\n";
+
   indent_left();
+  ret_str += indent() + "end\n"; indent_left(); indent_left();
+  ret_str += indent() + "endcase\n"; indent_left();
   ret_str += indent() + "end // if fin\n"; indent_left();
   // ----------------------------------------
-  
+
   indent_left();
 
   return ret_str + indent() + "end // always\n";
