@@ -1,0 +1,93 @@
+* 最小公倍数を求めるプログラムに関する比較実験
+** 【概要】
+   FortRock(2014/10/21現在)とJavaRock-Thrashの性能比較．
+   同様のプログラムを用いて，動作周波数やリソースの使用率などを比較する．
+
+** 【評価プログラム】
+C**************************************************
+C 最小公倍数
+C**************************************************
+      SUBROUTINE LCM(I, J, ret_lcm)
+      INTEGER I, J, IR1, IR2, IR, ret_lcm
+
+      IF(I < J) THEN
+         IR1 = J
+         IR2 = I
+      ELSE
+         IR1 = I
+         IR2 = J
+      ENDIF
+
+      IR = IR1 - (IR1/IR2) * IR2
+
+      DO WHILE(IR>0)
+         IR1 = IR2
+         IR2 = IR
+         IR = IR1 - (IR1/IR2) * IR2
+      ENDDO
+
+      ret_lcm = I*J/IR2
+
+      RETURN
+      END
+
+** 【結果】
+*** FortRock
+   Minimum period: 75.060ns (Maximum Frequency: 13.323MHz)
+   Minimum input arrival time before clock: 92.360ns
+   Maximum output required time after clock: 0.776ns
+   Maximum combinational path delay: No path found
+
+   Selected Device : 7a100tcsg324-2l 
+    
+    
+   Slice Logic Utilization: 
+    Number of Slice Registers:             171  out of  126800     0%  
+    Number of Slice LUTs:                 3628  out of  63400     5%  
+       Number used as Logic:              3628  out of  63400     5%  
+    
+   Slice Logic Distribution: 
+    Number of LUT Flip Flop pairs used:   3687
+      Number with an unused Flip Flop:    3516  out of   3687    95%  
+      Number with an unused LUT:            59  out of   3687     1%  
+      Number of fully used LUT-FF pairs:   112  out of   3687     3%  
+      Number of unique control sets:         4
+    
+   IO Utilization: 
+    Number of IOs:                          99
+    Number of bonded IOBs:                  99  out of    210    47%  
+    
+   Specific Feature Utilization:
+    Number of BUFG/BUFGCTRLs:                1  out of     32     3%  
+
+*** JavaRock-Thrash
+---------------
+Speed Grade: -2
+
+   Minimum period: 78.026ns (Maximum Frequency: 12.816MHz)
+   Minimum input arrival time before clock: 1.926ns
+   Maximum output required time after clock: 0.771ns
+   Maximum combinational path delay: No path found
+
+Selected Device : 7a100tcsg324-2l 
+
+
+Slice Logic Utilization: 
+ Number of Slice Registers:             259  out of  126800     0%  
+ Number of Slice LUTs:                 5794  out of  63400     9%  
+    Number used as Logic:              5794  out of  63400     9%  
+
+Slice Logic Distribution: 
+ Number of LUT Flip Flop pairs used:   5981
+   Number with an unused Flip Flop:    5722  out of   5981    95%  
+   Number with an unused LUT:           187  out of   5981     3%  
+   Number of fully used LUT-FF pairs:    72  out of   5981     1%  
+   Number of unique control sets:         9
+
+IO Utilization: 
+ Number of IOs:                          37
+ Number of bonded IOBs:                  37  out of    210    17%  
+
+Specific Feature Utilization:
+ Number of BUFG/BUFGCTRLs:                1  out of     32     3%  
+ Number of DSP48E1s:                      3  out of    240     1%  
