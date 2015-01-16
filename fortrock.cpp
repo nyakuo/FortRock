@@ -87,6 +87,7 @@ private:
   // print instruction functions
   std::string print_RET(const Instruction * inst);
   std::string print_LOAD(const Instruction * inst);
+  std::string print_STORE(const Instruction * inst);  
   std::string print_ICMP(const Instruction * inst);
   std::string print_PHI(const Instruction * inst);
   std::string print_SELECT(const Instruction * inst);
@@ -592,7 +593,6 @@ std::string FortRock::print_BR(const Instruction * inst) {
  */
 std::string FortRock::print_LOAD(const Instruction * inst) {
   std::string ret_str;
-  Value * operand;
   Variable var;
   std::list<Variable>::iterator var_it;
 
@@ -602,14 +602,40 @@ std::string FortRock::print_LOAD(const Instruction * inst) {
                      var);
   ret_str = var_it->get_name();
 
-  operand = inst->getOperand(0);
-  var.set_asm_name(operand->getName());
+  var.set_asm_name(inst->getOperand(0)->getName());
 
   var_it = std::find(variables.begin(),
                      variables.end(),
                      var);
   ret_str += " = " + var_it->get_name() + ";";
 
+  return ret_str;
+}
+
+/**
+ * STORE命令の出力
+ */
+std::string FortRock::print_STORE(const Instruction * inst) {
+  std::string ret_str;
+  Variable var;
+  std::list<Variable>::iterator var_it;
+
+  // 保存対象のレジスタ名の取得
+  //  var.set_asm_name(inst->getName());
+  var.set_asm_name(inst->getOperand(1)->getName());
+  var_it = std::find(variables.begin(),
+                     variables.end(),
+                     var);
+
+  ret_str = var_it->get_name();
+
+  // 保存元のレジスタ名の取得
+  var.set_asm_name(inst->getOperand(0)->getName());
+  var_it = std::find(variables.begin(),
+                     variables.end(),
+                     var);
+
+  ret_str += " = " + var_it->get_name() + ";";
   return ret_str;
 }
 
@@ -859,6 +885,7 @@ std::string FortRock::print_instruction(const Instruction * inst) {
   case RET:    return print_RET(inst);
   case BR:     return print_BR(inst);
   case LOAD:   return print_LOAD(inst);
+  case STORE:  return print_STORE(inst);
   case ICMP:   return print_ICMP(inst);
   case PHI:    return print_PHI(inst);
   case SELECT: return print_SELECT(inst);
@@ -866,7 +893,9 @@ std::string FortRock::print_instruction(const Instruction * inst) {
   case MUL:    return print_MUL(inst);
   case SDIV:   return print_SDIV(inst);
   default:
-    errs() <<  "ERROR:" << inst->getOpcodeName() << " 未定義のオペランド\n";
+    errs() <<  "ERROR:" << inst->getOpcodeName()
+           << "(" << inst->getOpcode() << ")"
+           << " 未定義のオペランド\n";
     return "";
   }
 }
