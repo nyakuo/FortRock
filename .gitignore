@@ -3,6 +3,7 @@ CppBackend/*
 fortran/*
 gomi/*
 verilog/*
+verilog_test_space/*
 
 *.s
 *.v
