@@ -1,7 +1,7 @@
-CFLAGS					= -std=c++11
-INPUT_FORTRAN		= ./fortran/lcm/lcm.f
-INPUT_LLVM			= ./fortran/lcm/lcm_opt.s
-OUTPUT_VERILOG	= output.v
+CFLAGS         = -std=c++11
+INPUT_FORTRAN  = ./fortran/lcm/lcm.f
+INPUT_LLVM     = ./fortran/lcm/lcm_opt.s
+OUTPUT_VERILOG = output.v
 
 fortrock: fortrock.cpp
 	g++ -g fortrock.cpp `llvm-config --cflags --ldflags --libs` -c -o fortrock.o $(CFLAGS)
