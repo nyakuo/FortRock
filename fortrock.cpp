@@ -87,7 +87,7 @@ private:
   // print instruction functions
   std::string print_RET(const Instruction * inst);
   std::string print_LOAD(const Instruction * inst);
-  std::string print_STORE(const Instruction * inst);  
+  std::string print_STORE(const Instruction * inst);
   std::string print_ICMP(const Instruction * inst);
   std::string print_PHI(const Instruction * inst);
   std::string print_SELECT(const Instruction * inst);
@@ -154,7 +154,7 @@ std::string FortRock::print_arguments(const Module::FunctionListType::iterator &
       ret_str += arg_it->getName();
     }
     else {
-      ret_str += "ERROR: can not solb the arg type\n";
+      ret_str += "ERROR: can not solve the arg type\n";
     }
   }
 
