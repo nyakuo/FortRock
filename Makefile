@@ -14,5 +14,4 @@ llvm:
 	gfortran-4.7 -O3 $(INPUT_FORTRAN) -fplugin=/usr/lib/gcc/x86_64-linux-gnu/4.7/plugin/dragonegg.so -fplugin-arg-dragonegg-emit-ir -S
 
 clean:
-	rm *.o *.so
-
+	rm *.o *.so 2> /dev/null
