@@ -1,6 +1,6 @@
 // -*- C++ -*-
-#ifndef __CDEFG_CONNECT
-#define __CDEFG_CONNECT
+#ifndef __CDEFG_CONNECT_H
+#define __CDEFG_CONNECT_H
 
 #include <iostream>
 using namespace std;

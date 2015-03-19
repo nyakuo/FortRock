@@ -1,6 +1,6 @@
 // -*- C++ -*-
-#ifndef __CDFG_ELEMENT
-#define __CDFG_ELEMENT
+#ifndef __CDFG_NODE_H
+#define __CDFG_NODE_H
 
 #include <iostream>
 #include <list>
