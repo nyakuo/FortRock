@@ -171,8 +171,30 @@ void CModuleGenerator::__generate_header(void) {
               << this->__indent() << "input wire i_ce_p,\n"
               << this->__indent() << "output wire o_fin_p,\n";
 
+  // 入力信号の出力
   std::list< std::shared_ptr< CDFG_Node > >::iterator ite = this->__input_list.begin();
   std::list< std::shared_ptr< CDFG_Node > >::iterator end = this->__input_list.end();
+  bool someIO = this->__input_list.size() != 0 && this->__output_list.size() != 0;
+  while(ite != end) {
+    this->__ofs << this->__indent() << "input wire ";
+    if ((*ite)->get_bit_width() > 1) {
+      this->__ofs << "[" << (*ite)->get_bit_width() - 1 << ":0] ";
+    }
+    this->__ofs << (*ite)->get_name();
+    ++ite;
+
+    if(ite == end) {
+      if (someIO)
+        this->__ofs << ",\n";
+    }
+    else
+      this->__ofs << ",\n";
+  }
+
+
+  // 出力信号の出力
+  ite = this->__output_list.begin();
+  end = this->__output_list.end();
   while(ite != end) {
     this->__ofs << this->__indent() << "input wire ";
     if ((*ite)->get_bit_width() > 1) {
@@ -184,6 +206,7 @@ void CModuleGenerator::__generate_header(void) {
       this->__ofs << ",";
     this->__ofs << "\n";
   }
+
 
   this->__ofs << this->__indent() << ");" << std::endl;
 }
