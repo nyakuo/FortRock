@@ -9,78 +9,122 @@
 #include <list>
 
 #include "CDFG_Element.h"
-#include "CDFG_Connect.h"
-using namespace std;
-
-class CInput : public CDFG_Element {
-public:
-};
-
-class CRegister : public CDFG_Element {
-public:
-
-};
-
-class CWire : public CDFG_Element {
-public:
-
-};
-
-class COperator : public CDFG_Element {
-
-public:
-  enum EOPE_TYPE {
-    OPE_ADD = 0,
-    OPE_MINUS,
-    OPE_MUL,
-    OPE_DIV,
-  };
-
-  EOPE_TYPE ope_type;
-  unsigned ope_num;
-
-};
+#include "CDFG_Node.h"
 
 class CModuleGenerator {
 private:
-  const string OUTPUT_FILE = "output.v";
+  const std::string OUTPUT_FILE = "output.v";
   const unsigned INDENT_WIDTH;
 
   unsigned __indent_level;
-  string __filename;
-  string __module_name;
-  ofstream __ofs;
+  std::string __filename;
+  std::string __module_name;
+  std::ofstream __ofs;
 
-  list<CDFG_Element> __input_list;
-  list<CDFG_Element> __output_list;
-  list<CDFG_Element> __DFG;
+  std::list< std::shared_ptr< CDFG_Node > > __input_list;
+  std::list< std::shared_ptr< CDFG_Node > > __output_list;
+  std::list< std::shared_ptr< CDFG_Element > > __DFG;
 
-  string __print_spaces(const int num_space);
-  inline string __indent(void) { return this->__print_spaces(this->__indent_level * this->INDENT_WIDTH); }
+  std::string __print_spaces(const int num_space);
+  inline std::string __indent(void) { return this->__print_spaces(this->__indent_level * this->INDENT_WIDTH); }
   inline void __indent_left(void) { if(this->__indent_level > 0) --__indent_level; }
   inline void __indent_right(void) { ++this->__indent_level; }
 
-  // int __write_line(const string & line);
   void __generate_header(void);
+  void __generate_define(void);
+  void __generate_parameter(void);
+  void __generate_assign(void);
+  void __generate_calculator(void);
+  void __generate_always(void);
   void __generate_footer(void);
 
 public:
   int generate(void);
 
-  CModuleGenerator(const string & filename);
+  CModuleGenerator(const std::string & filename);
 };
 
-CModuleGenerator::CModuleGenerator(const string & filename)
+CModuleGenerator::CModuleGenerator(const std::string & filename)
   : __filename(filename),
     __indent_level(0),
     INDENT_WIDTH(3) {
-  // テスト用初期化
-  this->__module_name = "auto";
+  // テスト用初期化処理
+  {
+    this->__module_name = "test";
 
-  //  this->__input_list.append(CDFG_Element(
+    // ノード確保
+    // 入力
+    std::shared_ptr< CDFG_Node > a = std::shared_ptr< CDFG_Node >(new CDFG_Node("input_a",
+                                                                                8,
+                                                                                true,
+                                                                                CDFG_Node::eNode::IN));
+    std::shared_ptr< CDFG_Node > b = std::shared_ptr< CDFG_Node >(new CDFG_Node("input_b",
+                                                                                8,
+                                                                                true,
+                                                                                CDFG_Node::eNode::IN));
+
+    // 出力
+    std::shared_ptr< CDFG_Node > out = std::shared_ptr< CDFG_Node > (new CDFG_Node("out",
+                                                                                   8,
+                                                                                   true,
+                                                                                   CDFG_Node::eNode::OUT));
+
+    // 演算器
+    std::shared_ptr< CDFG_Node > add = std::shared_ptr< CDFG_Node >(new CDFG_Node("my_add",
+                                                                                  8,
+                                                                                  true,
+                                                                                  CDFG_Node::eNode::ADD));
+
+    std::shared_ptr< CDFG_Node > minus = std::shared_ptr< CDFG_Node >(new CDFG_Node("my_minus",
+                                                                                    8,
+                                                                                    true,
+                                                                                    CDFG_Node::eNode::MINUS));
+    std::shared_ptr< CDFG_Node > p3 = std::shared_ptr< CDFG_Node >(new CDFG_Node("3",
+                                                                                 8,
+                                                                                 true,
+                                                                                 CDFG_Node::eNode::PARAM));
+
+    // テンプレートレジスタ
+    std::shared_ptr< CDFG_Node > t1 = std::shared_ptr< CDFG_Node >(new CDFG_Node("t1",
+                                                                                 8,
+                                                                                 true,
+                                                                                 CDFG_Node::eNode::REG));
+
+    // DFG
+    // 入出力
+    this->__input_list.push_back(a);
+    this->__input_list.push_back(b);
+    this->__output_list.push_back(out);
+
+    // t1 = input_a + input_b
+    std::shared_ptr< CDFG_Element > elem = std::shared_ptr< CDFG_Element >(new CDFG_Element());
+
+    elem->set_input_size(2);
+    elem->set_output_size(1);
+    elem->set_ope(add);
+    elem->set_input(a, 0);
+    elem->set_input(b, 1);
+    elem->set_output(t1, 0);
+    elem->set_state(0);
+
+    this->__DFG.push_back(elem);
+    elem.reset();
+    elem = std::shared_ptr< CDFG_Element >(new CDFG_Element());
+
+    elem->set_input_size(2);
+    elem->set_output_size(1);
+    elem->set_ope(minus);
+    elem->set_input(t1, 0);
+    elem->set_input(p3, 1);
+    elem->set_output(out, 0);
+    elem->set_state(1);
+
+    this->__DFG.push_back(elem);
+    elem.reset();
+  }
 }
 
-string CModuleGenerator::__print_spaces(const int num_space) {
+std::string CModuleGenerator::__print_spaces(const int num_space) {
   std::string ret_str = "";
 
   for(int i=0; i<num_space; ++i)
@@ -89,41 +133,21 @@ string CModuleGenerator::__print_spaces(const int num_space) {
   return ret_str;
 }
 
-// int CModuleGenerator::__write_line(const string & line) {
-//   this->__ofs << this->__indent();
-//   this->__ofs << line << endl;
-
-//   return 0;
-// }
-
-void CModuleGenerator::__generate_header(void) {
-  this->__ofs << "`default_nettype none" << endl << endl
-              << "module " << this->__module_name << endl;
-
-  this->__indent_right();
-
-  this->__ofs << this->__indent() << "(" << endl;
-  this->__ofs << this->__indent() << "input wire i_clk," << endl
-              << this->__indent() << "input wire i_res_p," << endl
-              << this->__indent() << "input wire i_req_p," << endl
-              << this->__indent() << "input wire i_ce_p," << endl
-              << this->__indent() << "output wire o_fin_p," << endl;
-
-  this->__ofs << this->__indent() << ");" << endl;
-}
-
-void CModuleGenerator::__generate_footer(void) {
-  this->__ofs << "endmodule" << endl << endl
-              << "`default_nettype wire" << endl;
-}
-
 int CModuleGenerator::generate(void) {
-  //  this->__ofs.open(this->__filename, ios::out);
-  this->__ofs.open(this->OUTPUT_FILE, ios::out);
+  //  this->__ofs.open(this->__filename, std::ios::out);
+  this->__ofs.open(this->OUTPUT_FILE, std::ios::out);
   if (!this->__ofs)
     return -1;
 
+  std::cout.rdbuf(this->__ofs.rdbuf());
+  std::cout << "before\n";
   this->__generate_header();
+
+  // this->__generate_define();
+  // this->__generate_parameter();
+  // this->__generate_assign();
+  // this->__generate_calculator();
+  // this->__generate_always();
 
   this->__generate_footer();
 
@@ -131,8 +155,47 @@ int CModuleGenerator::generate(void) {
   return 0;
 }
 
+void CModuleGenerator::__generate_define(void) {
+}
+
+void CModuleGenerator::__generate_header(void) {
+  this->__ofs << "`default_nettype none\n\n"
+              << "module " << this->__module_name << std::endl;
+
+  this->__indent_right();
+
+  this->__ofs << this->__indent() << "(\n";
+  this->__ofs << this->__indent() << "input wire i_clk,\n"
+              << this->__indent() << "input wire i_res_p,\n"
+              << this->__indent() << "input wire i_req_p,\n"
+              << this->__indent() << "input wire i_ce_p,\n"
+              << this->__indent() << "output wire o_fin_p,\n";
+
+  std::list< std::shared_ptr< CDFG_Node > >::iterator ite = this->__input_list.begin();
+  std::list< std::shared_ptr< CDFG_Node > >::iterator end = this->__input_list.end();
+  while(ite != end) {
+    this->__ofs << this->__indent() << "input wire ";
+    if ((*ite)->get_bit_width() > 1) {
+      this->__ofs << "[" << (*ite)->get_bit_width() - 1 << ":0] ";
+    }
+    this->__ofs << (*ite)->get_name();
+    ++ite;
+    if(ite != end)
+      this->__ofs << ",";
+    this->__ofs << "\n";
+  }
+
+  this->__ofs << this->__indent() << ");" << std::endl;
+}
+
+void CModuleGenerator::__generate_footer(void) {
+  this->__ofs << "endmodule\n\n"
+              << "`default_nettype wire" << std::endl;
+}
+
+
 int main(int argc, char **argv) {
-  const string INPUT_FILE = "test_input.xml";
+  const std::string INPUT_FILE = "test_input.xml";
 
   CModuleGenerator generator(INPUT_FILE);
   generator.generate();

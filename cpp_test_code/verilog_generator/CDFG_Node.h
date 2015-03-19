@@ -3,22 +3,38 @@
 #define __CDFG_NODE_H
 
 #include <iostream>
-#include <list>
-#include "CDFG_Connect.h"
-using namespace std;
 
-class CDFG_Element {
+class CDFG_Node {
 public:
-  string name;
-  unsigned bit_width;
-  bool is_signed;
-  list<CDFG_Connect> connection_list;
+  enum class eNode : unsigned {
+    REG = 0,
+      WIRE,
+      IN = WIRE,
+      OUT = REG,
+      PARAM,
+      ADD,
+      MINUS,
+      MUL,
+      DIV,
+      FUNC,
+      };
 
-  CDFG_Element(const string & name,
-               const unsigned & bit_width,
-               const bool & is_signed);
+  CDFG_Node(const std::string & name,
+            const unsigned & bit_width,
+            const bool & is_signed,
+            const CDFG_Node::eNode & type);
 
-  void set_connect(const CDFG_Connect & connect);
+  inline CDFG_Node::eNode get_type(void) const { return this->__type; }
+  inline std::string get_name(void) const { return this->__name; }
+  inline unsigned get_bit_width(void) const { return this->__bit_width; }
+  inline bool get_is_signed(void) const { return this->__is_signed; }
+
+private:
+  CDFG_Node::eNode __type;
+  std::string __name;
+  unsigned __bit_width;
+  bool __is_signed;
+
 };
 
 #endif
