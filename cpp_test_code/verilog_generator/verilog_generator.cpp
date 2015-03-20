@@ -24,6 +24,7 @@ private:
   std::list< std::shared_ptr< CDFG_Node > > __input_list;
   std::list< std::shared_ptr< CDFG_Node > > __output_list;
   std::list< std::shared_ptr< CDFG_Element > > __DFG;
+  std::list< std::shared_ptr< CDFG_Node > > __node_list;
 
   std::string __print_spaces(const int num_space);
   inline std::string __indent(void) { return this->__print_spaces(this->__indent_level * this->INDENT_WIDTH); }
@@ -54,17 +55,17 @@ CModuleGenerator::CModuleGenerator(const std::string & filename)
 
     // ノード確保
     // 入力
-    std::shared_ptr< CDFG_Node > a = std::shared_ptr< CDFG_Node >(new CDFG_Node("input_a",
+    std::shared_ptr< CDFG_Node > a = std::shared_ptr< CDFG_Node >(new CDFG_Node("i_a",
                                                                                 8,
                                                                                 true,
                                                                                 CDFG_Node::eNode::IN));
-    std::shared_ptr< CDFG_Node > b = std::shared_ptr< CDFG_Node >(new CDFG_Node("input_b",
+    std::shared_ptr< CDFG_Node > b = std::shared_ptr< CDFG_Node >(new CDFG_Node("i_b",
                                                                                 8,
                                                                                 true,
                                                                                 CDFG_Node::eNode::IN));
 
     // 出力
-    std::shared_ptr< CDFG_Node > out = std::shared_ptr< CDFG_Node > (new CDFG_Node("out",
+    std::shared_ptr< CDFG_Node > out = std::shared_ptr< CDFG_Node > (new CDFG_Node("o_out",
                                                                                    8,
                                                                                    true,
                                                                                    CDFG_Node::eNode::OUT));
@@ -79,7 +80,7 @@ CModuleGenerator::CModuleGenerator(const std::string & filename)
                                                                                     8,
                                                                                     true,
                                                                                     CDFG_Node::eNode::MINUS));
-    std::shared_ptr< CDFG_Node > p3 = std::shared_ptr< CDFG_Node >(new CDFG_Node("3",
+    std::shared_ptr< CDFG_Node > p3 = std::shared_ptr< CDFG_Node >(new CDFG_Node("p3",
                                                                                  8,
                                                                                  true,
                                                                                  CDFG_Node::eNode::PARAM));
@@ -90,12 +91,22 @@ CModuleGenerator::CModuleGenerator(const std::string & filename)
                                                                                  true,
                                                                                  CDFG_Node::eNode::REG));
 
-    // DFG
+    // 資源登録
     // 入出力
+    // TODO: this->__input_list & this->__output_list は不必要?
     this->__input_list.push_back(a);
     this->__input_list.push_back(b);
     this->__output_list.push_back(out);
+    // 回路内
+    this->__node_list.push_back(a);
+    this->__node_list.push_back(b);
+    this->__node_list.push_back(out);
+    this->__node_list.push_back(add);
+    this->__node_list.push_back(minus);
+    this->__node_list.push_back(p3);
+    this->__node_list.push_back(t1);
 
+    // DFG
     // t1 = input_a + input_b
     std::shared_ptr< CDFG_Element > elem = std::shared_ptr< CDFG_Element >(new CDFG_Element());
 
@@ -142,8 +153,8 @@ int CModuleGenerator::generate(void) {
   std::cout.rdbuf(this->__ofs.rdbuf());
   std::cout << "before\n";
   this->__generate_header();
+  this->__generate_define();
 
-  // this->__generate_define();
   // this->__generate_parameter();
   // this->__generate_assign();
   // this->__generate_calculator();
@@ -156,6 +167,40 @@ int CModuleGenerator::generate(void) {
 }
 
 void CModuleGenerator::__generate_define(void) {
+  std::list< std::shared_ptr< CDFG_Node > >::iterator ite = this->__node_list.begin();
+  std::list< std::shared_ptr< CDFG_Node > >::iterator end = this->__node_list.end();
+
+  while (ite != end) {
+    if ((*ite)->get_type() == CDFG_Node::eNode::REG) {
+      this->__ofs << this->__indent() << "reg ";
+    }
+    else if((*ite)->get_type() == CDFG_Node::eNode::WIRE) {
+      this->__ofs << this->__indent() << "wire ";
+    }
+    else {
+      // input, output
+      ++ite;
+      continue;
+    }
+
+    if ((*ite)->get_is_signed()) {
+      this->__ofs << "signed ";
+    }
+
+    if ((*ite)->get_bit_width() > 1) {
+      this->__ofs << "[" << (*ite)->get_bit_width() - 1 << ":0] ";
+    }
+
+    this->__ofs << (*ite)->get_name() << ";\n";
+    ++ite;
+  }
+
+  this->__ofs << std::endl;
+
+  // todo: state信号の出力
+  this->__ofs << this->__indent()
+              << "reg r_sys_fin;" << std::endl;
+
 }
 
 void CModuleGenerator::__generate_header(void) {
@@ -177,6 +222,10 @@ void CModuleGenerator::__generate_header(void) {
   bool someIO = this->__input_list.size() != 0 && this->__output_list.size() != 0;
   while(ite != end) {
     this->__ofs << this->__indent() << "input wire ";
+
+    if((*ite)->get_is_signed())
+      this->__ofs << "signed ";
+
     if ((*ite)->get_bit_width() > 1) {
       this->__ofs << "[" << (*ite)->get_bit_width() - 1 << ":0] ";
     }
@@ -191,12 +240,11 @@ void CModuleGenerator::__generate_header(void) {
       this->__ofs << ",\n";
   }
 
-
   // 出力信号の出力
   ite = this->__output_list.begin();
   end = this->__output_list.end();
   while(ite != end) {
-    this->__ofs << this->__indent() << "input wire ";
+    this->__ofs << this->__indent() << "output reg ";
     if ((*ite)->get_bit_width() > 1) {
       this->__ofs << "[" << (*ite)->get_bit_width() - 1 << ":0] ";
     }
