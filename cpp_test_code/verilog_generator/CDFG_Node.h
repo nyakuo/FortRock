@@ -9,8 +9,8 @@ public:
   enum class eNode : unsigned {
     REG = 0,
       WIRE,
-      IN = WIRE,
-      OUT = REG,
+      IN,
+      OUT,
       PARAM,
       ADD,
       MINUS,
