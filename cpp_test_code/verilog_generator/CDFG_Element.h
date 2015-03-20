@@ -1,6 +1,6 @@
 // -*- C++ -*-
-#ifndef __CDFG_ELEMENT_H
-#define __CDFG_ELEMENT_H
+#ifndef _CDFG_ELEMENT_H
+#define _CDFG_ELEMENT_H
 
 #include <iostream>
 #include <memory>
@@ -9,10 +9,10 @@
 
 class CDFG_Element {
 private:
-  std::vector< std::shared_ptr< CDFG_Node > > __input_list;
-  std::vector< std::shared_ptr< CDFG_Node > > __output_list;
-  std::shared_ptr< CDFG_Node > __ope;
-  unsigned __state;
+  std::vector< std::shared_ptr< CDFG_Node > > _input_list;
+  std::vector< std::shared_ptr< CDFG_Node > > _output_list;
+  std::shared_ptr< CDFG_Node > _ope;
+  unsigned _state;
 
 public:
   CDFG_Element(void);

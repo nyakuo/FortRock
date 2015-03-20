@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <list>
 
 #include "CDFG_Element.h"
@@ -16,28 +17,27 @@ private:
   const std::string OUTPUT_FILE = "output.v";
   const unsigned INDENT_WIDTH;
 
-  unsigned __indent_level;
-  std::string __filename;
-  std::string __module_name;
-  std::ofstream __ofs;
+  unsigned _indent_level;
+  std::string _filename;
+  std::string _module_name;
+  std::ofstream _ofs;
 
-  std::list< std::shared_ptr< CDFG_Node > > __input_list;
-  std::list< std::shared_ptr< CDFG_Node > > __output_list;
-  std::list< std::shared_ptr< CDFG_Element > > __DFG;
-  std::list< std::shared_ptr< CDFG_Node > > __node_list;
+  std::list< std::shared_ptr< CDFG_Node > > _input_list;
+  std::list< std::shared_ptr< CDFG_Node > > _output_list;
+  std::list< std::shared_ptr< CDFG_Element > > _DFG;
+  std::list< std::shared_ptr< CDFG_Node > > _node_list;
 
-  std::string __print_spaces(const int num_space);
-  inline std::string __indent(void) { return this->__print_spaces(this->__indent_level * this->INDENT_WIDTH); }
-  inline void __indent_left(void) { if(this->__indent_level > 0) --__indent_level; }
-  inline void __indent_right(void) { ++this->__indent_level; }
+  std::string _print_spaces(const int num_space);
+  inline std::string _indent(void) { return this->_print_spaces(this->_indent_level * this->INDENT_WIDTH); }
+  inline void _indent_left(void) { if(this->_indent_level > 0) --_indent_level; }
+  inline void _indent_right(void) { ++this->_indent_level; }
 
-  void __generate_header(void);
-  void __generate_define(void);
-  void __generate_parameter(void);
-  void __generate_assign(void);
-  void __generate_calculator(void);
-  void __generate_always(void);
-  void __generate_footer(void);
+  void _generate_header(void);
+  void _generate_define(void);
+  void _generate_assign(void);
+  void _generate_calculator(void);
+  void _generate_always(void);
+  void _generate_footer(void);
 
 public:
   int generate(void);
@@ -46,12 +46,12 @@ public:
 };
 
 CModuleGenerator::CModuleGenerator(const std::string & filename)
-  : __filename(filename),
-    __indent_level(0),
+  : _filename(filename),
+    _indent_level(0),
     INDENT_WIDTH(3) {
   // テスト用初期化処理
   {
-    this->__module_name = "test";
+    this->_module_name = "test";
 
     // ノード確保
     // 入力
@@ -93,18 +93,18 @@ CModuleGenerator::CModuleGenerator(const std::string & filename)
 
     // 資源登録
     // 入出力
-    // TODO: this->__input_list & this->__output_list は不必要?
-    this->__input_list.push_back(a);
-    this->__input_list.push_back(b);
-    this->__output_list.push_back(out);
+    // TODO: this->_input_list & this->_output_list は不必要?
+    this->_input_list.push_back(a);
+    this->_input_list.push_back(b);
+    this->_output_list.push_back(out);
     // 回路内
-    this->__node_list.push_back(a);
-    this->__node_list.push_back(b);
-    this->__node_list.push_back(out);
-    this->__node_list.push_back(add);
-    this->__node_list.push_back(minus);
-    this->__node_list.push_back(p3);
-    this->__node_list.push_back(t1);
+    this->_node_list.push_back(a);
+    this->_node_list.push_back(b);
+    this->_node_list.push_back(out);
+    this->_node_list.push_back(add);
+    this->_node_list.push_back(minus);
+    this->_node_list.push_back(p3);
+    this->_node_list.push_back(t1);
 
     // DFG
     // t1 = input_a + input_b
@@ -118,7 +118,7 @@ CModuleGenerator::CModuleGenerator(const std::string & filename)
     elem->set_output(t1, 0);
     elem->set_state(0);
 
-    this->__DFG.push_back(elem);
+    this->_DFG.push_back(elem);
     elem.reset();
     elem = std::shared_ptr< CDFG_Element >(new CDFG_Element());
 
@@ -130,12 +130,12 @@ CModuleGenerator::CModuleGenerator(const std::string & filename)
     elem->set_output(out, 0);
     elem->set_state(1);
 
-    this->__DFG.push_back(elem);
+    this->_DFG.push_back(elem);
     elem.reset();
   }
 }
 
-std::string CModuleGenerator::__print_spaces(const int num_space) {
+std::string CModuleGenerator::_print_spaces(const int num_space) {
   std::string ret_str = "";
 
   for(int i=0; i<num_space; ++i)
@@ -145,122 +145,143 @@ std::string CModuleGenerator::__print_spaces(const int num_space) {
 }
 
 int CModuleGenerator::generate(void) {
-  //  this->__ofs.open(this->__filename, std::ios::out);
-  this->__ofs.open(this->OUTPUT_FILE, std::ios::out);
-  if (!this->__ofs)
+  //  this->_ofs.open(this->_filename, std::ios::out);
+  this->_ofs.open(this->OUTPUT_FILE, std::ios::out);
+  if (!this->_ofs)
     return -1;
 
-  std::cout.rdbuf(this->__ofs.rdbuf());
+  std::cout.rdbuf(this->_ofs.rdbuf());
   std::cout << "before\n";
-  this->__generate_header();
-  this->__generate_define();
+  this->_generate_header();
+  this->_generate_define();
+  // this->_generate_assign();
+  // this->_generate_calculator();
+  // this->_generate_always();
 
-  // this->__generate_parameter();
-  // this->__generate_assign();
-  // this->__generate_calculator();
-  // this->__generate_always();
+  this->_generate_footer();
 
-  this->__generate_footer();
-
-  this->__ofs.close();
+  this->_ofs.close();
   return 0;
 }
+void CModuleGenerator::_generate_header(void) {
+  this->_ofs << "`default_nettype none\n\n"
+              << "module " << this->_module_name << std::endl;
 
-void CModuleGenerator::__generate_define(void) {
-  std::list< std::shared_ptr< CDFG_Node > >::iterator ite = this->__node_list.begin();
-  std::list< std::shared_ptr< CDFG_Node > >::iterator end = this->__node_list.end();
+  this->_indent_right();
 
-  while (ite != end) {
-    if ((*ite)->get_type() == CDFG_Node::eNode::REG) {
-      this->__ofs << this->__indent() << "reg ";
-    }
-    else if((*ite)->get_type() == CDFG_Node::eNode::WIRE) {
-      this->__ofs << this->__indent() << "wire ";
-    }
-    else {
-      // input, output
-      ++ite;
-      continue;
-    }
-
-    if ((*ite)->get_is_signed()) {
-      this->__ofs << "signed ";
-    }
-
-    if ((*ite)->get_bit_width() > 1) {
-      this->__ofs << "[" << (*ite)->get_bit_width() - 1 << ":0] ";
-    }
-
-    this->__ofs << (*ite)->get_name() << ";\n";
-    ++ite;
-  }
-
-  this->__ofs << std::endl;
-
-  // todo: state信号の出力
-  this->__ofs << this->__indent()
-              << "reg r_sys_fin;" << std::endl;
-
-}
-
-void CModuleGenerator::__generate_header(void) {
-  this->__ofs << "`default_nettype none\n\n"
-              << "module " << this->__module_name << std::endl;
-
-  this->__indent_right();
-
-  this->__ofs << this->__indent() << "(\n";
-  this->__ofs << this->__indent() << "input wire i_clk,\n"
-              << this->__indent() << "input wire i_res_p,\n"
-              << this->__indent() << "input wire i_req_p,\n"
-              << this->__indent() << "input wire i_ce_p,\n"
-              << this->__indent() << "output wire o_fin_p,\n";
+  this->_ofs << this->_indent() << "(\n";
+  this->_ofs << this->_indent() << "input wire i_clk,\n"
+              << this->_indent() << "input wire i_res_p,\n"
+              << this->_indent() << "input wire i_req_p,\n"
+              << this->_indent() << "input wire i_ce_p,\n"
+              << this->_indent() << "output wire o_fin_p,\n";
 
   // 入力信号の出力
-  std::list< std::shared_ptr< CDFG_Node > >::iterator ite = this->__input_list.begin();
-  std::list< std::shared_ptr< CDFG_Node > >::iterator end = this->__input_list.end();
-  bool someIO = this->__input_list.size() != 0 && this->__output_list.size() != 0;
+  std::list< std::shared_ptr< CDFG_Node > >::iterator ite = this->_input_list.begin();
+  std::list< std::shared_ptr< CDFG_Node > >::iterator end = this->_input_list.end();
+  bool someIO = this->_input_list.size() != 0 && this->_output_list.size() != 0;
   while(ite != end) {
-    this->__ofs << this->__indent() << "input wire ";
+    this->_ofs << this->_indent() << "input wire ";
 
     if((*ite)->get_is_signed())
-      this->__ofs << "signed ";
+      this->_ofs << "signed ";
 
     if ((*ite)->get_bit_width() > 1) {
-      this->__ofs << "[" << (*ite)->get_bit_width() - 1 << ":0] ";
+      this->_ofs << "[" << (*ite)->get_bit_width() - 1 << ":0] ";
     }
-    this->__ofs << (*ite)->get_name();
+    this->_ofs << (*ite)->get_name();
     ++ite;
 
     if(ite == end) {
       if (someIO)
-        this->__ofs << ",\n";
+        this->_ofs << ",\n";
     }
     else
-      this->__ofs << ",\n";
+      this->_ofs << ",\n";
   }
 
   // 出力信号の出力
-  ite = this->__output_list.begin();
-  end = this->__output_list.end();
+  ite = this->_output_list.begin();
+  end = this->_output_list.end();
   while(ite != end) {
-    this->__ofs << this->__indent() << "output reg ";
+    this->_ofs << this->_indent() << "output reg ";
     if ((*ite)->get_bit_width() > 1) {
-      this->__ofs << "[" << (*ite)->get_bit_width() - 1 << ":0] ";
+      this->_ofs << "[" << (*ite)->get_bit_width() - 1 << ":0] ";
     }
-    this->__ofs << (*ite)->get_name();
+    this->_ofs << (*ite)->get_name();
     ++ite;
     if(ite != end)
-      this->__ofs << ",";
-    this->__ofs << "\n";
+      this->_ofs << ",";
+    this->_ofs << "\n";
   }
 
 
-  this->__ofs << this->__indent() << ");" << std::endl;
+  this->_ofs << this->_indent() << ");" << std::endl;
 }
 
-void CModuleGenerator::__generate_footer(void) {
-  this->__ofs << "endmodule\n\n"
+void CModuleGenerator::_generate_define(void) {
+  unsigned type;
+  const unsigned reg = 0;
+  const unsigned wire = 1;
+  const unsigned param = 2;
+  const unsigned none = 3;
+  std::stringstream streams[3];
+  std::string types[3] = {"reg", "wire", "parameter"};
+  std::list< std::shared_ptr< CDFG_Node > >::iterator ite;
+  std::list< std::shared_ptr< CDFG_Node > >::iterator end;
+
+  ite = this->_node_list.begin();
+  end = this->_node_list.end();
+
+  while (ite != end) {
+    switch((*ite)->get_type()) {
+    case CDFG_Node::eNode::REG:
+      type = reg;
+      break;
+
+    case CDFG_Node::eNode::WIRE:
+      type = wire;
+      break;
+
+    case CDFG_Node::eNode::PARAM:
+      type = param;
+      break;
+
+    default:
+      type = none;
+      break;
+    }
+
+    if (type != none) {
+      streams[type] << this->_indent() << types[type] << ' ';
+
+      if ((*ite)->get_is_signed()) {
+        streams[type] << "signed ";
+      }
+
+      if ((*ite)->get_bit_width() > 1) {
+        streams[type] << "[" << (*ite)->get_bit_width() - 1 << ":0] ";
+      }
+
+      streams[type] << (*ite)->get_name() << ";\n";
+    }
+    ++ite;
+  }
+
+  // todo: state信号の出力
+  // fin, state信号
+  streams[reg] << this->_indent() << "reg r_sys_fin;" << std::endl;
+
+  for (int i=0; i<3; ++i) {
+    if (streams[i].rdbuf()->in_avail() != 0) {
+      this->_ofs << streams[i].str() << std::endl;
+    }
+  }
+  // todo: 演算器のI/Oポートの定義
+}
+
+void CModuleGenerator::_generate_footer(void) {
+  this->_ofs << "endmodule\n\n"
               << "`default_nettype wire" << std::endl;
 }
 
