@@ -1,4 +1,3 @@
-// -*- C++ -*-
 #ifndef _CDFG_NODE_H
 #define _CDFG_NODE_H
 
@@ -34,6 +33,8 @@ private:
   std::string _name;
   bool _is_signed;
   unsigned _bit_width;
+  // todo: parameter用定数が足りない
+  // todo: 演算器用入出力ポートの定義ができない
 };
 
 #endif

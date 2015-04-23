@@ -1,4 +1,3 @@
-// -*- C++ -*-
 #ifndef _CDEFG_CONNECT_H
 #define _CDEFG_CONNECT_H
 

@@ -1,4 +1,3 @@
-// -*- C++ -*-
 #ifndef _CDFG_ELEMENT_H
 #define _CDFG_ELEMENT_H
 
