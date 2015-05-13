@@ -1,5 +1,6 @@
 CXX = clang++
-CXXFLAGS = -Werror -std=c++11 -stdlib=libc++
+#CXXFLAGS = -Werror -std=c++11 -stdlib=libc++
+CXXFLAGS = -Werror -std=c++11 -stdlib=libstdc++
 OBJ_FILES = verilog_generator.o CDFG_Element.o CDFG_Node.o
 OUTPUT = generator
 
