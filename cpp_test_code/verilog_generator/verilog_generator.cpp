@@ -81,6 +81,8 @@ CModuleGenerator::CModuleGenerator(const std::string & filename)
     // 定数
     auto p3 = std::make_shared<CDFG_Node>
       (CDFG_Node("p3", 8, true, CDFG_Node::eNode::PARAM, 3));
+    auto p_true = std::make_shared<CDFG_Node>
+      (CDFG_Node("TRUE", 1, false, CDFG_Node::eNode::PARAM, 1));
 
     // テンプレートレジスタ
     auto t1 = std::make_shared<CDFG_Node>
@@ -117,6 +119,7 @@ CModuleGenerator::CModuleGenerator(const std::string & filename)
     this->_node_list.emplace_back(b);
     this->_node_list.emplace_back(out);
     this->_node_list.emplace_back(p3);
+    this->_node_list.emplace_back(p_true);
     this->_node_list.emplace_back(t1);
     this->_node_list.emplace_back(adder1_i_a);
     this->_node_list.emplace_back(adder1_i_b);
@@ -300,7 +303,8 @@ void CModuleGenerator::_generate_define(void) {
     streams[type] << node->get_name();
 
     if (type == param)
-      streams[param] << " = " << node->get_parameter();
+      streams[param] << " = " << node->get_bit_width()
+                     << "'h" << std::hex << node->get_parameter();
 
     streams[type] << ";\n";
   }
