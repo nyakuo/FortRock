@@ -3,6 +3,8 @@
 
 #include <string>
 #include <map>
+#include <list>
+#include <algorithm>
 
 /**
    @class CStateMachineGen
@@ -19,13 +21,17 @@ public:
   void add_state_process(const unsigned & state,
                          const unsigned & step,
                          const std::string & process); /** ステートマシンの処理をリストに追加 */
-  
+
+  std::multimap<unsigned, unsigned> get_state_step_list(void); /** ステートマシンに存在する
+                                                                                       すべてのステート・ステップの
+                                                                                       ペアのリストを取得 */
+
 private:
   /**
      ステートマシンの処理を記述
      <state, <step, 接続情報 (文字列)> >
    */
-  std::map<unsigned, std::map<unsigned, std::string> > _state_machine; 
+  std::map<unsigned, std::map<unsigned, std::string> > _state_machine;
 };
 
 #endif
