@@ -41,7 +41,13 @@ void CStateMachineGen::add_state_process(const unsigned & state,
 
   // ステップの存在確認
   auto ite_step = ite_state->second.find(step);
+  if (ite_step == ite_state->second.end()) {
+    // ステップの追加
+    ite_state->second.insert(std::pair<unsigned, std::string>(step, ""));
+    ite_step = ite_state->second.find(step);
+  }
 
   // 処理の追加
   ite_step->second.append(process);
+
 }
