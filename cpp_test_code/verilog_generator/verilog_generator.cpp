@@ -502,36 +502,10 @@ void CModuleGenerator::_generate_always(void) {
   this->_indent_left();
 
   // list(接続タイミング) ---> always
-  // for (auto & state_step : sm_gen.get_state_step_list()) {
-
-  //   std::cout << state_step.first << ' ' << state_step.second << std::endl;
-
-  //   // ステートの出力
-  //   this->_ofs << this->_indent()
-  //              << node_state->get_bit_width()
-  //              << "'h" << std::hex << state_step.first << ":\n";
-
-  //   // ステップの出力
-
-  //   this->_indent_right();
-
-  //   this->_ofs << this->_indent() << "begin\n";
-
-  //   this->_indent_right();
-  //   this->_ofs << sm_gen.gen_state_machine(state_step.first,
-  //                                          state_step.second);
-  //   this->_indent_left();
-
-  //   this->_ofs << this->_indent() << "end\n";
-
-  //   this->_indent_left();
-  // }
-
-    auto state_step_list = sm_gen.get_state_step_list();
-
-    for(auto ite_state_step = state_step_list.begin();
-        ite_state_step != state_step_list.end();
-        ) {
+  auto state_step_list = sm_gen.get_state_step_list();
+  for(auto ite_state_step = state_step_list.begin();
+      ite_state_step != state_step_list.end();
+      ) {
     // ステートの出力
     this->_ofs << this->_indent()
                << node_state->get_bit_width()
@@ -571,15 +545,15 @@ void CModuleGenerator::_generate_always(void) {
     this->_ofs << this->_indent()
                << "end\n";
     this->_indent_left();
-    }
+  }
 
-    this->_indent_left();
-    this->_ofs << this->_indent() << "endcase\n";
-    this->_indent_left();
-    this->_ofs << this->_indent() << "end\n";
-    this->_indent_left();
-    this->_indent_left();
-    this->_ofs << this->_indent() << "end\n";
+  this->_indent_left();
+  this->_ofs << this->_indent() << "endcase\n";
+  this->_indent_left();
+  this->_ofs << this->_indent() << "end\n";
+  this->_indent_left();
+  this->_indent_left();
+  this->_ofs << this->_indent() << "end\n";
 }
 
 /**
