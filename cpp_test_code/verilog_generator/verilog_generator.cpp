@@ -79,10 +79,15 @@ CModuleGenerator::CModuleGenerator(const std::string & filename)
       (CDFG_Node("o_fin_p", 1, false, CDFG_Node::eNode::FIN));
 
     // 定数
-    auto p3 = std::make_shared<CDFG_Node>
-      (CDFG_Node("p3", 8, true, CDFG_Node::eNode::PARAM, 3));
+    auto p_3 = std::make_shared<CDFG_Node>
+      (CDFG_Node("p_3", 8, true, CDFG_Node::eNode::PARAM, 3));
     auto p_true = std::make_shared<CDFG_Node>
       (CDFG_Node("TRUE", 1, false, CDFG_Node::eNode::PARAM, 1));
+    auto p_false = std::make_shared<CDFG_Node>
+      (CDFG_Node("FALSE", 1, false, CDFG_Node::eNode::PARAM, 0));
+    auto p_zero = std::make_shared<CDFG_Node>
+      (CDFG_Node("ZERO", 1, false, CDFG_Node::eNode::PARAM, 0));
+
 
     // テンプレートレジスタ
     auto t1 = std::make_shared<CDFG_Node>
@@ -118,8 +123,10 @@ CModuleGenerator::CModuleGenerator(const std::string & filename)
     this->_node_list.emplace_back(a);
     this->_node_list.emplace_back(b);
     this->_node_list.emplace_back(out);
-    this->_node_list.emplace_back(p3);
+    this->_node_list.emplace_back(p_3);
     this->_node_list.emplace_back(p_true);
+    this->_node_list.emplace_back(p_false);
+    this->_node_list.emplace_back(p_zero);
     this->_node_list.emplace_back(t1);
     this->_node_list.emplace_back(adder1_i_a);
     this->_node_list.emplace_back(adder1_i_b);
@@ -170,13 +177,13 @@ CModuleGenerator::CModuleGenerator(const std::string & filename)
     elem1->set_step(0);
     this->_dfg.emplace_back(elem1);
 
-    // out = t1 + p3
+    // out = t1 + p_3
     auto elem2 = std::make_shared<CDFG_Element>(CDFG_Element(sub));
     elem2->set_input(t1, 0);
-    elem2->set_input(p3, 1);
+    elem2->set_input(p_3, 1);
     elem2->set_output(out, 0);
     elem2->set_state(1);
-    elem2->set_step(1);
+    elem2->set_step(2);
     this->_dfg.emplace_back(elem2);
   }
 }
@@ -477,9 +484,9 @@ void CModuleGenerator::_generate_always(void) {
       if ((unsigned)node->get_type() &
           ((unsigned)CDFG_Node::eNode::WIRE)) {
         process_str.append(this->_indent()
-                             + node->get_name()
-                             + " <= "
                              + elem->get_output_at(i)->get_name()
+                             + " <= "
+                             + node->get_name()
                              + ";\n");
       }
     }
