@@ -5,6 +5,7 @@
  */
 
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <sstream>
 #include <list>
@@ -92,6 +93,7 @@ CModuleGenerator::CModuleGenerator(const std::string & filename)
       (CDFG_Node("mr_adder1_i_b", 8, true, CDFG_Node::eNode::REG));
     auto adder1_out = std::make_shared<CDFG_Node>
       (CDFG_Node("mw_adder1_output", 8, true, CDFG_Node::eNode::WIRE));
+
     auto adder2_i_a = std::make_shared<CDFG_Node>
       (CDFG_Node("mr_adder2_i_a", 8, true, CDFG_Node::eNode::REG));
     auto adder2_i_b = std::make_shared<CDFG_Node>
@@ -126,17 +128,18 @@ CModuleGenerator::CModuleGenerator(const std::string & filename)
     this->_node_list.emplace_back(s_step);
 
     // 演算器
+    // todo: CLKやCEの接続を行うとElementの入出力と整合性がとれなくなる
     auto add = std::make_shared<CDFG_Operator>
       (CDFG_Operator("my_add1",
                      "my_add",
                      1,
                      CDFG_Operator::eType::ADD));
 
-    add->add_input_port("clock", i_clk);
-    add->add_input_port("ce", i_ce);
     add->add_input_port("i_a", adder1_i_a);
     add->add_input_port("i_b", adder1_i_b);
     add->add_output_port("o_output", adder1_out);
+    add->add_input_port("clock", i_clk);
+    add->add_input_port("ce", i_ce);
 
     auto sub = std::make_shared<CDFG_Operator>
       (CDFG_Operator("my_sub1",
@@ -144,11 +147,11 @@ CModuleGenerator::CModuleGenerator(const std::string & filename)
                      1,
                      CDFG_Operator::eType::SUB));
 
-    sub->add_input_port("clock", i_clk);
-    sub->add_input_port("ce", i_ce);
     sub->add_input_port("i_a", adder2_i_a);
     sub->add_input_port("i_b", adder2_i_b);
     sub->add_output_port("o_output", adder2_out);
+    sub->add_input_port("clock", i_clk);
+    sub->add_input_port("ce", i_ce);
 
     // 演算器登録
     this->_operator_list.emplace_back(add);
@@ -432,129 +435,140 @@ void CModuleGenerator::_generate_always(void) {
 
   this->_indent_left();
   this->_ofs << this->_indent() << "end\n";
-  this->_indent_left();
 
   // ステートマシンの出力
+  // DFG ---> list(接続タイミング)
+  this->_indent_right();
+  this->_indent_right();
+  this->_indent_right();
+  this->_indent_right();
   CStateMachineGen sm_gen;
   for (auto & elem : this->_dfg) {
     auto ope = elem->get_operator();
     auto state = elem->get_state();
     auto step = elem->get_step();
     auto latency = ope->get_latency();
+    std::string process_str = "";
 
     // 入力の接続
-    {
-      std::string processes_str = "";
-      auto ope = elem->get_operator();
-      for (auto i=0; i<ope->get_num_input(); ++i) {
-        //        processes_str.append(ope->get_input_at(i)->get_);
+    ope = elem->get_operator();
+    for (auto i=0; i<ope->get_num_input(); ++i) {
+      auto node = ope->get_input_node_at(i);
+      if ((unsigned)node->get_type() &
+          ((unsigned)CDFG_Node::eNode::REG | (unsigned)CDFG_Node::eNode::OUT)) {
+        process_str.append(this->_indent()
+                             + node->get_name()
+                             + " <= "
+                             + elem->get_input_at(i)->get_name()
+                             + ";\n");
       }
-
     }
+    sm_gen.add_state_process(state, step, process_str);
 
-    
+    // 出力の接続
+    process_str = "";
+    for (auto i=0; i<ope->get_num_output(); ++i) {
+      auto node = ope->get_output_node_at(i);
+
+      if ((unsigned)node->get_type() &
+          ((unsigned)CDFG_Node::eNode::WIRE)) {
+        process_str.append(this->_indent()
+                             + node->get_name()
+                             + " <= "
+                             + elem->get_output_at(i)->get_name()
+                             + ";\n");
+      }
+    }
+    sm_gen.add_state_process(state,
+                             step + latency,
+                             process_str);
   }
-  // DFG ---> list(接続タイミング)
+
+  this->_indent_left();
+  this->_indent_left();
+  this->_indent_left();
+  this->_indent_left();
+  this->_indent_left();
+
   // list(接続タイミング) ---> always
+  // for (auto & state_step : sm_gen.get_state_step_list()) {
 
-#if 0
+  //   std::cout << state_step.first << ' ' << state_step.second << std::endl;
 
-  // ステートマシンの各ステートの動作 (ステップ)
-  // note: ステートの番号でソートされていると想定
-  unsigned state = 0;
-  unsigned step = 0;
-  bool is_first_state = true;
-  bool is_first_step = true;
-  for (auto & elem : this->_dfg) {
-    // ステートを閉じる
-    if (elem->get_state() != state) {
-      this->_indent_left();
-      this->_ofs << this->_indent() << "end\n";
-      this->_indent_left();
+  //   // ステートの出力
+  //   this->_ofs << this->_indent()
+  //              << node_state->get_bit_width()
+  //              << "'h" << std::hex << state_step.first << ":\n";
 
-      is_first_state = true;
-      state = elem->get_state();
-    }
+  //   // ステップの出力
 
-    // ステートの番号の出力 (ステートの開始)
-    if (is_first_state) {
-      state = elem->get_state();
+  //   this->_indent_right();
 
+  //   this->_ofs << this->_indent() << "begin\n";
+
+  //   this->_indent_right();
+  //   this->_ofs << sm_gen.gen_state_machine(state_step.first,
+  //                                          state_step.second);
+  //   this->_indent_left();
+
+  //   this->_ofs << this->_indent() << "end\n";
+
+  //   this->_indent_left();
+  // }
+
+    auto state_step_list = sm_gen.get_state_step_list();
+
+    for(auto ite_state_step = state_step_list.begin();
+        ite_state_step != state_step_list.end();
+        ) {
+    // ステートの出力
+    this->_ofs << this->_indent()
+               << node_state->get_bit_width()
+               << "'h" << std::hex << ite_state_step->first << ":\n";
+    this->_indent_right();
+    this->_ofs << this->_indent()
+               << "begin\n";
+
+    // ステップの出力
+    this->_indent_right();
+    this->_ofs << this->_indent()
+               << "case (" << node_step->get_name() << ")\n";
+    auto range = state_step_list.equal_range(ite_state_step->first);
+    for (auto ite = range.first;
+         ite != range.second;
+         ++ite, ++ite_state_step) {
+      this->_indent_right();
       this->_ofs << this->_indent()
-                 << node_state->get_bit_width()
-                 << "'h" << state << ":\n";
-
+                 << node_step->get_bit_width()
+                 << "'h" << std::hex << ite->second << ":\n";
       this->_indent_right();
       this->_ofs << this->_indent() << "begin\n";
       this->_indent_right();
 
-      is_first_state = false;
-      step = elem->get_step();
-    }
+      this->_ofs  << sm_gen.gen_state_machine(ite->first,
+                                              ite->second);
 
-    // ステップを閉じる
-    if (elem->get_step() != step) {
       this->_indent_left();
       this->_ofs << this->_indent() << "end\n";
       this->_indent_left();
-      this->_ofs << this->_indent() << "endcase\n";
+      this->_indent_left();
+    }
+    this->_ofs << this->_indent() << "endcase\n";
 
-      is_first_step = true;
+    this->_indent_left();
+
+    this->_ofs << this->_indent()
+               << "end\n";
+    this->_indent_left();
     }
 
-    // ステップの出力
-    if (elem->get_step() == step) {
-      if (is_first_step) {
-        this->_ofs << this->_indent()
-                   << "case (" << node_step->get_name() << ")\n";
-
-        this->_indent_right();
-
-        this->_ofs << this->_indent()
-                   << node_step->get_bit_width()
-                   << "'h" << step << ":\n";
-
-        this->_indent_right();
-
-        this->_ofs << this->_indent() << "begin\n";
-
-        this->_indent_right();
-        is_first_step = false;
-      }
-
-      auto ope = elem->get_operator();
-      for (unsigned at=0; at < ope->get_num_input(); ++at) {
-        auto port = ope->get_input_at(at);
-        this->_ofs << this->_indent()
-                   << port->get_name()
-                   << " <= "
-                   << port->get_node()->get_name()
-                   << "\n";
-      }
-      for (unsigned at=0; at < ope->get_num_output(); ++at) {
-        auto port = ope->get_output_at(at);
-        this->_ofs << this->_indent()
-                   << port->get_name()
-                   << " <= "
-                   << port->get_node()->get_name()
-                   << "\n";
-      }
-    }
-  }
-  // ステートを閉じる
-  this->_indent_left();
-  this->_ofs << this->_indent() << "end\n";
-  this->_indent_left();
-
-  // 入れ子を閉じる
-  this->_indent_left();
-  this->_ofs << this->_indent() << "endcase\n";
-  this->_indent_left();
-  this->_ofs << this->_indent() << "end\n";
-  this->_indent_left();
-  this->_indent_left();
-  this->_ofs << this->_indent() << "end // always\n";
-#endif
+    this->_indent_left();
+    this->_ofs << this->_indent() << "endcase\n";
+    this->_indent_left();
+    this->_ofs << this->_indent() << "end\n";
+    this->_indent_left();
+    this->_indent_left();
+    this->_ofs << this->_indent() << "end\n";
 }
 
 /**
