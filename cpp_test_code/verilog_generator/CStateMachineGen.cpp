@@ -60,14 +60,9 @@ std::multimap<unsigned, unsigned>
 CStateMachineGen::get_state_step_list(void) {
   std::multimap<unsigned, unsigned> ret_list;
 
-  for (auto & state : this->_state_machine) {
-    for (auto & step : state.second) {
-      // auto ite = find(ret_list.begin(), ret_list.end(),
-      //                  std::pair<unsigned, unsigned>(state.first, step.first));
-      // if (ite == ret_list.end())
+  for (auto & state : this->_state_machine)
+    for (auto & step : state.second)
       ret_list.insert(std::pair<unsigned, unsigned>(state.first, step.first));
-    }
-  }
 
   return ret_list;
 }
