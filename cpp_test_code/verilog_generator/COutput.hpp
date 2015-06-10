@@ -10,15 +10,17 @@
  */
 class COutput {
 public:
-  COutput(const std::string & filename,
-          const unsigned & indent_width);
+  COutput(void);
   ~COutput(void);
 
-  void output(std::string & str);                    /** 出力の追加 */
+  void open_ofstream(const std::string filename);    /** ofstreamを開く */
   void indent_left(const unsigned & num_level = 0);  /** インデントを浅くする */
   void indent_right(const unsigned & num_level = 0); /** インデントを深くする */
+  std::string output_indent(void);                   /** 現在のインデントレベルでスペース文字を返す */
 
-  std::ostream &operator << (std::string & str); /** ファイルに出力する */
+  std::ostream & operator << (const std::string & str); /** ファイルに出力する */
+  std::ostream & operator << (const char * str);        /** ファイルに出力する */
+  std::ostream & operator << (const int & i);           /** ファイルに出力する */
 
 private:
   const unsigned _INDENT_WIDTH; /** インデント幅 (コンストラクタで初期化) */

@@ -5,12 +5,9 @@
    @paramm[in] filename 出力ファイル名
    @param[in] indent_width インデントのスペース文字の数
  */
-COutput::COutput(const std::string & filename,
-                 const unsigned & indent_width)
-  : _INDENT_WIDTH(indent_width)
-{
-  this->_ofs .open(filename, std::ios::out);
-}
+COutput::COutput(void)
+  : _INDENT_WIDTH(2)
+{}
 
 /**
    デストラクタ
@@ -18,6 +15,28 @@ COutput::COutput(const std::string & filename,
  */
 COutput::~COutput(void) {
   this->_ofs.close();
+}
+
+/**
+   ofstreamを開く
+   @param[in] 出力するファイル名
+ */
+void COutput::open_ofstream(const std::string filename) {
+  this->_ofs.open(filename, std::ios::out);
+}
+
+/**
+   現在のインデントレベルでスペース文字を返す
+   @return 現在のインデントレベル分のスペース文字列
+*/
+std::string COutput::output_indent(void) {
+  std::string spaces = "";
+  for (auto i=0;
+       i<this->_INDENT_WIDTH * this->_indent_level;
+       ++i)
+    spaces += ' ';
+
+  return spaces;
 }
 
 /**
@@ -46,13 +65,24 @@ void COutput::indent_right(const unsigned & num_level) {
    ファイルに出力する
    @param[in] str ファイルに出力する文字列
  */
-std::ostream & COutput::operator  << (std::string & str) {
-  std::string spaces = "";
-  for (auto i=0;
-       i<(this->_INDENT_WIDTH * this->_indent_level);
-       ++i)
-    spaces += ' ';
+std::ostream & COutput::operator << (const std::string & str) {
+  return this->_ofs << this->output_indent() << str;
+}
 
-  this->_ofs << spaces<< str;
-  return this->_ofs.flush();
+/**
+   char *型の文字列をファイルに出力する
+   @param[in] str ファイルに出力する文字列
+   @note operator << (const std::string & str)に処理を渡している
+ */
+std::ostream & COutput::operator << (const char * str) {
+  return (*this) << std::string(str);
+}
+
+/**
+   int型をファイルに出力する
+   @param[in] i ファイルに出力する数字
+   @note operator << (const std::string & str)に処理を渡している
+*/
+std::ostream & COutput::operator << (const int & i) {
+  return (*this) << std::to_string(i);
 }
