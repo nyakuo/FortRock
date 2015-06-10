@@ -1,2 +1,7 @@
 generator
-./verilog
+verilog/*
+html/*
+\#*
+.\#*
+a.out
+*.vcd
