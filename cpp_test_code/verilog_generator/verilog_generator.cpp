@@ -21,23 +21,13 @@
 class CModuleGenerator {
 private:
   const std::string OUTPUT_FILE = "output.v";
-  //  const unsigned INDENT_WIDTH;
 
   COutput _cout;
-
-  //  unsigned _indent_level;
-  //  std::string _filename;
   std::string _module_name;
-  //  std::ofstream _ofs;
 
   std::list<std::shared_ptr<CDFG_Element> > _dfg; /** モジュール内のElementのリスト */
   std::list<std::shared_ptr<CDFG_Node> > _node_list; /** モジュール内のNode(reg, wire, parameter)のリスト */
   std::list<std::shared_ptr<CDFG_Operator> >_operator_list; /** モジュール内の演算モジュールリスト */
-
-  // std::string _print_spaces(const int & num_space);
-  // inline std::string _indent(void) { return this->_print_spaces(this->_cout.indent_level * this->INDENT_WIDTH); }
-  // inline void _indent_left(void) { if(this->_cout.indent_level > 0) --_indent_level; }
-  // inline void _indent_right(void) { ++this->_cout.indent_level; }
 
   void _generate_header(void);
   void _generate_define(void);
@@ -52,11 +42,7 @@ public:
   CModuleGenerator(const std::string & filename);
 };
 
-CModuleGenerator::CModuleGenerator(const std::string & filename)
-//  : _filename(filename),
-    //    _indent_level(0),
-    //    INDENT_WIDTH(3)
-{
+CModuleGenerator::CModuleGenerator(const std::string & filename) {
   // テスト用初期化処理
   this->_module_name = "test";
 
@@ -197,26 +183,7 @@ CModuleGenerator::CModuleGenerator(const std::string & filename)
   this->_dfg.emplace_back(elem2);
 }
 
-// /**
-//    スペース文字の出力
-//    @param[in] num_space 出力するスペース文字の数
-//    @return スペース文字列
-// */
-// std::string CModuleGenerator::_print_spaces(const int & num_space) {
-//   std::string ret_str = "";
-
-//   for(int i=0; i<num_space; ++i)
-//     ret_str += ' ';
-
-//   return ret_str;
-// }
-
 int CModuleGenerator::generate(void) {
-  //  this->_cout.open(this->_filename, std::ios::out);
-  //  this->_cout.open(this->OUTPUT_FILE, std::ios::out);
-  //  if (!this->_cout)
-  //    return -1;
-
   this->_generate_header();
   this->_generate_define();
   // this->_generate_assign();
@@ -501,11 +468,7 @@ void CModuleGenerator::_generate_always(void) {
                              process_str);
   }
 
-  this->_cout.indent_left();
-  this->_cout.indent_left();
-  this->_cout.indent_left();
-  this->_cout.indent_left();
-  this->_cout.indent_left();
+  this->_cout.indent_left(5);
 
   // list(接続タイミング) ---> always
   auto state_step_list = sm_gen.get_state_step_list();
@@ -544,8 +507,7 @@ void CModuleGenerator::_generate_always(void) {
 
       this->_cout.indent_left();
       this->_cout << this->_cout.output_indent() << "end\n";
-      this->_cout.indent_left();
-      this->_cout.indent_left();
+      this->_cout.indent_left(2);
     }
     this->_cout << this->_cout.output_indent() << "endcase\n";
 
@@ -560,8 +522,7 @@ void CModuleGenerator::_generate_always(void) {
   this->_cout << this->_cout.output_indent() << "endcase\n";
   this->_cout.indent_left();
   this->_cout << this->_cout.output_indent() << "end\n";
-  this->_cout.indent_left();
-  this->_cout.indent_left();
+  this->_cout.indent_left(2);
   this->_cout << this->_cout.output_indent() << "end\n";
 }
 
