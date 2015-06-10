@@ -1,7 +1,6 @@
 CXX = clang++
-#CXXFLAGS = -Werror -std=c++11 -stdlib=libc++
-CXXFLAGS = -Werror -std=c++11 -stdlib=libstdc++
-OBJ_FILES = verilog_generator.o CDFG_Element.o CDFG_Node.o CDFG_Operator.o CStateMachineGen.o
+CXXFLAGS = -Werror -std=c++11
+OBJ_FILES = verilog_generator.o CDFG_Element.o CDFG_Node.o CDFG_Operator.o CStateMachineGen.o COutput.o
 OUTPUT = generator
 
 generator: $(OBJ_FILES)
@@ -18,6 +17,9 @@ CDFG_Operator.o: CDFG_Operator.cpp
 
 CStateMachineGen.o: CStateMachineGen.cpp
 	$(CXX) -c CStateMachineGen.cpp $(CXXFLAGS)
+
+COutput.o: COutput.cpp
+	$(CXX) -c COutput.cpp $(CXXFLAGS)
 
 verilog_generator.o: verilog_generator.cpp
 	$(CXX) -c verilog_generator.cpp $(CXXFLAGS)
