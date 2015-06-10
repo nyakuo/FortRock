@@ -163,6 +163,11 @@ CModuleGenerator::CModuleGenerator(const std::string & filename)
     sub->add_input_port("clock", i_clk);
     sub->add_input_port("ce", i_ce);
 
+    //    auto equal = std::make_shared<CDFG_Operator>
+      // todo: equal演算器の出力を通常の演算器の出力とは異なるようにする
+      //       --> 単純な代入扱いにする
+      //       --> ステートマシン制御用の繊維命令を追加
+
     // 演算器登録
     this->_operator_list.emplace_back(add);
     this->_operator_list.emplace_back(sub);
@@ -183,7 +188,7 @@ CModuleGenerator::CModuleGenerator(const std::string & filename)
     elem2->set_input(p_3, 1);
     elem2->set_output(out, 0);
     elem2->set_state(1);
-    elem2->set_step(2);
+    elem2->set_step(3);
     this->_dfg.emplace_back(elem2);
   }
 }
@@ -491,7 +496,7 @@ void CModuleGenerator::_generate_always(void) {
       }
     }
     sm_gen.add_state_process(state,
-                             step + latency,
+                             step + latency + 1,
                              process_str);
   }
 
@@ -516,6 +521,9 @@ void CModuleGenerator::_generate_always(void) {
 
     // ステップの出力
     this->_indent_right();
+    this->_ofs << this->_indent()
+               << node_step->get_name() << " <= "
+               << node_step->get_name() << " + 1'h1;\n";
     this->_ofs << this->_indent()
                << "case (" << node_step->get_name() << ")\n";
     auto range = state_step_list.equal_range(ite_state_step->first);
