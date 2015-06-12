@@ -152,11 +152,6 @@ CModuleGenerator::CModuleGenerator(const std::string & filename) {
   sub->add_input_port("clock", i_clk);
   sub->add_input_port("ce", i_ce);
 
-  //    auto equal = std::make_shared<CDFG_Operator>
-  // todo: equal演算器の出力を通常の演算器の出力とは異なるようにする
-  //       --> 単純な代入扱いにする
-  //       --> ステートマシン制御用の繊維命令を追加
-
   // 演算器登録
   this->_operator_list.emplace_back(add);
   this->_operator_list.emplace_back(sub);
@@ -196,44 +191,53 @@ int CModuleGenerator::generate(void) {
    moduleの入出力定義部の出力
 */
 void CModuleGenerator::_generate_header(void) {
-  this->_cout << "`default_nettype none\n\n" << "module " << this->_module_name << std::endl;
+  std::list<std::string> io_list;
+  this->_cout << "`default_nettype none\n\n"
+              << "module " << this->_module_name << std::endl;
   this->_cout.indent_right();
   this->_cout << "(\n";
 
   // 入出力信号の出力
   for (auto io = this->_node_list.begin();
-       io != this->_node_list.end();) {
+       io != this->_node_list.end();
+       ++io) {
+    std::string io_str;
     switch ((*io)->get_type()) {
     case CDFG_Node::eNode::IN:
     case CDFG_Node::eNode::CLK:
     case CDFG_Node::eNode::RES:
     case CDFG_Node::eNode::REQ:
     case CDFG_Node::eNode::CE:
-      this->_cout << "input wire ";
+      io_str = "input wire ";
       break;
 
     case CDFG_Node::eNode::OUT:
     case CDFG_Node::eNode::FIN:
-      this->_cout << "output reg ";
+      io_str = "output reg ";
       break;
 
     default:
-      ++io;
       continue;
     }
 
     if((*io)->get_is_signed())
-      this->_cout << "signed ";
+      io_str += "signed ";
 
     if ((*io)->get_bit_width() > 1) {
-      this->_cout << "[" << (*io)->get_bit_width() - 1 << ":0] ";
+      io_str += "["
+        + std::to_string((*io)->get_bit_width() - 1)
+        + ":0] ";
     }
 
-    // todo: 最後のoutput出力には","を付けない
-    this->_cout << (*io)->get_name();
-    ++io;
-    std::cout  << (*io)->get_name() << std::endl;
-    if (io != this->_node_list.end())
+    io_str += (*io)->get_name();
+    io_list.push_back(io_str);
+  }
+
+  for (auto ite = io_list.begin();
+       ite != io_list.end();
+       ) {
+    this->_cout << (*ite);
+    if ((++ite) != io_list.end())
       this->_cout <<= ',';
     this->_cout << "\n";
   }
@@ -331,7 +335,7 @@ void CModuleGenerator::_generate_calculator(void) {
     }
 
     this->_cout.indent_left();
-    this->_cout << ");" << std::endl;
+    this->_cout << ");\n" << std::endl;
   }
 }
 
@@ -510,6 +514,7 @@ void CModuleGenerator::_generate_always(void) {
   this->_cout << "end\n";
   this->_cout.indent_left(2);
   this->_cout << "end\n";
+  this->_cout.indent_left();
 }
 
 /**
@@ -517,6 +522,7 @@ void CModuleGenerator::_generate_always(void) {
    @note デバッグ用データの出力などに利用
 */
 void CModuleGenerator::_generate_footer(void) {
+  this->_cout.indent_left();
   this->_cout << "endmodule\n\n"
               << "`default_nettype wire" << std::endl;
 }
