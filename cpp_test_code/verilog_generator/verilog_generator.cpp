@@ -234,7 +234,7 @@ void CModuleGenerator::_generate_header(void) {
     ++io;
     std::cout  << (*io)->get_name() << std::endl;
     if (io != this->_node_list.end())
-      this->_cout << ',';
+      this->_cout <<= ',';
     this->_cout << "\n";
   }
 
