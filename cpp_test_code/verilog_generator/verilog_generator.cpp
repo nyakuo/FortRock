@@ -2,7 +2,7 @@
    テストプログラム
    命令列のDFG化に関するクラスの実装
    およびVerilogコードの出力機能に関する検証
- */
+*/
 
 #include <iostream>
 #include <iomanip>
@@ -20,8 +20,6 @@
 
 class CModuleGenerator {
 private:
-  const std::string OUTPUT_FILE = "output.v";
-
   COutput _cout;
   std::string _module_name;
 
@@ -186,7 +184,7 @@ CModuleGenerator::CModuleGenerator(const std::string & filename) {
 int CModuleGenerator::generate(void) {
   this->_generate_header();
   this->_generate_define();
-  // this->_generate_assign();
+  this->_generate_assign();
   this->_generate_calculator();
   this->_generate_always();
   this->_generate_footer();
@@ -196,10 +194,9 @@ int CModuleGenerator::generate(void) {
 
 /**
    moduleの入出力定義部の出力
- */
+*/
 void CModuleGenerator::_generate_header(void) {
   this->_cout << "`default_nettype none\n\n" << "module " << this->_module_name << std::endl;
-
   this->_cout.indent_right();
   this->_cout << "(\n";
 
@@ -246,7 +243,7 @@ void CModuleGenerator::_generate_header(void) {
 
 /**
    moduleの信号宣言部の出力
- */
+*/
 void CModuleGenerator::_generate_define(void) {
   unsigned type;
   const auto reg = 0;
@@ -276,7 +273,7 @@ void CModuleGenerator::_generate_define(void) {
       continue;
     }
 
-    streams[type] << types[type] << ' ';
+    streams[type] << this->_cout.output_indent() << types[type] << ' ';
 
     if (node->get_is_signed()) {
       streams[type] << "signed ";
@@ -295,11 +292,9 @@ void CModuleGenerator::_generate_define(void) {
     streams[type] << ";\n";
   }
 
-  for (auto & s : streams) {
-    if (s.rdbuf()->in_avail() != 0) {
-      this->_cout << s.str() << std::endl;
-    }
-  }
+  for (auto & s : streams)
+    if (s.rdbuf()->in_avail() != 0)
+      this->_cout <<= s.str() + "\n";
 }
 
 /**
@@ -307,13 +302,13 @@ void CModuleGenerator::_generate_define(void) {
    演算器の入出力ポートの割り当て
 
    @note 実質必要がないので，現状では空
- */
+*/
 void CModuleGenerator::_generate_assign(void) {
 }
 
 /**
    moduleの演算器定義の出力
- */
+*/
 void CModuleGenerator::_generate_calculator(void) {
   // 各演算器の入出力信号の接続
   for (auto & module : this->_operator_list) {
@@ -342,7 +337,7 @@ void CModuleGenerator::_generate_calculator(void) {
 
 /**
    moduleのステートマシンの出力
- */
+*/
 void CModuleGenerator::_generate_always(void) {
   std::string clk_name;
   std::string res_name;
@@ -386,13 +381,13 @@ void CModuleGenerator::_generate_always(void) {
   this->_cout << "begin" << std::endl;
   this->_cout.indent_right();
   this->_cout << "if ("
-             << res_name << " ==  TRUE)\n";
+              << res_name << " ==  TRUE)\n";
   this->_cout.indent_right();
   this->_cout << "begin\n";
   this->_cout.indent_right();
-  this->_cout << fin_name << " <= FALSE;\n"
-              << node_state->get_name() << " <= ZERO;\n"
-              << node_step->get_name() << " <= ZERO;\n";
+  this->_cout << fin_name << " <= FALSE;\n";
+  this->_cout << node_state->get_name() << " <= ZERO;\n";
+  this->_cout << node_step->get_name() << " <= ZERO;\n";
   this->_cout.indent_left();
   this->_cout << "end\n";
   this->_cout.indent_left();
@@ -441,10 +436,10 @@ void CModuleGenerator::_generate_always(void) {
       if ((unsigned)node->get_type() &
           ((unsigned)CDFG_Node::eNode::REG | (unsigned)CDFG_Node::eNode::OUT)) {
         process_str.append(this->_cout.output_indent()
-                             + node->get_name()
-                             + " <= "
-                             + elem->get_input_at(i)->get_name()
-                             + ";\n");
+                           + node->get_name()
+                           + " <= "
+                           + elem->get_input_at(i)->get_name()
+                           + ";\n");
       }
     }
     sm_gen.add_state_process(state, step, process_str);
@@ -457,10 +452,10 @@ void CModuleGenerator::_generate_always(void) {
       if ((unsigned)node->get_type() &
           ((unsigned)CDFG_Node::eNode::WIRE)) {
         process_str.append(this->_cout.output_indent()
-                             + elem->get_output_at(i)->get_name()
-                             + " <= "
-                             + node->get_name()
-                             + ";\n");
+                           + elem->get_output_at(i)->get_name()
+                           + " <= "
+                           + node->get_name()
+                           + ";\n");
       }
     }
     sm_gen.add_state_process(state,
@@ -473,63 +468,54 @@ void CModuleGenerator::_generate_always(void) {
   // list(接続タイミング) ---> always
   auto state_step_list = sm_gen.get_state_step_list();
   for(auto ite_state_step = state_step_list.begin();
-      ite_state_step != state_step_list.end();
-      ) {
+      ite_state_step != state_step_list.end(); ) {
     // ステートの出力
-    this->_cout << this->_cout.output_indent()
-               << node_state->get_bit_width()
-               << "'h" << std::hex << ite_state_step->first << ":\n";
+    this->_cout << node_state->get_bit_width()
+                << "'h" << std::hex << ite_state_step->first << ":\n";
     this->_cout.indent_right();
-    this->_cout << this->_cout.output_indent()
-               << "begin\n";
+    this->_cout << "begin\n";
 
     // ステップの出力
     this->_cout.indent_right();
-    this->_cout << this->_cout.output_indent()
-               << node_step->get_name() << " <= "
-               << node_step->get_name() << " + 1'h1;\n";
-    this->_cout << this->_cout.output_indent()
-               << "case (" << node_step->get_name() << ")\n";
+    this->_cout << node_step->get_name() << " <= "
+                << node_step->get_name() << " + 1'h1;\n";
+    this->_cout << "case (" << node_step->get_name() << ")\n";
     auto range = state_step_list.equal_range(ite_state_step->first);
     for (auto ite = range.first;
          ite != range.second;
          ++ite, ++ite_state_step) {
       this->_cout.indent_right();
-      this->_cout << this->_cout.output_indent()
-                 << node_step->get_bit_width()
-                 << "'h" << std::hex << ite->second << ":\n";
+      this->_cout << node_step->get_bit_width()
+                  << "'h" << std::hex << ite->second << ":\n";
       this->_cout.indent_right();
-      this->_cout << this->_cout.output_indent() << "begin\n";
+      this->_cout << "begin\n";
       this->_cout.indent_right();
 
-      this->_cout  << sm_gen.gen_state_machine(ite->first,
-                                              ite->second);
+      this->_cout  <<= sm_gen.gen_state_machine(ite->first,
+                                                ite->second);
 
       this->_cout.indent_left();
-      this->_cout << this->_cout.output_indent() << "end\n";
+      this->_cout << "end\n";
       this->_cout.indent_left(2);
     }
-    this->_cout << this->_cout.output_indent() << "endcase\n";
-
+    this->_cout << "endcase\n";
     this->_cout.indent_left();
-
-    this->_cout << this->_cout.output_indent()
-               << "end\n";
+    this->_cout << "end\n";
     this->_cout.indent_left();
   }
 
   this->_cout.indent_left();
-  this->_cout << this->_cout.output_indent() << "endcase\n";
+  this->_cout << "endcase\n";
   this->_cout.indent_left();
-  this->_cout << this->_cout.output_indent() << "end\n";
+  this->_cout << "end\n";
   this->_cout.indent_left(2);
-  this->_cout << this->_cout.output_indent() << "end\n";
+  this->_cout << "end\n";
 }
 
 /**
-  module定義の尾部の出力
-  @note デバッグ用データの出力などに利用
- */
+   module定義の尾部の出力
+   @note デバッグ用データの出力などに利用
+*/
 void CModuleGenerator::_generate_footer(void) {
   this->_cout << "endmodule\n\n"
               << "`default_nettype wire" << std::endl;
@@ -537,8 +523,7 @@ void CModuleGenerator::_generate_footer(void) {
 
 
 int main(int argc, char **argv) {
-  const auto INPUT_FILE = "test_input.xml";
-  CModuleGenerator generator(INPUT_FILE);
+  CModuleGenerator generator("output.v");
   generator.generate();
 
   return 0;
