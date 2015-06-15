@@ -6,3 +6,11 @@ document/*
 *.v
 *.o
 *.so
+
+generator
+verilog/*
+html/*
+\#*
+.\#*
+a.out
+*.vcd
