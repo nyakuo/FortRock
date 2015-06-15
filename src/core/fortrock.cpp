@@ -23,8 +23,8 @@
 #include <list>
 #include <regex>
 
-#include "label.h"
-#include "variable.h"
+#include "label.hpp"
+#include "variable.hpp"
 using namespace llvm;
 
 #define PREV_STATE_STR "prev_state"

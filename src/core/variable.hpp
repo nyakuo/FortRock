@@ -1,7 +1,7 @@
 // -*- C++ -*-
 #ifndef __VARIABLE_H
 #define __VARIABLE_H
-#include "FRObj.h"
+#include "FRObj.hpp"
 
 /**
  * @class Variable
@@ -55,7 +55,7 @@ public:
     ret_str += (_is_output ? "true" : "false");
     ret_str += "\ntype: ";
     ret_str += type_to_string(type);
-      
+
     return ret_str + "\n";
   }
 
@@ -70,7 +70,7 @@ private:
     case WIRE:      return "wire";
     case PARAMETER: return "parameter";
     }
-      
+
     return "null";
   }
 };

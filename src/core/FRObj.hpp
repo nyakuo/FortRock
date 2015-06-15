@@ -1,6 +1,6 @@
-// -*- C++ -*-
 #ifndef __FROBJ_H
 #define __FROBJ_H
+
 class FRObj {
 protected:
   std::string name;

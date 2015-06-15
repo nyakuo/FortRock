@@ -1,7 +1,6 @@
-// -*- C++ -*-
 #ifndef __LABEL_H
 #define __LABEL_H
-#include "FRObj.h"
+#include "FRObj.hpp"
 
 /**
  * @class Label
