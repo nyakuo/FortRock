@@ -29,9 +29,9 @@ public:
   void set_step(const unsigned & step);
 
   /* ゲッター */
-  std::shared_ptr<CDFG_Node> get_input_at(const unsigned & at);
-  std::shared_ptr<CDFG_Node> get_output_at(const unsigned & at);
-  std::shared_ptr<CDFG_Operator> get_operator(void);
+  std::shared_ptr<CDFG_Node> & get_input_at(const unsigned & at);
+  std::shared_ptr<CDFG_Node> & get_output_at(const unsigned & at);
+  std::shared_ptr<CDFG_Operator> & get_operator(void);
   unsigned get_state(void);
   unsigned get_step(void);
 

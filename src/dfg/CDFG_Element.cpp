@@ -77,7 +77,7 @@ void CDFG_Element::set_step(const unsigned & step) {
    @param[in] at 入力ノードの位置
    @return 入力ノード
  */
-std::shared_ptr<CDFG_Node>
+std::shared_ptr<CDFG_Node> &
 CDFG_Element::get_input_at(const unsigned & at) {
   return this->_input_list.at(at);
 }
@@ -87,7 +87,7 @@ CDFG_Element::get_input_at(const unsigned & at) {
    @param[in] at 出力ノードの位置
    @return 出力ノード
  */
-std::shared_ptr<CDFG_Node>
+std::shared_ptr<CDFG_Node> &
 CDFG_Element::get_output_at(const unsigned & at) {
   return this->_output_list.at(at);
 }
@@ -96,7 +96,7 @@ CDFG_Element::get_output_at(const unsigned & at) {
    演算に用いる演算器の取得
    @return 演算に用いる演算器
  */
-std::shared_ptr<CDFG_Operator>
+std::shared_ptr<CDFG_Operator> &
 CDFG_Element::get_operator(void) {
   return this->_ope;
 }
