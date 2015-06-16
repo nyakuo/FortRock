@@ -28,6 +28,8 @@ void CModule::add_node
  this->_node_list.emplace_back(node);
 }
 
+
+
 /**
    Operatorを追加
    @param[in] ope モジュールに追加するOperatorの参照
@@ -37,28 +39,61 @@ void CModule::add_node
 void CModule::add_operator
 (std::shared_ptr<CDFG_Operator> & ope) {
   // todo: operator の入出力ノードを定義し this->_node_list に追加する
+  switch(ope->get_type()) {
+  case CDFG_Operator::eType::ADD:
+  case CDFG_Operator::eType::SUB:
+  case CDFG_Operator::eType::ADD_SUB:
+  case CDFG_Operator::eType::MUL:
+  case CDFG_Operator::eType::DIV:
+    this->_make_operator_node(ope);
+    break;
+
+  default:
+    break;
+  }
   this->_operator_list.emplace_back(ope);
+}
+
+/**
+   演算器の入出力ポートを作成し this->_node_list に追加する
+   @param[in] ope 処理対象の演算器
+ */
+void _make_operator_node
+(std::shared_ptr<CDFG_Operator> & ope) {
+
 }
 
 /**
    モジュールの名前を取得
    @return モジュール名
  */
-std::string CModule::get_name(void) {
+std::string & CModule::get_name(void) {
   return this->_module_name;
 }
 
-std::list<std::shared_ptr<CDFG_Element> >
+/**
+   モジュールのElementのリスト(DFG)を取得
+   @return モジュールのElementのリスト(DFG)
+ */
+std::list<std::shared_ptr<CDFG_Element> > &
 CModule::get_element_list(void) {
   return this->_dfg;
 }
 
-std::list<std::shared_ptr<CDFG_Node> >
+/**
+   モジュールのNodeのリストを取得
+   @return モジュールのNodeのリスト
+ */
+std::list<std::shared_ptr<CDFG_Node> > &
 CModule::get_node_list(void) {
   return this->_node_list;
 }
 
-std::list<std::shared_ptr<CDFG_Operator> >
+/**
+   モジュールの演算器のリストを取得
+   @return モジュールの演算器のリスト
+ */
+std::list<std::shared_ptr<CDFG_Operator> > &
 CModule::get_operator_list(void) {
   return this->_operator_list;
 }
