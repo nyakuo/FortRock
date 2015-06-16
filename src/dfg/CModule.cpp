@@ -25,42 +25,16 @@ void CModule::add_element
  */
 void CModule::add_node
 (std::shared_ptr<CDFG_Node> & node) {
- this->_node_list.emplace_back(node);
+  this->_node_list.emplace_back(node);
 }
-
-
 
 /**
    Operatorを追加
    @param[in] ope モジュールに追加するOperatorの参照
-   @note オペレータの入出力ポートは自動的に
-         this->_node_list に登録される
  */
 void CModule::add_operator
 (std::shared_ptr<CDFG_Operator> & ope) {
-  // todo: operator の入出力ノードを定義し this->_node_list に追加する
-  switch(ope->get_type()) {
-  case CDFG_Operator::eType::ADD:
-  case CDFG_Operator::eType::SUB:
-  case CDFG_Operator::eType::ADD_SUB:
-  case CDFG_Operator::eType::MUL:
-  case CDFG_Operator::eType::DIV:
-    this->_make_operator_node(ope);
-    break;
-
-  default:
-    break;
-  }
   this->_operator_list.emplace_back(ope);
-}
-
-/**
-   演算器の入出力ポートを作成し this->_node_list に追加する
-   @param[in] ope 処理対象の演算器
- */
-void _make_operator_node
-(std::shared_ptr<CDFG_Operator> & ope) {
-
 }
 
 /**

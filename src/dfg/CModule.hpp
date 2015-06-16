@@ -36,8 +36,6 @@ private:
   std::list<std::shared_ptr<CDFG_Element> > _dfg;            /** モジュール内のElementのリスト*/
   std::list<std::shared_ptr<CDFG_Node> > _node_list;         /** モジュール内のNodeのリスト */
   std::list<std::shared_ptr<CDFG_Operator> > _operator_list; /** モジュール内の演算モジュールリスト */
-
-  void _make_operator_node(std::shared_ptr<CDFG_Operator> & ope);
 };
 
 #endif
