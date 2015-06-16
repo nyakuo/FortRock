@@ -74,18 +74,52 @@ CModule::get_operator_list(void) {
 
 /**
    モジュールのステートのNodeの取得
-   @node this->_node_list を検索して
-         見つからなければ新規作成し追加する
+   @node this->_node_list を検索する
  */
-// std::shared_ptr<CDFG_Node>
-// CModule::get_state_node(void) {
-// }
+std::shared_ptr<CDFG_Node> &
+CModule::get_state_node(void) {
+  return this->find_node(CDFG_Node::eNode::STATE);
+}
 
 /**
    モジュールのステップのNodeの取得
-   @node this->_node_list を検索して
-         見つからなければ新規作成し追加する
+   @node this->_node_list を検索する
  */
-// std::shared_ptr<CDFG_Node>
-// CModule::get_step_node(void) {
-// }
+std::shared_ptr<CDFG_Node> &
+CModule::get_step_node(void) {
+  return this->find_node(CDFG_Node::eNode::STEP);
+}
+
+/**
+   モジュール内のノードの検索
+   @param[in] type ノードの種類
+   @return 検索結果のノード
+ */
+std::shared_ptr<CDFG_Node> &
+CModule::find_node(CDFG_Node::eNode type) {
+  auto ite =
+    std::find_if(this->_node_list.begin(),
+                 this->_node_list.end(),
+                 [type](std::shared_ptr<CDFG_Node> obj) -> bool {
+                   return obj->get_type() == type;
+                 }
+                 );
+  return *ite;
+}
+
+/**
+   モジュール内のノードの検索
+   @param[in] name ノードの名前
+   @return 検索結果のノード
+ */
+std::shared_ptr<CDFG_Node> &
+CModule::find_node(std::string & name) {
+  auto ite =
+    std::find_if(this->_node_list.begin(),
+                 this->_node_list.end(),
+                 [name](std::shared_ptr<CDFG_Node> obj) -> bool {
+                   return obj->get_name() == name;
+                 }
+                 );
+  return *ite;
+}

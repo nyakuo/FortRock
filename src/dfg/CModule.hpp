@@ -4,6 +4,7 @@
 #include <string>
 #include <list>
 #include <memory>
+#include <algorithm>
 
 #include "CDFG_Element.hpp"
 #include "CDFG_Node.hpp"
@@ -26,9 +27,10 @@ public:
   std::list<std::shared_ptr<CDFG_Node> > & get_node_list(void);
   std::list<std::shared_ptr<CDFG_Element> > & get_element_list(void);
   std::list<std::shared_ptr<CDFG_Operator> > & get_operator_list(void);
-
-//  std::shared_ptr<CDFG_Node> get_state_node(void);
-//  std::shared_ptr<CDFG_Node> get_step_node(void);
+  std::shared_ptr<CDFG_Node> & get_state_node(void);
+  std::shared_ptr<CDFG_Node> & get_step_node(void);
+  std::shared_ptr<CDFG_Node> & find_node(std::string & name);
+  std::shared_ptr<CDFG_Node> & find_node(CDFG_Node::eNode type);
 
 private:
   std::string _module_name; /** モジュール名 */
