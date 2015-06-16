@@ -35,7 +35,7 @@ void COutput::close_ofstream(void) {
    @return 現在のインデントレベル分のスペース文字列
 */
 std::string COutput::output_indent(void) {
-  std::string spaces = "";
+  std::string spaces ("");
   for (auto i=0;
        i<this->_INDENT_WIDTH * this->_indent_level;
        ++i)
