@@ -9,7 +9,7 @@ document/*
 
 generator
 verilog/*
-html/*
+src/html/*
 \#*
 .\#*
 a.out
