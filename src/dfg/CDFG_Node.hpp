@@ -43,6 +43,9 @@ public:
   long get_address(void) const;
   long get_access_port(void) const;
 
+  // setter
+  void set_type(CDFG_Node::eNode type);
+
 private:
   std::string _name;      /** ノードの名前 */
   unsigned _bit_width;    /** ビット幅 */
