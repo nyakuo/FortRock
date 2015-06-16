@@ -30,9 +30,6 @@ private:
   COutput _cout;
   std::shared_ptr<CModule> _module;
 
-  // std::list<std::shared_ptr<CDFG_Element> > _dfg;            /** モジュール内のElementのリスト */
-  // std::list<std::shared_ptr<CDFG_Node> > _node_list;         /** モジュール内のNodeのリスト */
-  // std::list<std::shared_ptr<CDFG_Operator> > _operator_list; /** モジュール内の演算モジュールリスト */
   void _generate_header(void);
   void _generate_define(void);
   void _generate_assign(void);
@@ -40,6 +37,5 @@ private:
   void _generate_always(void);
   void _generate_footer(void);
 };
-
 
 #endif

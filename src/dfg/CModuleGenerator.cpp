@@ -160,9 +160,6 @@ void CModuleGenerator::_generate_header(void) {
   this->_cout << "(\n";
 
   // 入出力信号の出力
-  // for (auto io = this->_node_list.begin();
-  //      io != this->_node_list.end();
-  //      ++io) {
   for (auto & io : this->_module->get_node_list()) {
     std::string io_str;
     switch (io->get_type()) {
@@ -213,12 +210,13 @@ void CModuleGenerator::_generate_header(void) {
 */
 void CModuleGenerator::_generate_define(void) {
   unsigned type;
+  std::string types[3] = {"reg", "wire", "parameter"};
+  std::array<std::stringstream, 3> streams;
+
   const auto reg = 0;
   const auto wire = 1;
   const auto param = 2;
   const auto none = 3;
-  std::array<std::stringstream, 3> streams;
-  std::string types[3] = {"reg", "wire", "parameter"};
 
   for (auto & node : this->_module->get_node_list()) {
     switch(node->get_type()) {
@@ -394,7 +392,7 @@ void CModuleGenerator::_generate_always(void) {
     auto state = elem->get_state();
     auto step = elem->get_step();
     auto latency = ope->get_latency();
-    std::string process_str = "";
+    std::string process_str ("");
 
     // 入力の接続
     ope = elem->get_operator();
