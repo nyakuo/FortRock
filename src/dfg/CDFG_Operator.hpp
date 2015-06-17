@@ -20,8 +20,17 @@ public:
       ADD_SUB,
       MUL,
       DIV,
-      FUNC
+      FUNC,
+
+      ICMP,
+      LOAD,
+      SELECT,
+      PHI,
+      RET,
       };
+
+  //! @todo 入出力Nodeを自動的に作成する機能
+  //! @todo 演算器の入力ポートの名前などを外部の入力ファイルを用いて指定する機能
 
   CDFG_Operator(const std::string & name,
                 const std::string & mod_name,
@@ -48,6 +57,7 @@ public:
                        std::shared_ptr<CDFG_Node> & node);
   void set_latency(const unsigned & latency);
   void set_type(const eType & type);
+  void set_num_input(const unsigned &);
 
 private:
   std::string _name;     /** インスタンス名 */
