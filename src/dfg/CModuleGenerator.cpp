@@ -10,7 +10,7 @@ CModuleGenerator::CModuleGenerator(const std::string & filename) {
   this->_cout.open_ofstream(filename);
 
   // ノード確保
-  // 入力
+  // 基本入出力
   auto i_clk = std::make_shared<CDFG_Node>
     (CDFG_Node("i_clk", 1, false, CDFG_Node::eNode::CLK));
   auto i_res = std::make_shared<CDFG_Node>
@@ -19,6 +19,10 @@ CModuleGenerator::CModuleGenerator(const std::string & filename) {
     (CDFG_Node("i_req_p", 1, false, CDFG_Node::eNode::REQ));
   auto i_ce = std::make_shared<CDFG_Node>
     (CDFG_Node("i_ce_p", 1, false, CDFG_Node::eNode::CE));
+  auto o_fin = std::make_shared<CDFG_Node>
+    (CDFG_Node("o_fin_p", 1, false, CDFG_Node::eNode::FIN));
+
+  // 入力
   auto a = std::make_shared<CDFG_Node>
     (CDFG_Node("i_a", 8, true, CDFG_Node::eNode::IN));
   auto b = std::make_shared<CDFG_Node>
@@ -27,8 +31,6 @@ CModuleGenerator::CModuleGenerator(const std::string & filename) {
   // 出力
   auto out = std::make_shared<CDFG_Node>
     (CDFG_Node("o_out", 8, true, CDFG_Node::eNode::OUT));
-  auto o_fin = std::make_shared<CDFG_Node>
-    (CDFG_Node("o_fin_p", 1, false, CDFG_Node::eNode::FIN));
 
   // 定数
   auto p_3 = std::make_shared<CDFG_Node>
@@ -89,7 +91,7 @@ CModuleGenerator::CModuleGenerator(const std::string & filename) {
   this->_module->add_node(s_step);
 
   // 演算器
-  // todo: CLKやCEの接続を行うとElementの入出力と整合性がとれなくなる
+  //! @todo CLKやCEの接続を行うとElementの入出力と整合性がとれなくなる
   auto add = std::make_shared<CDFG_Operator>
     (CDFG_Operator("my_add1",
                    "my_add",
