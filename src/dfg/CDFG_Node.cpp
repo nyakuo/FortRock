@@ -17,14 +17,23 @@ CDFG_Node::CDFG_Node(const std::string & name,
                      const double & parameter,
                      const long & address,
                      const long & access_port)
-  : _name(name),
-    _bit_width(bit_width),
+  : _bit_width(bit_width),
     _is_signed(is_signed),
     _type(type),
     _parameter(parameter),
     _address(address),
   _access_port(access_port)
-{}
+{
+  // 変数に使用できない文字の置換
+  int at;
+  std::string safe_name = name;
+  while((at = safe_name.find('.', 0)) != std::string::npos)
+    safe_name.replace(at, 1, "_");
+
+  this->_name = safe_name;
+
+  //! @todo 変数名に接頭語をつける (mw_, mr_ など)
+}
 
 /**
    Nodeの信号名を取得
