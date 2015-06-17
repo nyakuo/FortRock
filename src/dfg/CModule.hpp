@@ -18,6 +18,7 @@ class CModule {
 public:
   CModule(const std::string & module_name);
 
+  // 資源の登録
   void add_element(std::shared_ptr<CDFG_Element> & element);
   void add_node(std::shared_ptr<CDFG_Node> & node);
   void add_operator(std::shared_ptr<CDFG_Operator> & ope);
@@ -29,8 +30,8 @@ public:
   std::list<std::shared_ptr<CDFG_Operator> > & get_operator_list(void);
   std::shared_ptr<CDFG_Node> & get_state_node(void);
   std::shared_ptr<CDFG_Node> & get_step_node(void);
-  std::shared_ptr<CDFG_Node> & find_node(std::string & name);
-  std::shared_ptr<CDFG_Node> & find_node(CDFG_Node::eNode type);
+  std::shared_ptr<CDFG_Node> & get_node(CDFG_Node::eNode type);
+  bool find_node(std::string & name);
 
 private:
   std::string _module_name; /** モジュール名 */

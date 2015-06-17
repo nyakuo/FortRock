@@ -73,30 +73,13 @@ CModule::get_operator_list(void) {
 }
 
 /**
-   モジュールのステートのNodeの取得
-   @node this->_node_list を検索する
- */
-std::shared_ptr<CDFG_Node> &
-CModule::get_state_node(void) {
-  return this->find_node(CDFG_Node::eNode::STATE);
-}
-
-/**
-   モジュールのステップのNodeの取得
-   @node this->_node_list を検索する
- */
-std::shared_ptr<CDFG_Node> &
-CModule::get_step_node(void) {
-  return this->find_node(CDFG_Node::eNode::STEP);
-}
-
-/**
    モジュール内のノードの検索
    @param[in] type ノードの種類
+   @note state, step, clkなどシステムに関する信号の取得に利用
    @return 検索結果のノード
  */
 std::shared_ptr<CDFG_Node> &
-CModule::find_node(CDFG_Node::eNode type) {
+CModule::get_node(CDFG_Node::eNode type) {
   auto ite =
     std::find_if(this->_node_list.begin(),
                  this->_node_list.end(),
@@ -110,9 +93,9 @@ CModule::find_node(CDFG_Node::eNode type) {
 /**
    モジュール内のノードの検索
    @param[in] name ノードの名前
-   @return 検索結果のノード
+   @return 検索結果 T/F
  */
-std::shared_ptr<CDFG_Node> &
+bool
 CModule::find_node(std::string & name) {
   auto ite =
     std::find_if(this->_node_list.begin(),
@@ -121,5 +104,5 @@ CModule::find_node(std::string & name) {
                    return obj->get_name() == name;
                  }
                  );
-  return *ite;
+  return ite != this->_node_list.end();
 }
