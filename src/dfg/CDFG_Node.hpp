@@ -10,19 +10,20 @@
 class CDFG_Node {
 public:
   enum class eNode : unsigned {
-      REG   = 1 << 0,
-      WIRE  = 1 << 1,
-      IN    = 1 << 2,
-      OUT   = 1 << 3,
-      PARAM = 1 << 4,
-      ARRAY = 1 << 5,
-      CLK   = 1 << 6,
-      RES   = 1 << 7,
-      REQ   = 1 << 8,
-      CE    = 1 << 9,
-      FIN   = 1 << 10,
-      STATE = 1 << 11,
-      STEP  = 1 << 12,
+      REG        = 1 << 0,
+      WIRE       = 1 << 1,
+      IN         = 1 << 2,
+      OUT        = 1 << 3,
+      PARAM      = 1 << 4,
+      ARRAY      = 1 << 5,
+      CLK        = 1 << 6,
+      RES        = 1 << 7,
+      REQ        = 1 << 8,
+      CE         = 1 << 9,
+      FIN        = 1 << 10,
+      STATE      = 1 << 11,
+      PREV_STATE = 1 << 12,
+      STEP       = 1 << 13,
       };
 
   CDFG_Node(const std::string & name,
