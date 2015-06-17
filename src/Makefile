@@ -7,12 +7,12 @@ OUTPUT_VERILOG = output.v
 
 .PHONY: fortrock
 fortrock: ./core/fortrock.cpp
-	$(CXX) -g ./core/fortrock.cpp `llvm-config-3.3 --cflags --ldflags --libs` -c -o fortrock.o $(CXXFLAGS)
+	$(CXX) -g ./core/fortrock.cpp `llvm-config --cflags --ldflags --libs` -c -o fortrock.o $(CXXFLAGS)
 	$(CXX) -g -shared -o fortrock.so fortrock.o $(CXXFLAGS)
 
 .PHONY: use
 use: ./fortrock.so
-	opt-3.3 -load=./fortrock.so -instnamer -fortrock $(INPUT_LLVM) -S 1> /dev/null 2> $(OUTPUT_VERILOG)
+	opt -load=./fortrock.so -instnamer -fortrock $(INPUT_LLVM) -S 1> /dev/null 2> $(OUTPUT_VERILOG)
 
 .PHONY: llvm
 llvm:
