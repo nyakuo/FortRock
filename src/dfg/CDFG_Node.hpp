@@ -35,13 +35,13 @@ public:
   ~CDFG_Node(){}
 
   /* ゲッター */
-  std::string get_name(void) const;
-  unsigned get_bit_width(void) const;
-  bool get_is_signed(void) const;
-  CDFG_Node::eNode get_type(void) const;
-  double get_parameter(void) const;
-  long get_address(void) const;
-  long get_access_port(void) const;
+  std::string & get_name(void);
+  unsigned & get_bit_width(void);
+  bool & get_is_signed(void);
+  CDFG_Node::eNode & get_type(void);
+  double & get_parameter(void);
+  long & get_address(void);
+  long & get_access_port(void);
 
   // setter
   void set_type(CDFG_Node::eNode type);

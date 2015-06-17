@@ -30,8 +30,8 @@ CDFG_Node::CDFG_Node(const std::string & name,
    Nodeの信号名を取得
    @return Nodeの信号名
  */
-std::string
-CDFG_Node::get_name(void) const{
+std::string &
+CDFG_Node::get_name(void){
   return this->_name;
 }
 
@@ -39,7 +39,8 @@ CDFG_Node::get_name(void) const{
    Nodeのビット幅の取得
    @return    Nodeのビット幅
  */
-unsigned CDFG_Node::get_bit_width(void) const {
+unsigned &
+CDFG_Node::get_bit_width(void) {
   return this->_bit_width;
 }
 
@@ -47,7 +48,8 @@ unsigned CDFG_Node::get_bit_width(void) const {
    Nodeが is_signed かどうかを取得
    @return Nodeが is_signed かどうか
  */
-bool CDFG_Node::get_is_signed(void) const {
+bool &
+CDFG_Node::get_is_signed(void) {
   return this->_is_signed;
 }
 
@@ -55,8 +57,8 @@ bool CDFG_Node::get_is_signed(void) const {
    Nodeの種類を取得
    @return Nodeの種類
  */
-CDFG_Node::eNode
-CDFG_Node::get_type(void) const {
+CDFG_Node::eNode &
+CDFG_Node::get_type(void) {
   return this->_type;
 }
 
@@ -64,19 +66,26 @@ CDFG_Node::get_type(void) const {
    Nodeのパラメータ(定数)の取得
    @return Nodeのパラメータ(定数)
  */
-double CDFG_Node::get_parameter(void) const {
+double &
+CDFG_Node::get_parameter(void) {
   return this->_parameter;
 }
 
 /**
    Nodeのメモリアドレスの取得 (未使用)
  */
-long CDFG_Node::get_address(void) const { return this->_address; }
+long &
+CDFG_Node::get_address(void) {
+  return this->_address;
+}
 
 /**
    Nodeのメモリのアクセスポートの取得 (未使用)
  */
-long CDFG_Node::get_access_port(void) const { return this->_access_port; }
+long &
+CDFG_Node::get_access_port(void) {
+  return this->_access_port;
+}
 
 /**
    Nodeの種類の再設定
