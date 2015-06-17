@@ -23,15 +23,16 @@
 #include <list>
 #include <regex>
 
-#include "label.hpp"
 #include "variable.hpp"
-using namespace llvm;
+#include "../dfg/CModule.hpp"
+#include "../dfg/COutput.hpp"
+#include "../dfg/CModuleGenerator.hpp"
 
-#define PREV_STATE_STR "prev_state"
-#define CUR_STATE_STR "current_state"
+using namespace llvm;
 
 /**
  * LLVMのInstructionのOpcode
+ * @todo LLVMのものに置き換える
  */
 enum inst_opcode {
   RET    = 1,
@@ -51,161 +52,159 @@ enum inst_opcode {
  * FortRockのメインのパスの実装
  */
 class FortRock : public ModulePass  {
-  unsigned            indent_level;
-  const unsigned      indent_width;
-  std::list<Variable> variables;
-  std::list<Label>    labels;
-
 public:
   static char ID;
-  FortRock(void) : ModulePass(ID), indent_width(2),
-                   indent_level(0) {}
+  FortRock(void)
+    : ModulePass(ID)
+  {}
 
   virtual const char *getPassName(void) const { return "FortRock: Fortran to Verilog backend"; }
   bool runOnModule(Module &M);
 
 private:
-  inline void indent_right(void) { ++indent_level; }
-  inline void indent_left(void) { if(indent_level > 0) --indent_level; }
-  inline std::string indent(void) {
-    return print_spaces(indent_level * indent_width);
-  }
-  inline int state_bit_width(void) {
-    return (int)round(sqrt(labels.size() + 1));
-  }
+  COutput _out;
+  std::shared_ptr<CModule> _module;
 
-  std::string print_header(const Module &M);
-  std::string print_arguments(const Module::FunctionListType::iterator &funct);
-  int grub_variables(const Module::FunctionListType::iterator &funct);
-  int grub_labels(const Module::FunctionListType::iterator &funct);
-  std::string print_varlist(void);
-  std::string print_always(const Module::FunctionListType::iterator &funct);
-  std::string print_spaces(const int num_space);
-  std::string print_bit_width(Variable var);
-  std::string print_instruction(const Instruction * inst);
+  const std::string PREV_STATE_NAME = "prev_state"; //! ステートマシンの遷移前の状態を保持するレジスタの名前
+  const std::string CUR_STATE_NAME = "current_state"; //! ステートマシンの現在の状態を保持するレジスタの名前
+
+  void grub_variables(const Module::FunctionListType::iterator &funct);
+  void grub_labels(const Module::FunctionListType::iterator &funct);
+  // std::string print_varlist(void);
+  // std::string print_always(const Module::FunctionListType::iterator &funct);
+  // std::string print_instruction(const Instruction * inst);
+
+  void _set_IO(const Module::FunctionListType::iterator & funct);
+  std::string _get_module_name(const Module & M);
+  unsigned _get_required_bit_width(const unsigned & num);
+  void _parse_instructions(const Instruction * inst);
 
   // print instruction functions
-  std::string print_RET(const Instruction * inst);
-  std::string print_LOAD(const Instruction * inst);
-  std::string print_STORE(const Instruction * inst);
-  std::string print_ICMP(const Instruction * inst);
-  std::string print_PHI(const Instruction * inst);
-  std::string print_SELECT(const Instruction * inst);
-  std::string print_SREM(const Instruction * inst);
-  std::string print_MUL(const Instruction * inst);
-  std::string print_SDIV(const Instruction * inst);
-  std::string print_BR(const Instruction * inst);
+  // std::string print_RET(const Instruction * inst);
+  // std::string print_LOAD(const Instruction * inst);
+  // std::string print_STORE(const Instruction * inst);
+  // std::string print_ICMP(const Instruction * inst);
+  // std::string print_PHI(const Instruction * inst);
+  // std::string print_SELECT(const Instruction * inst);
+  // std::string print_SREM(const Instruction * inst);
+  // std::string print_MUL(const Instruction * inst);
+  // std::string print_SDIV(const Instruction * inst);
+  // std::string print_BR(const Instruction * inst);
 };
 
 /**
- * moduleのheader(固定であるclk, res, fin)を出力する
+   入力された数を表すために必要なビット幅を計算する
+   @param[in] num 表現したい種類の数
+   @return 必要なビット幅
  */
-std::string FortRock::print_header(const Module &M) {
-  std::string mod_name = M.getModuleIdentifier();
-  std::regex pattern(".*/(.*)\\.s");
-   std::smatch match;
-   std::regex_match(mod_name, match, pattern);
-
-   // ファイル名の抽出
-   mod_name = std::string(match[match.size()-1].str(),
-                          1,
-                          match[match.size()-1].str().length() - 3);
-
-  return  "// " + M.getModuleIdentifier() + "\n"
-    + "module " + mod_name + "(clk, res, fin";
+unsigned
+FortRock::_get_required_bit_width
+(const unsigned & num) {
+  return (unsigned)round(sqrt(num + 1));
 }
 
 /**
- * moduleのarg-listの後半部分(各モジュールによって異なる部分)を出力する
+   moduleの名前を取得
+   @param[in] M モジュールの参照
+   @return モジュールの名前
  */
-std::string FortRock::print_arguments(const Module::FunctionListType::iterator & funct) {
-  std::string ret_str = "";
-  Type *type = NULL;
-  Variable var;
-  int num;
+std::string
+FortRock::_get_module_name
+(const Module & M) {
+  std::string mod_name = M.getModuleIdentifier();
+  std::regex pattern(".*/(.*)\\.s");
+  std::smatch match;
+  std::regex_match(mod_name, match, pattern);
 
-  Function::arg_iterator arg_it  = funct->arg_begin();
-  Function::arg_iterator arg_end = funct->arg_end();
+  // ファイル名の抽出
+  mod_name = std::string(match[match.size()-1].str(),
+                         1,
+                         match[match.size()-1].str().length() - 3);
 
-  for(num = 1; // 最後の引数(返り値)を知るため
+  return mod_name;
+}
+
+/**
+   moduleの入出力を定義
+ */
+void FortRock::_set_IO
+(const Module::FunctionListType::iterator & funct) {
+  auto arg_it  = funct->arg_begin();
+  auto arg_end = funct->arg_end();
+
+  for(auto num = 1; // 最後の引数(返り値)を知るため
       arg_it != arg_end;
       ++num, ++arg_it) {
-    type = arg_it->getType();
+    auto type = arg_it->getType();
 
     if(type->isPointerTy()) // ポインタならポインタの型を取得
       type = type->getPointerElementType();
 
+    // todo: 浮動小数点対応
     if(type->isIntegerTy()) {
-      var.set_name(arg_it->getName());
-      var.set_asm_name(arg_it->getName());
-      var.set_bit_width(type->getPrimitiveSizeInBits());
-      var.set_type(Variable::REG);
-
-      var.set_input(true);
+      auto arg = std::make_shared<CDFG_Node>
+        (CDFG_Node(arg_it->getName(),
+                   type->getPrimitiveSizeInBits(),
+                   true, // todo: isSigned対応
+                   CDFG_Node::eNode::IN));
 
       if(num == funct->arg_size()) { // 最後の引数は返り値
-        var.set_input(false);
-        var.set_output(true);
+        arg->set_type(CDFG_Node::eNode::OUT);
       }
-
-      variables.push_back(var);
-
-      ret_str += ", ";
-      ret_str += arg_it->getName();
-    }
-    else {
-      ret_str += "ERROR: can not solve the arg type\n";
+      this->_module->add_node(arg);
     }
   }
-
-  ret_str += ");\n";
-
-  return ret_str;
 }
 
-bool FortRock::runOnModule(Module &M) {
-  errs() << print_header(M);
-  indent_right();
+void FortRock::_parse_instructions
+(const Instruction * inst) {
 
-  // -------------------- Functions --------------------
-  Module::FunctionListType::iterator it = M.begin();
-  Module::FunctionListType::iterator end = M.end();
+}
 
-  if(++it != end) {
-    errs() << "ERROR: 1つのファイルに記述できるのは1つのモジュールだけです\n";
-    return true;
-  }
+bool FortRock::runOnModule
+(Module &M) {
+  // this->_module = std::make_shared<CModule>(this->_get_module_name(M));
 
-  --it;
+  // // -------------------- Functions --------------------
+  // auto it = M.begin();
+  // auto end = M.end();
 
-  if(it->getArgumentList().size() != 0)
-    errs() << print_arguments(it);
+  // try {
+  // if(++it != end)
+  //   throw "ERROR: 1つのファイルに記述できるのは1つのモジュールだけです";
+  // }
+  // catch (char * str) {
+  //   std::cerr << str << std::endl;
+  //   return true;
+  // }
 
-  grub_labels(it);
-  grub_variables(it);
+  //  this->_set_IO(--it);
 
-  errs() << print_varlist();
-  errs() << print_always(it);
+  // grub_labels(it);
+  // grub_variables(it);
 
-  errs() << "endmodule\n";
+  // errs() << print_varlist();
+  // errs() << print_always(it);
+
+  //  errs() << "endmodule\n";
   // --------------------------------------------------
 
 
   // -------------------- debug --------------------
-  std::list<Variable>::iterator debit = variables.begin();
-  std::list<Variable>::iterator debend = variables.end();
-  errs() << "/*\n";
+  // std::list<Variable>::iterator debit = variables.begin();
+  // std::list<Variable>::iterator debend = variables.end();
+  // errs() << "/*\n";
 
-  for(;debit != debend; ++debit)
-    errs() << debit->to_string() << "\n";
+  // for(;debit != debend; ++debit)
+  //   errs() << debit->to_string() << "\n";
 
-  std::list<Label>::iterator l_it = labels.begin();
-  std::list<Label>::iterator l_end = labels.end();
+  // std::list<Label>::iterator l_it = labels.begin();
+  // std::list<Label>::iterator l_end = labels.end();
 
-  for(; l_it != l_end; ++l_it)
-    errs() << l_it->to_string() << "\n";
+  // for(; l_it != l_end; ++l_it)
+  //   errs() << l_it->to_string() << "\n";
 
-  errs() << "*/\n";
+  // errs() << "*/\n";
   // -----------------------------------------------
 
   return false;
@@ -216,33 +215,22 @@ bool FortRock::runOnModule(Module &M) {
  * variablesに格納する
  * Labelについても列挙し，格納する
  */
-int FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
-  std::list<Instruction*> insts;
-
-  inst_iterator it  = inst_begin(*funct);
-  inst_iterator end = inst_end(*funct);
-
+void FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
   Instruction * inst;
+  BranchInst *binst;
   Value * value;
   Type * type;
   Variable var;
+  std::shared_ptr<CDFG_Node> node;
 
-  int num_variable = 0;
+  for (auto it = inst_begin(*funct); //funct->begin();
+       it != inst_end(*funct); // funct->end();
+       ++it) {
 
-  it  = inst_begin(*funct);
-  end = inst_end(*funct);
-
-  for(; it != end; ++it)
-    insts.push_back(&*it);
-
-  while(!insts.empty()) {
-    inst = insts.front();
-    insts.pop_front();
-
-    if(!inst->use_empty()) {
+    if (!it->use_empty()) {
       // 命令に対応するオペランド数の指定
       int getop = 1;
-      switch(inst->getOpcode()) {
+      switch(it->getOpcode()) {
       case LOAD:   getop = 1; break;
       case ICMP:   getop = 2; break;
       case PHI:    getop = 2; break;
@@ -251,43 +239,39 @@ int FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
       case MUL:    getop = 2; break;
       case SDIV:   getop = 2; break;
       default:
-        errs() << "ERROR:" << inst->getOpcodeName() << " "
-               << inst->getOpcode() << " 未定義のオペランド\n";
-        getop = 0; break;
+        errs() << "ERROR:"
+               << it->getOpcodeName() << " "
+               << it->getOpcode() << " 未定義のオペランド\n";
+        getop = 0;
+        break;
       }
 
       // 未定義のregの追加
-      for(int i=0; i<getop; ++i) {
-        value = inst->getOperand(i);
+      for(auto i=0; i<getop; ++i) {
+        value = it->getOperand(i);
         type = value->getType();
 
         if(type->isPointerTy())
           type = type->getPointerElementType();
 
-        if(!value->hasName()) // 定数はパス
+        if(!value->hasName()) // todo: 定数はパスしている
           continue;
 
-        var.set_name(value->getName());
-        var.set_asm_name(value->getName());
-        var.set_bit_width(type->getPrimitiveSizeInBits());
-        var.set_type(Variable::REG);
+        node = std::make_shared<CDFG_Node>
+          (CDFG_Node(value->getName(),
+                     type->getPrimitiveSizeInBits(),
+                     true, // todo: is signedが常にtrue
+                     CDFG_Node::eNode::REG));
 
-        var.set_input(false);
-        var.set_output(false);
-
-        if(std::find(variables.begin(),
-                     variables.end(),
-                     var) == variables.end()) {
-          variables.push_back(var);
-          ++num_variable;
-        }
+        if (!this->_module->find_node(node->get_name()))
+          this->_module->add_node(node);
       }
     }
     else {
-      BranchInst *binst;
-
       switch(inst->getOpcode()) {
-      case RET:        break;
+      case RET:
+        break;
+
       case BR:
         binst = dyn_cast<BranchInst>(inst);
         value = binst->getCondition();
@@ -296,44 +280,33 @@ int FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
         if(type->isPointerTy())
           type = type->getPointerElementType();
 
-        var.set_name(value->getName());
-        var.set_asm_name(value->getName());
-        var.set_bit_width(type->getPrimitiveSizeInBits());
-        var.set_type(Variable::REG);
+        node = std::make_shared<CDFG_Node>
+          (CDFG_Node(value->getName(),
+                     type->getPrimitiveSizeInBits(),
+                     true,
+                     CDFG_Node::eNode::REG));
 
-        var.set_input(false);
-        var.set_output(false);
-
-        if(std::find(variables.begin(),
-                     variables.end(),
-                     var) == variables.end()) {
-          variables.push_back(var);
-          ++num_variable;
-        }
+        if (!this->_module->find_node(node->get_name()))
+          this->_module->add_node(node);
         break;
 
       case STORE:
-        for(int i=0; i<2; ++i) {
+        for(auto i=0; i<2; ++i) {
           value = inst->getOperand(i);
           type = value->getType();
 
           if(type->isPointerTy())
             type = type->getPointerElementType();
 
-          var.set_name(value->getName());
-          var.set_asm_name(value->getName());
-          var.set_bit_width(type->getPrimitiveSizeInBits());
-          var.set_type(Variable::REG);
-          var.set_input(false);
-          var.set_output(false);
+          node = std::make_shared<CDFG_Node>
+            (CDFG_Node(value->getName(),
+                       type->getPrimitiveSizeInBits(),
+                       true,
+                       CDFG_Node::eNode::REG));
 
-          if(std::find(variables.begin(),
-                       variables.end(),
-                       var) == variables.end()) {
-            variables.push_back(var);
-            ++num_variable;
+          if (!this->_module->find_node(node->get_name()))
+            this->_module->add_node(node);
           }
-        }
         break;
 
       default:
@@ -343,80 +316,58 @@ int FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
       }
     }
   }
-
-  // reg名のサニタイジング
-  std::list<Variable>::iterator v_it  = variables.begin();
-  std::list<Variable>::iterator v_end = variables.end();
-
-  for(; v_it != v_end; ++v_it) {
-    if(!v_it->is_input() && !v_it->is_output())
-      v_it->sanitize_name("reg_");
-  }
-
-  // state管理用regの追加 --------------------
-  var.set_name(PREV_STATE_STR);
-  var.set_asm_name(PREV_STATE_STR);
-  var.set_bit_width(state_bit_width());
-  var.set_type(Variable::REG);
-  var.set_input(false);
-  var.set_output(false);
-
-  variables.push_back(var);
-  ++num_variable;
-
-  var.set_name(CUR_STATE_STR);
-  var.set_asm_name(CUR_STATE_STR);
-
-  variables.push_back(var);
-  ++num_variable;
-
-  return num_variable;
 }
 
-int FortRock::grub_labels(const Module::FunctionListType::iterator &funct) {
-  Function::BasicBlockListType::iterator bb_it = funct->begin();
-  Function::BasicBlockListType::iterator bb_end = funct->end();
-  Label label;
-  int num_label = 0;
+/**
+   ステートマシンのラベル(ステート)の列挙
+   @param[in] funct CFDの参照
+   @note ラベルはNodeとしてインスタンス化され，追加される
+   @attention このタイミングでState管理NodeがCModuleに追加される
+ */
+void FortRock::grub_labels(const Module::FunctionListType::iterator & funct) {
+  int num_label = std::distance(funct->begin(), funct->end());
+  auto label_bit_width = this->_get_required_bit_width(num_label + 1);
 
   // labelの追加
-  for(; bb_it!=bb_end; ++bb_it) {
-    label.set_name(bb_it->getName());
-    label.set_asm_name(bb_it->getName());
-    if(std::find(labels.begin(),
-                 labels.end(),
-                 label) == labels.end()) {
-      labels.push_back(label);
-      ++num_label;
-    }
+  auto ite = funct->begin();
+  auto i = 0;
+  for(;ite != funct->end();
+      ++ite, ++i) {
+    auto label_node = std::make_shared<CDFG_Node>
+      (CDFG_Node(ite->getName(),
+                 label_bit_width,
+                 false,
+                 CDFG_Node::eNode::PARAM,
+                 i));
+
+    if (!this->_module->find_node(label_node->get_name()))
+      this->_module->add_node(label_node);
   }
 
-  // todo: labelのparameter追加
-
-  // label名に対応する値の定義 --------------------
-  std::list<Label>::iterator l_it  = labels.begin();
-  std::list<Label>::iterator l_end = labels.end();
-
-  for(int i=0; l_it != l_end; ++l_it, ++i) {
-    std::string label_name;
-    label_name = std::to_string(state_bit_width()) + "'d" + std::to_string(i);
-    l_it->set_name(label_name);
-  }
-
-  return num_label;
+  // state_nodeの追加
+  auto state_node = std::make_shared<CDFG_Node>
+    (CDFG_Node(this->CUR_STATE_NAME,
+               label_bit_width,
+               false,
+               CDFG_Node::eNode::STATE));
+  auto prev_state_node = std::make_shared<CDFG_Node>
+    (CDFG_Node(this->PREV_STATE_NAME,
+               label_bit_width,
+               false,
+               CDFG_Node::eNode::PREV_STATE));
 }
-
+#if 0
 /**
  * moduleのI/Oやレジスタ，ワイヤの宣言の出力
  * @return input, output, reg, wireの宣言部
  */
 std::string FortRock::print_varlist(void) {
   std::string ret_str;
-  std::list<Variable>::iterator it;
-  std::list<Variable>::iterator end;
-
   unsigned now_width;
   bool printed;
+
+  auto it = variables.begin();
+  auto end = variables.end();
 
   ret_str += indent() + "input clk, res;\n";
   ret_str += indent() + "output fin;\n\n";
@@ -426,8 +377,6 @@ std::string FortRock::print_varlist(void) {
   // input
   {
     variables.sort();
-    it = variables.begin();
-    end = variables.end();
 
     now_width = -1;
     printed = false;
@@ -530,13 +479,13 @@ std::string FortRock::print_varlist(void) {
 std::string FortRock::print_RET(const Instruction * inst) {
   std::string ret_str;
 
-  ret_str = PREV_STATE_STR;
+  ret_str = PREV_STR_NAME;
   ret_str += " = ";
-  ret_str += CUR_STATE_STR;
+  ret_str += CUR_STATE_NAME;
   ret_str += ";\n";
 
   ret_str += indent();
-  ret_str += CUR_STATE_STR;
+  ret_str += CUR_STATE_NAME;
   ret_str += " = " + std::to_string(state_bit_width());
   ret_str += "'d" + std::to_string(labels.size());
   ret_str += ";";
@@ -559,12 +508,12 @@ std::string FortRock::print_BR(const Instruction * inst) {
   BranchInst * bi;
   bi = dynamic_cast<BranchInst*>(const_cast<Instruction*>(inst));
 
-  ret_str = PREV_STATE_STR;
+  ret_str = PREV_STR_NAME;
   ret_str += " = ";
-  ret_str += CUR_STATE_STR;
+  ret_str += CUR_STATE_NAME;
   ret_str += ";\n";
   ret_str += indent();
-  ret_str += CUR_STATE_STR;
+  ret_str += CUR_STATE_NAME;
   ret_str += " = (1'b1 == ";
   value = bi->getCondition();
   var.set_asm_name(value->getName());
@@ -716,7 +665,7 @@ std::string FortRock::print_PHI(const Instruction * inst) {
   phinode = dynamic_cast<PHINode*>(const_cast<Instruction*>(inst));
 
   ret_str = "case(";
-  ret_str += PREV_STATE_STR;
+  ret_str += PREV_STR_NAME;
   ret_str += ")\n";
   indent_right();
 
@@ -914,9 +863,9 @@ std::string FortRock::print_always(const Module::FunctionListType::iterator &fun
   ret_str += indent() + "begin\n";    indent_right();
 
   ret_str += indent() + "fin = 1'b0;\n";
-  ret_str += indent() + PREV_STATE_STR + " = "
+  ret_str += indent() + PREV_STR_NAME + " = "
     + std::to_string(state_bit_width()) + "'b0;\n";
-  ret_str += indent() + CUR_STATE_STR + " = "
+  ret_str += indent() + CUR_STATE_NAME + " = "
     + std::to_string(state_bit_width()) + "'b0;\n";
 
   std::list<Variable>::iterator v_it = variables.begin();
@@ -945,7 +894,7 @@ std::string FortRock::print_always(const Module::FunctionListType::iterator &fun
   Label label;
   std::list<Label>::iterator l_it;
 
-  ret_str += indent() + "case (" + CUR_STATE_STR + ")\n";
+  ret_str += indent() + "case (" + CUR_STATE_NAME + ")\n";
   indent_right();
   for(; bb_it!=bb_end; ++bb_it) {
     it = bb_it->begin();
@@ -994,38 +943,7 @@ std::string FortRock::print_always(const Module::FunctionListType::iterator &fun
 
   return ret_str + indent() + "end // always\n";
 }
-
-/**
- * スペース文字の出力
- * @arg num_space 出力するスペースの文字数
- * @return スペースの文字列
- */
-std::string FortRock::print_spaces(const int num_space) {
-  std::string ret_str = "";
-
-  for(int i=0; i<num_space; ++i)
-    ret_str += ' ';
-
-  return ret_str;
-}
-
-/**
- * I/Oのビット幅を出力する
- * @arg var reg, wire, input, outputのいずれか
- * @return スペースで整形されたビット幅を含む文字列
- */
-std::string FortRock::print_bit_width(Variable var) {
-  std::string ret_str;
-
-  if( var.get_bit_width() == 1 ) return print_spaces(10);
-
-  ret_str =  "["
-    + std::to_string(var.get_bit_width() - 1)
-    + ":0]";
-
-  return ret_str + print_spaces(10 - ret_str.length());
-}
-
+#endif
 char FortRock::ID = 0;
 
 // ==================================================
