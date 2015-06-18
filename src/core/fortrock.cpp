@@ -62,34 +62,21 @@ public:
   bool runOnModule(Module &M);
 
 private:
-  COutput _out;
+  std::shared_ptr<COutput> _out;
   std::shared_ptr<CModule> _module;
+  std::shared_ptr<CModuleGenerator> _module_gen;
 
   const std::string PREV_STATE_NAME = "prev_state"; //! ステートマシンの遷移前の状態を保持するレジスタの名前
   const std::string CUR_STATE_NAME = "current_state"; //! ステートマシンの現在の状態を保持するレジスタの名前
 
   void grub_variables(const Module::FunctionListType::iterator &funct);
   void grub_labels(const Module::FunctionListType::iterator &funct);
-  // std::string print_varlist(void);
-  // std::string print_always(const Module::FunctionListType::iterator &funct);
-  // std::string print_instruction(const Instruction * inst);
 
   void _set_IO(const Module::FunctionListType::iterator & funct);
   std::string _get_module_name(const Module & M);
   unsigned _get_required_bit_width(const unsigned & num);
-  void _parse_instructions(const Instruction * inst);
 
-  // print instruction functions
-  // std::string print_RET(const Instruction * inst);
-  // std::string print_LOAD(const Instruction * inst);
-  // std::string print_STORE(const Instruction * inst);
-  // std::string print_ICMP(const Instruction * inst);
-  // std::string print_PHI(const Instruction * inst);
-  // std::string print_SELECT(const Instruction * inst);
-  // std::string print_SREM(const Instruction * inst);
-  // std::string print_MUL(const Instruction * inst);
-  // std::string print_SDIV(const Instruction * inst);
-  // std::string print_BR(const Instruction * inst);
+  void _parse_instructions(const Instruction * inst);
 };
 
 /**
@@ -140,12 +127,12 @@ void FortRock::_set_IO
     if(type->isPointerTy()) // ポインタならポインタの型を取得
       type = type->getPointerElementType();
 
-    // todo: 浮動小数点対応
+    //! @todo 浮動小数点対応
     if(type->isIntegerTy()) {
       auto arg = std::make_shared<CDFG_Node>
         (CDFG_Node(arg_it->getName(),
                    type->getPrimitiveSizeInBits(),
-                   true, // todo: isSigned対応
+                   true, //! @todo isSigned対応
                    CDFG_Node::eNode::IN));
 
       if(num == funct->arg_size()) { // 最後の引数は返り値
@@ -163,34 +150,39 @@ void FortRock::_parse_instructions
 
 bool FortRock::runOnModule
 (Module &M) {
-  // this->_module = std::make_shared<CModule>(this->_get_module_name(M));
+  this->_out = std::make_shared<COutput>();
+  this->_module = std::make_shared<CModule>
+    (this->_get_module_name(M));
+  this->_module_gen = std::make_shared<CModuleGenerator>
+    ("output.v", this->_module->get_name());
 
-  // // -------------------- Functions --------------------
-  // auto it = M.begin();
-  // auto end = M.end();
+  // -------------------- Functions --------------------
+  auto it = M.begin();
+  auto end = M.end();
 
-  // try {
-  // if(++it != end)
-  //   throw "ERROR: 1つのファイルに記述できるのは1つのモジュールだけです";
-  // }
-  // catch (char * str) {
-  //   std::cerr << str << std::endl;
-  //   return true;
-  // }
+  try {
+  if(++it != end)
+    throw "ERROR: 1つのファイルに記述できるのは1つのモジュールだけです";
+  }
+  catch (char * str) {
+    std::cerr << str << std::endl;
+    return true;
+  }
 
-  //  this->_set_IO(--it);
+  this->_set_IO(--it);
 
-  // grub_labels(it);
-  // grub_variables(it);
+  grub_labels(it);
+  grub_variables(it);
 
-  // errs() << print_varlist();
-  // errs() << print_always(it);
-
-  //  errs() << "endmodule\n";
+  //  this->_module_gen->generate();
   // --------------------------------------------------
+   // std::string err;
+   // raw_fd_ostream file("output.txt", err, sys::fs::F_None);
+   // file << "test\n";
+   // file.close();
+                       //                       sys::fs::OpenFlags::F_Text);
 
-
-  // -------------------- debug --------------------
+   // -------------------- debug --------------------
   // std::list<Variable>::iterator debit = variables.begin();
   // std::list<Variable>::iterator debend = variables.end();
   // errs() << "/*\n";
@@ -216,7 +208,6 @@ bool FortRock::runOnModule
  * Labelについても列挙し，格納する
  */
 void FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
-  Instruction * inst;
   BranchInst *binst;
   Value * value;
   Type * type;
@@ -224,7 +215,7 @@ void FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
   std::shared_ptr<CDFG_Node> node;
 
   for (auto it = inst_begin(*funct); //funct->begin();
-       it != inst_end(*funct); // funct->end();
+           it != inst_end(*funct);   // funct->end();
        ++it) {
 
     if (!it->use_empty()) {
@@ -254,13 +245,13 @@ void FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
         if(type->isPointerTy())
           type = type->getPointerElementType();
 
-        if(!value->hasName()) // todo: 定数はパスしている
+        if(!value->hasName()) //! @todo 定数はパスしている
           continue;
 
         node = std::make_shared<CDFG_Node>
           (CDFG_Node(value->getName(),
                      type->getPrimitiveSizeInBits(),
-                     true, // todo: is signedが常にtrue
+                     true, //! @todo is signedが常にtrue
                      CDFG_Node::eNode::REG));
 
         if (!this->_module->find_node(node->get_name()))
@@ -268,31 +259,15 @@ void FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
       }
     }
     else {
-      switch(inst->getOpcode()) {
-      case RET:
-        break;
+      try {
+        switch(it->getOpcode()) {
+        case RET:
+          break;
 
-      case BR:
-        binst = dyn_cast<BranchInst>(inst);
-        value = binst->getCondition();
-        type = value->getType();
-
-        if(type->isPointerTy())
-          type = type->getPointerElementType();
-
-        node = std::make_shared<CDFG_Node>
-          (CDFG_Node(value->getName(),
-                     type->getPrimitiveSizeInBits(),
-                     true,
-                     CDFG_Node::eNode::REG));
-
-        if (!this->_module->find_node(node->get_name()))
-          this->_module->add_node(node);
-        break;
-
-      case STORE:
-        for(auto i=0; i<2; ++i) {
-          value = inst->getOperand(i);
+        case BR:
+          continue;
+          binst = dyn_cast<BranchInst>(inst);
+          value = binst->getCondition();
           type = value->getType();
 
           if(type->isPointerTy())
@@ -306,16 +281,42 @@ void FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
 
           if (!this->_module->find_node(node->get_name()))
             this->_module->add_node(node);
-          }
-        break;
+          break;
 
-      default:
-        errs() << "ERROR:" << inst->getOpcodeName() << " "
-               << inst->getOpcode() << " 未定義のオペランド\n";
-        break;
+        case STORE:
+          continue;
+          for(auto i=0; i<2; ++i) {
+            value = inst->getOperand(i);
+            type = value->getType();
+
+            if(type->isPointerTy())
+              type = type->getPointerElementType();
+
+            node = std::make_shared<CDFG_Node>
+              (CDFG_Node(value->getName(),
+                         type->getPrimitiveSizeInBits(),
+                         true,
+                         CDFG_Node::eNode::REG));
+
+            if (!this->_module->find_node(node->get_name()))
+              this->_module->add_node(node);
+          }
+          break;
+
+        default:
+          throw std::string(std::string("ERROR:")
+                            + std::string(inst->getOpcodeName())
+                            + " "
+                            + std::to_string(inst->getOpcode())
+                            + " 未定義のオペランド\n");
+          break;
+        } // switch
+      } // try
+      catch(std::string err) {
+        std::cerr << err;
       }
-    }
-  }
+    } // else
+  } // for
 }
 
 /**
