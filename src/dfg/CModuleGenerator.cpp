@@ -11,6 +11,15 @@ CModuleGenerator::CModuleGenerator(const std::string & filename,
   this->_cout.open_ofstream(filename);
 }
 
+/**
+   モジュールにノードを追加する
+   @note FortRock 本体から呼び出すために使用
+ */
+void CModuleGenerator::add_node
+(std::shared_ptr<CDFG_Node> & node) {
+  this->_module->add_node(node);
+}
+
 void CModuleGenerator::_generate_test_data(void) {
   // ノード確保
   // 基本入出力
@@ -143,6 +152,9 @@ void CModuleGenerator::_generate_test_data(void) {
   this->_module->add_element(elem2);
 }
 
+/**
+   ステートマシン回路をファイルへ出力
+ */
 int CModuleGenerator::generate(void) {
   this->_generate_header();
   this->_generate_define();
