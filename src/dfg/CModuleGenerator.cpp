@@ -260,6 +260,7 @@ void CModuleGenerator::_generate_define(void) {
       type = wire;
       break;
 
+    case CDFG_Node::eNode::LABEL:
     case CDFG_Node::eNode::PARAM:
       type = param;
       break;
