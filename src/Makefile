@@ -29,6 +29,10 @@ use: ./fortrock.so
 llvm:
 	gfortran-4.7 -O3 $(INPUT_FORTRAN) -fplugin=/usr/lib/gcc/x86_64-linux-gnu/4.7/plugin/dragonegg.so -fplugin-arg-dragonegg-emit-ir -S -o $(INPUT_LLVM)
 
+.PHONY: count
+count:;
+	wc -lc ./core/*.cpp ./core/*.hpp ./dfg/*.cpp ./dfg/*.hpp
+
 .PHONY: clean
 clean:
 	rm -f ./core/*.o ./dfg/*.o *.so
