@@ -21,6 +21,14 @@ void CModuleGenerator::add_node
 }
 
 /**
+   モジュールに演算器を追加する
+ */
+void CModuleGenerator::add_operator
+(std::shared_ptr<CDFG_Operator> & ope) {
+  this->_module->add_operator(ope);
+}
+
+/**
    モジュール内のノードを検索する
    @param[in] node_name 検索対象のアセンブリ上での名前
    @note FortRock 本体から呼び出すために使用
@@ -182,7 +190,7 @@ int CModuleGenerator::generate(void) {
   this->_generate_header();
   this->_generate_define();
 //  this->_generate_assign();
-//  this->_generate_calculator();
+  this->_generate_calculator();
 //  this->_generate_always();
 //  this->_generate_footer();
 
