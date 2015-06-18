@@ -51,7 +51,7 @@ CDFG_Node::CDFG_Node(const std::string & name,
 
   case eNode::STATE:
   case eNode::PREV_STATE:
-  case eNode::STEP: prefix = "r_sys";
+  case eNode::STEP: prefix = "r_sys_";
     break;
 
   case eNode::LABEL: prefix = "l_"; break;
