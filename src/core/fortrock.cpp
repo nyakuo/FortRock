@@ -335,7 +335,7 @@ void FortRock::_grub_labels
       (CDFG_Node(ite->getName(),
                  label_bit_width,
                  false,
-                 CDFG_Node::eNode::PARAM,
+                 CDFG_Node::eNode::LABEL,
                  i));
 
     if (!this->_module_gen->find_node(label_node->get_name()))
