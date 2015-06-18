@@ -62,8 +62,6 @@ public:
   bool runOnModule(Module &M);
 
 private:
-  std::shared_ptr<COutput> _out;
-  std::shared_ptr<CModule> _module;
   std::shared_ptr<CModuleGenerator> _module_gen;
 
   const std::string PREV_STATE_NAME = "prev_state"; //! ステートマシンの遷移前の状態を保持するレジスタの名前
@@ -148,11 +146,8 @@ void FortRock::_set_IO
  */
 bool FortRock::runOnModule
 (Module &M) {
-  this->_out = std::make_shared<COutput>();
-  this->_module = std::make_shared<CModule>
-    (this->_get_module_name(M));
   this->_module_gen = std::make_shared<CModuleGenerator>
-    ("output.v", this->_module->get_name());
+  ("output.v", this->_get_module_name(M));
 
   // -------------------- Functions --------------------
   auto it = M.begin();
@@ -257,8 +252,8 @@ void FortRock::_grub_variables
                      true, //! @todo is signedが常にtrue
                      CDFG_Node::eNode::REG));
 
-        if (!this->_module->find_node(node->get_name()))
-          this->_module->add_node(node);
+        if (!this->_module_gen->find_node(node->get_name()))
+          this->_module_gen->add_node(node);
       } // for
     } // if
     else {
@@ -281,8 +276,8 @@ void FortRock::_grub_variables
                        true,
                        CDFG_Node::eNode::REG));
 
-          if (!this->_module->find_node(node->get_name()))
-            this->_module->add_node(node);
+          if (!this->_module_gen->find_node(node->get_name()))
+            this->_module_gen->add_node(node);
           break;
 
         case STORE:
@@ -299,8 +294,8 @@ void FortRock::_grub_variables
                          true,
                          CDFG_Node::eNode::REG));
 
-            if (!this->_module->find_node(node->get_name()))
-              this->_module->add_node(node);
+            if (!this->_module_gen->find_node(node->get_name()))
+              this->_module_gen->add_node(node);
           }
           break;
 
@@ -343,8 +338,8 @@ void FortRock::_grub_labels
                  CDFG_Node::eNode::PARAM,
                  i));
 
-    if (!this->_module->find_node(label_node->get_name()))
-      this->_module->add_node(label_node);
+    if (!this->_module_gen->find_node(label_node->get_name()))
+      this->_module_gen->add_node(label_node);
   }
 
   // state_nodeの追加
