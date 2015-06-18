@@ -24,6 +24,7 @@ public:
       STATE      = 1 << 11,
       PREV_STATE = 1 << 12,
       STEP       = 1 << 13,
+      LABEL      = 1 << 14,
       };
 
   CDFG_Node(const std::string & name,

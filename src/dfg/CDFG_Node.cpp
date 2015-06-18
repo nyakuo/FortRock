@@ -30,9 +30,38 @@ CDFG_Node::CDFG_Node(const std::string & name,
   while((at = safe_name.find('.', 0)) != std::string::npos)
     safe_name.replace(at, 1, "_");
 
-  this->_name = safe_name;
+  // 変数名に接頭語をつける
+  std::string prefix("");
+  switch (type) {
+  case eNode::REG: prefix = "r_"; break;
+  case eNode::WIRE: prefix = "w_"; break;
 
-  //! @todo 変数名に接頭語をつける (mw_, mr_ など)
+  case eNode::CLK:
+  case eNode::RES:
+  case eNode::REQ:
+  case eNode::CE:
+  case eNode::IN: prefix = "i_";
+    break;
+
+  case eNode::FIN:
+  case eNode::OUT: prefix = "o_";
+    break;
+
+  case eNode::PARAM: prefix = "p_"; break;
+
+  case eNode::STATE:
+  case eNode::PREV_STATE:
+  case eNode::STEP: prefix = "r_sys";
+    break;
+
+  case eNode::LABEL: prefix = "l_"; break;
+
+  default:
+    "nodef_";
+    break;
+  }
+
+  this->_name = prefix + safe_name;
 }
 
 /**
