@@ -10,12 +10,16 @@ OBJ_FILES = \
 	./dfg/CStateMachineGen.o \
 	./dfg/COutput.o \
 	./dfg/CModuleGenerator.o \
-	./dfg/CModule.o
+	./dfg/CModule.o \
+	./core/fortrock.o
 
 .PHONY: fortrock
-fortrock: ./core/fortrock.cpp $(OBJ_FILES)
-	$(CXX) -g ./core/fortrock.cpp `llvm-config --cflags --ldflags --libs` -c -o fortrock.o $(CXXFLAGS)
-	$(CXX) -g -shared -o fortrock.so fortrock.o $(OBJ_FILES) $(CXXFLAGS)
+fortrock: $(OBJ_FILES)
+	$(CXX) -g -shared -o fortrock.so $(OBJ_FILES) $(CXXFLAGS)
+
+./core/fortrock.o: ./core/fortrock.cpp
+	$(CXX) -g ./core/fortrock.cpp `llvm-config --cflags --ldflags --libs`\
+				 -c -o ./core/fortrock.o $(CXXFLAGS)
 
 .PHONY: use
 use: ./fortrock.so
@@ -27,4 +31,4 @@ llvm:
 
 .PHONY: clean
 clean:
-	rm -f *.o *.so
+	rm -f ./core/*.o ./dfg/*.o *.so
