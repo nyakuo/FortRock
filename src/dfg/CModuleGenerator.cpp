@@ -5,10 +5,13 @@
    @brief テスト用の入力(DFG)を与えている
    @param[in] filename 出力ファイル名
  */
-CModuleGenerator::CModuleGenerator(const std::string & filename) {
-  this->_module = std::make_shared<CModule>("test");
+CModuleGenerator::CModuleGenerator(const std::string & filename,
+                                   const std::string & module_name) {
+  this->_module = std::make_shared<CModule>(module_name);
   this->_cout.open_ofstream(filename);
+}
 
+void CModuleGenerator::_generate_test_data(void) {
   // ノード確保
   // 基本入出力
   auto i_clk = std::make_shared<CDFG_Node>

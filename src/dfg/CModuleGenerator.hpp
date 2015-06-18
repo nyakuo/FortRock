@@ -24,12 +24,16 @@ class CModuleGenerator {
 public:
   int generate(void);
 
-  CModuleGenerator(const std::string & filename);
+  CModuleGenerator(const std::string & filename,
+                   const std::string & module_name);
+
+  void add_node(std::shared_ptr<CDFG_Node> & node);
 
 private:
   COutput _cout;
   std::shared_ptr<CModule> _module;
 
+  void _generate_test_data(void);
   void _generate_header(void);
   void _generate_define(void);
   void _generate_assign(void);
