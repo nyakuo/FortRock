@@ -27,7 +27,9 @@ public:
   CModuleGenerator(const std::string & filename,
                    const std::string & module_name);
 
+  // FortRock本体のためのアクセサ
   void add_node(std::shared_ptr<CDFG_Node> & node);
+  bool find_node(std::string & node_name);
 
 private:
   COutput _cout;

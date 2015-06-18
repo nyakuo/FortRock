@@ -20,6 +20,19 @@ void CModuleGenerator::add_node
   this->_module->add_node(node);
 }
 
+/**
+   モジュール内のノードを検索する
+   @note FortRock 本体から呼び出すために使用
+*/
+bool CModuleGenerator::find_node
+(std::string & node_name) {
+  return this->_module->find_node(node_name);
+}
+
+/**
+   テストデータ(DFG)の生成
+   @note テスト用
+ */
 void CModuleGenerator::_generate_test_data(void) {
   // ノード確保
   // 基本入出力
@@ -158,10 +171,10 @@ void CModuleGenerator::_generate_test_data(void) {
 int CModuleGenerator::generate(void) {
   this->_generate_header();
   this->_generate_define();
-  this->_generate_assign();
-  this->_generate_calculator();
-  this->_generate_always();
-  this->_generate_footer();
+//  this->_generate_assign();
+//  this->_generate_calculator();
+//  this->_generate_always();
+//  this->_generate_footer();
 
   return 0;
 }
