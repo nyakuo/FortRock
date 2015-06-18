@@ -64,18 +64,25 @@ public:
 private:
   std::shared_ptr<CModuleGenerator> _module_gen;
 
-  const std::string PREV_STATE_NAME = "prev_state"; //! ステートマシンの遷移前の状態を保持するレジスタの名前
-  const std::string CUR_STATE_NAME = "current_state"; //! ステートマシンの現在の状態を保持するレジスタの名前
+  //! ステートマシンの遷移前の状態を保持するレジスタの名前
+  const std::string PREV_STATE_NAME = "prev_state";
 
-  void _grub_variables(const Module::FunctionListType::iterator &funct);
-  void _grub_labels(const Module::FunctionListType::iterator &funct);
+  //! ステートマシンの現在の状態を保持するレジスタの名前
+  const std::string CUR_STATE_NAME = "current_state";
 
-  void _set_IO(const Module::FunctionListType::iterator & funct);
+  // 補助関数
   std::string _get_module_name(const Module & M);
   unsigned _get_required_bit_width(const unsigned & num);
 
+  // モジュール定義
+  void _set_IO(const Module::FunctionListType::iterator & funct);
+  void _grub_variables(const Module::FunctionListType::iterator &funct);
+  void _grub_labels(const Module::FunctionListType::iterator &funct);
+
+  // 命令パース
   void _parse_instructions(const Instruction * inst);
-};
+  void _add_load_node(const Instruction * inst);
+}; // FortRock
 
 /**
    入力された数を表すために必要なビット幅を計算する
@@ -107,7 +114,7 @@ FortRock::_get_module_name
                          match[match.size()-1].str().length() - 3);
 
   return mod_name;
-}
+} // _get_module_name
 
 /**
    moduleの入出力を定義
@@ -139,7 +146,7 @@ void FortRock::_set_IO
       this->_module_gen->add_node(node);
     } // if
   } // for
-}
+} // _set_IO
 
 /**
    FortRock passが最初に呼ばれる関数
@@ -169,6 +176,7 @@ bool FortRock::runOnModule
 
   this->_module_gen->generate();
   // --------------------------------------------------
+
    // std::string err;
    // raw_fd_ostream file("output.txt", err, sys::fs::F_None);
    // file << "test\n";
@@ -193,10 +201,43 @@ bool FortRock::runOnModule
   // -----------------------------------------------
 
   return false;
-}
+} // runOnModule
 
+/**
+   各命令の処理関数を呼び出す
+   @brief 処理関数がモジュールはDFGの登録などを行う
+ */
 void FortRock::_parse_instructions
 (const Instruction * inst) {
+  try {
+    switch (inst->getOpcode()) {
+    case RET:    this->_add_load_node(inst); break;
+    case BR:     this->_add_load_node(inst); break;
+    case LOAD:   this->_add_load_node(inst); break;
+    case STORE:  this->_add_load_node(inst); break;
+    case ICMP:   this->_add_load_node(inst); break;
+    case PHI:    this->_add_load_node(inst); break;
+    case SELECT: this->_add_load_node(inst); break;
+    case SREM:   this->_add_load_node(inst); break;
+    case MUL:    this->_add_load_node(inst); break;
+    case SDIV:   this->_add_load_node(inst); break;
+    default:
+      throw std::string(std::string("ERROR:")
+                        + std::string(inst->getOpcodeName())
+                        + " "
+                        + std::to_string(inst->getOpcode())
+                        + " 未定義のオペランド\n");
+    } // switch
+  } // try
+  catch (std::string err) {
+    errs() << err;
+  } // catch
+} // _parse_instructions
+
+void FortRock::_add_load_node
+(const Instruction * inst) {
+  //  auto elem = std::make_shared<CDFG_Element>
+  //    (CDFG_Element(
 }
 
 /**
@@ -233,7 +274,7 @@ void FortRock::_grub_variables
                << it->getOpcode() << " 未定義のオペランド\n";
         getop = 0;
         break;
-      }
+      } // if
 
       // 未定義のregの追加
       for(auto i=0; i<getop; ++i) {
@@ -252,7 +293,7 @@ void FortRock::_grub_variables
                      true, //! @todo is signedが常にtrue
                      CDFG_Node::eNode::REG));
 
-        if (!this->_module_gen->find_node(node->get_name()))
+        if (!this->_module_gen->find_node(node))
           this->_module_gen->add_node(node);
       } // for
     } // if
@@ -276,7 +317,7 @@ void FortRock::_grub_variables
                        true,
                        CDFG_Node::eNode::REG));
 
-          if (!this->_module_gen->find_node(node->get_name()))
+          if (!this->_module_gen->find_node(node))
             this->_module_gen->add_node(node);
           break;
 
@@ -294,7 +335,7 @@ void FortRock::_grub_variables
                          true,
                          CDFG_Node::eNode::REG));
 
-            if (!this->_module_gen->find_node(node->get_name()))
+            if (!this->_module_gen->find_node(node))
               this->_module_gen->add_node(node);
           }
           break;
@@ -313,7 +354,7 @@ void FortRock::_grub_variables
       }
     } // else
   } // for
-}
+} // _grub_variables
 
 /**
    ステートマシンのラベル(ステート)の列挙
@@ -323,8 +364,10 @@ void FortRock::_grub_variables
  */
 void FortRock::_grub_labels
 (const Module::FunctionListType::iterator & funct) {
-  int num_label = std::distance(funct->begin(), funct->end());
-  auto label_bit_width = this->_get_required_bit_width(num_label + 1);
+  int num_label
+    = std::distance(funct->begin(), funct->end());
+  auto label_bit_width
+    = this->_get_required_bit_width(num_label + 1);
 
   // labelの追加
   auto ite = funct->begin();
@@ -338,9 +381,9 @@ void FortRock::_grub_labels
                  CDFG_Node::eNode::LABEL,
                  i));
 
-    if (!this->_module_gen->find_node(label_node->get_name()))
+    if (!this->_module_gen->find_node(label_node))
       this->_module_gen->add_node(label_node);
-  }
+  } // for
 
   // state_nodeの追加
   auto state_node = std::make_shared<CDFG_Node>
@@ -353,7 +396,7 @@ void FortRock::_grub_labels
                label_bit_width,
                false,
                CDFG_Node::eNode::PREV_STATE));
-}
+} // _grub_labels
 #if 0
 /**
  * moduleのI/Oやレジスタ，ワイヤの宣言の出力
