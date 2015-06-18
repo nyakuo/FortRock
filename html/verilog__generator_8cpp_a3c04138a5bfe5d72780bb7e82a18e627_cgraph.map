@@ -1,0 +1,9 @@
+<map id="main" name="main">
+<area shape="rect" id="node2" href="$class_c_module_generator.html#ac602eee0421ee437ca15e4cd6cc51168" title="CModuleGenerator::generate" alt="" coords="104,77,293,104"/>
+<area shape="rect" id="node3" href="$class_c_module_generator.html#a8f864a48ba92560327e3866924c69680" title="CModuleGenerator::\l_generate_header" alt="" coords="344,70,483,111"/>
+<area shape="rect" id="node5" href="$class_c_module_generator.html#a24b9fda9aca7375952c240ff64bc580c" title="CModuleGenerator::\l_generate_define" alt="" coords="344,5,483,46"/>
+<area shape="rect" id="node7" href="$class_c_module_generator.html#a4ccb72794098af7f946e9d5d812e6807" title="CModuleGenerator::\l_generate_calculator" alt="" coords="342,135,485,177"/>
+<area shape="rect" id="node4" href="$class_c_output.html#a03eff9ac93ac7bd49f57e696ca006ae3" title="COutput::indent_right" alt="" coords="539,85,685,112"/>
+<area shape="rect" id="node6" href="$class_c_output.html#a42fb45682188efcdcad46582535db583" title="COutput::output_indent" alt="" coords="533,12,691,39"/>
+<area shape="rect" id="node8" href="$class_c_output.html#af76c8326521e43490dfdfca399772e87" title="COutput::indent_left" alt="" coords="543,143,681,169"/>
+</map>
