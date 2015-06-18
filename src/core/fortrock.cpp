@@ -69,8 +69,8 @@ private:
   const std::string PREV_STATE_NAME = "prev_state"; //! ステートマシンの遷移前の状態を保持するレジスタの名前
   const std::string CUR_STATE_NAME = "current_state"; //! ステートマシンの現在の状態を保持するレジスタの名前
 
-  void grub_variables(const Module::FunctionListType::iterator &funct);
-  void grub_labels(const Module::FunctionListType::iterator &funct);
+  void _grub_variables(const Module::FunctionListType::iterator &funct);
+  void _grub_labels(const Module::FunctionListType::iterator &funct);
 
   void _set_IO(const Module::FunctionListType::iterator & funct);
   std::string _get_module_name(const Module & M);
@@ -129,25 +129,23 @@ void FortRock::_set_IO
 
     //! @todo 浮動小数点対応
     if(type->isIntegerTy()) {
-      auto arg = std::make_shared<CDFG_Node>
+      auto node = std::make_shared<CDFG_Node>
         (CDFG_Node(arg_it->getName(),
                    type->getPrimitiveSizeInBits(),
                    true, //! @todo isSigned対応
                    CDFG_Node::eNode::IN));
 
-      if(num == funct->arg_size()) { // 最後の引数は返り値
-        arg->set_type(CDFG_Node::eNode::OUT);
-      }
-      this->_module->add_node(arg);
-    }
-  }
+      if(num == funct->arg_size()) // 最後の引数は返り値
+        node->set_type(CDFG_Node::eNode::OUT);
+
+      this->_module_gen->add_node(node);
+    } // if
+  } // for
 }
 
-void FortRock::_parse_instructions
-(const Instruction * inst) {
-
-}
-
+/**
+   FortRock passが最初に呼ばれる関数
+ */
 bool FortRock::runOnModule
 (Module &M) {
   this->_out = std::make_shared<COutput>();
@@ -171,10 +169,10 @@ bool FortRock::runOnModule
 
   this->_set_IO(--it);
 
-  grub_labels(it);
-  grub_variables(it);
+  _grub_labels(it);
+  _grub_variables(it);
 
-  //  this->_module_gen->generate();
+  this->_module_gen->generate();
   // --------------------------------------------------
    // std::string err;
    // raw_fd_ostream file("output.txt", err, sys::fs::F_None);
@@ -202,16 +200,21 @@ bool FortRock::runOnModule
   return false;
 }
 
+void FortRock::_parse_instructions
+(const Instruction * inst) {
+}
+
 /**
  * プログラムで使用するすべてのレジスタを取得し
  * variablesに格納する
  * Labelについても列挙し，格納する
  */
-void FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
-  BranchInst *binst;
-  Value * value;
-  Type * type;
-  Variable var;
+void FortRock::_grub_variables
+(const Module::FunctionListType::iterator &funct) {
+  BranchInst * binst;
+  Value      * value;
+  Type       * type;
+  Variable     var;
   std::shared_ptr<CDFG_Node> node;
 
   for (auto it = inst_begin(*funct); //funct->begin();
@@ -256,8 +259,8 @@ void FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
 
         if (!this->_module->find_node(node->get_name()))
           this->_module->add_node(node);
-      }
-    }
+      } // for
+    } // if
     else {
       try {
         switch(it->getOpcode()) {
@@ -265,8 +268,7 @@ void FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
           break;
 
         case BR:
-          continue;
-          binst = dyn_cast<BranchInst>(inst);
+          binst = dyn_cast<BranchInst>(&*it);
           value = binst->getCondition();
           type = value->getType();
 
@@ -284,9 +286,8 @@ void FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
           break;
 
         case STORE:
-          continue;
           for(auto i=0; i<2; ++i) {
-            value = inst->getOperand(i);
+            value = it->getOperand(i);
             type = value->getType();
 
             if(type->isPointerTy())
@@ -305,15 +306,15 @@ void FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
 
         default:
           throw std::string(std::string("ERROR:")
-                            + std::string(inst->getOpcodeName())
+                            + std::string(it->getOpcodeName())
                             + " "
-                            + std::to_string(inst->getOpcode())
+                            + std::to_string(it->getOpcode())
                             + " 未定義のオペランド\n");
           break;
         } // switch
       } // try
       catch(std::string err) {
-        std::cerr << err;
+        errs() << err;
       }
     } // else
   } // for
@@ -325,7 +326,8 @@ void FortRock::grub_variables(const Module::FunctionListType::iterator &funct) {
    @note ラベルはNodeとしてインスタンス化され，追加される
    @attention このタイミングでState管理NodeがCModuleに追加される
  */
-void FortRock::grub_labels(const Module::FunctionListType::iterator & funct) {
+void FortRock::_grub_labels
+(const Module::FunctionListType::iterator & funct) {
   int num_label = std::distance(funct->begin(), funct->end());
   auto label_bit_width = this->_get_required_bit_width(num_label + 1);
 
