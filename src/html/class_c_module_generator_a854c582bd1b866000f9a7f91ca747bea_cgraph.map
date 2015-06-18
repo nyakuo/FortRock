@@ -1,8 +1,0 @@
-<map id="CModuleGenerator::_generate_always" name="CModuleGenerator::_generate_always">
-<area shape="rect" id="node2" href="$class_c_output.html#a03eff9ac93ac7bd49f57e696ca006ae3" title="COutput::indent_right" alt="" coords="201,5,348,32"/>
-<area shape="rect" id="node3" href="$class_c_output.html#af76c8326521e43490dfdfca399772e87" title="COutput::indent_left" alt="" coords="205,56,344,83"/>
-<area shape="rect" id="node4" href="$class_c_output.html#a42fb45682188efcdcad46582535db583" title="COutput::output_indent" alt="" coords="196,107,353,133"/>
-<area shape="rect" id="node5" href="$class_c_state_machine_gen.html#af47bd87696e267cad40009da27150ca0" title="CStateMachineGen::add\l_state_process" alt="" coords="192,158,357,199"/>
-<area shape="rect" id="node6" href="$class_c_state_machine_gen.html#a51d68edfecefeee6ed794e7565b9f295" title="CStateMachineGen::get\l_state_step_list" alt="" coords="193,223,356,265"/>
-<area shape="rect" id="node7" href="$class_c_state_machine_gen.html#a7e42939d376958a457f7de636efbca86" title="CStateMachineGen::gen\l_state_machine" alt="" coords="192,289,357,330"/>
-</map>
