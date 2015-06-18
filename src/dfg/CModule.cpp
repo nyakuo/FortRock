@@ -92,16 +92,16 @@ CModule::get_node(CDFG_Node::eNode type) {
 
 /**
    モジュール内のノードの検索
-   @param[in] name ノードの名前
+   @param[in] asm_name ノードLLVM IR上での名前
    @return 検索結果 T/F
  */
 bool
-CModule::find_node(std::string & name) {
+CModule::find_node(std::string & asm_name) {
   auto ite =
     std::find_if(this->_node_list.begin(),
                  this->_node_list.end(),
-                 [name](std::shared_ptr<CDFG_Node> obj) -> bool {
-                   return obj->get_name() == name;
+                 [asm_name](std::shared_ptr<CDFG_Node> obj) -> bool {
+                   return obj->get_asm_name() == asm_name;
                  }
                  );
   return ite != this->_node_list.end();

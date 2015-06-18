@@ -31,7 +31,7 @@ public:
   std::shared_ptr<CDFG_Node> & get_state_node(void);
   std::shared_ptr<CDFG_Node> & get_step_node(void);
   std::shared_ptr<CDFG_Node> & get_node(CDFG_Node::eNode type);
-  bool find_node(std::string & name);
+  bool find_node(std::string & asm_name);
 
 private:
   std::string _module_name; /** モジュール名 */

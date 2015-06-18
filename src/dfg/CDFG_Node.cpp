@@ -2,22 +2,24 @@
 
 /**
    コンストラクタ
-   @param[in] name Nodeの名前
+   @param[in] name NodeのLLVM IR上での名前
    @param[in] bit_width Nodeのビット幅
    @param[in] is_signed Nodeが is_signed かどうか
    @param[in] type Nodeの種類
    @param[in] parameter Nodeに設定する定数 (PARAMの場合)
    @param[in] address メモリのアドレス (未使用)
    @param[in] access_port メモリのアクセスポート (未使用)
+   @note verilog_name の作成も行っている
  */
-CDFG_Node::CDFG_Node(const std::string & name,
+CDFG_Node::CDFG_Node(const std::string & asm_name,
                      const unsigned & bit_width,
                      const bool & is_signed,
                      const CDFG_Node::eNode & type,
                      const double & parameter,
                      const long & address,
                      const long & access_port)
-  : _bit_width(bit_width),
+  : _asm_name(asm_name),
+    _bit_width(bit_width),
     _is_signed(is_signed),
     _type(type),
     _parameter(parameter),
@@ -26,7 +28,7 @@ CDFG_Node::CDFG_Node(const std::string & name,
 {
   // 変数に使用できない文字の置換
   int at;
-  std::string safe_name = name;
+  std::string safe_name = asm_name;
   while((at = safe_name.find('.', 0)) != std::string::npos)
     safe_name.replace(at, 1, "_");
 
@@ -59,23 +61,32 @@ CDFG_Node::CDFG_Node(const std::string & name,
   default:
     "nodef_";
     break;
-  }
+  } // switch
 
-  this->_name = prefix + safe_name;
+  this->_verilog_name = prefix + safe_name;
+} // CDFG_Node
+
+/**
+   NodeのLLVM IR上での信号名を取得
+   @return NodeのLLVM IR上での信号名
+ */
+std::string &
+CDFG_Node::get_asm_name(void){
+  return this->_asm_name;
 }
 
 /**
-   Nodeの信号名を取得
-   @return Nodeの信号名
+   NodeのVerilog HDL上での信号名を取得
+   @return NodeのVerilog HDL上での信号名
  */
 std::string &
-CDFG_Node::get_name(void){
-  return this->_name;
+CDFG_Node::get_verilog_name(void){
+  return this->_verilog_name;
 }
 
 /**
    Nodeのビット幅の取得
-   @return    Nodeのビット幅
+   @return Nodeのビット幅
  */
 unsigned &
 CDFG_Node::get_bit_width(void) {

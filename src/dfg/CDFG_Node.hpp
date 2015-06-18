@@ -27,7 +27,7 @@ public:
       LABEL      = 1 << 14,
       };
 
-  CDFG_Node(const std::string & name,
+  CDFG_Node(const std::string & asm_name,
             const unsigned & bit_width,
             const bool & is_signed,
             const CDFG_Node::eNode & type,
@@ -37,7 +37,8 @@ public:
   ~CDFG_Node(){}
 
   /* ゲッター */
-  std::string & get_name(void);
+  std::string & get_asm_name(void);
+  std::string & get_verilog_name(void);
   unsigned & get_bit_width(void);
   bool & get_is_signed(void);
   CDFG_Node::eNode & get_type(void);
@@ -49,13 +50,14 @@ public:
   void set_type(CDFG_Node::eNode type);
 
 private:
-  std::string _name;      /** ノードの名前 */
-  unsigned _bit_width;    /** ビット幅 */
-  bool _is_signed;        /** signedかどうか */
-  CDFG_Node::eNode _type; /** ノードの種類 */
-  double _parameter;      /** parameter用定数 */
-  long _address;          /** アドレス (only array) */
-  long _access_port;       /** アクセスポート (only array) */
+  std::string _asm_name;     //! ノードの名前
+  std::string _verilog_name; //! Verilog HDL上での名前
+  unsigned _bit_width;       //! ビット幅
+  bool _is_signed;           //! signedかどうか
+  CDFG_Node::eNode _type;    //! ノードの種類
+  double _parameter;         //! parameter用定数
+  long _address;             //! アドレス (only array)
+  long _access_port;         //! アクセスポート (only array)
 };
 
 #endif
