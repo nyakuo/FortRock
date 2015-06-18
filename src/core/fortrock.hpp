@@ -23,6 +23,7 @@
 
 #include <iostream>
 #include <list>
+#include <map>
 #include <regex>
 
 #include "variable.hpp"
@@ -59,8 +60,10 @@ public:
     : ModulePass(ID)
   {}
 
-  virtual const char *getPassName(void) const { return "FortRock: Fortran to Verilog backend"; }
   bool runOnModule(Module &M);
+
+  virtual const char *getPassName(void) const
+  { return "FortRock: Fortran to Verilog backend"; }
 
 private:
   std::shared_ptr<CModuleGenerator> _module_gen;
@@ -79,6 +82,7 @@ private:
   void _set_IO(const Module::FunctionListType::iterator & funct);
   void _grub_variables(const Module::FunctionListType::iterator &funct);
   void _grub_labels(const Module::FunctionListType::iterator &funct);
+  void _grub_calculator(const Module::FunctionListType::iterator & funct);
 
   // 命令パース
   void _parse_instructions(const Instruction * inst);

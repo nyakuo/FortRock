@@ -4,7 +4,7 @@
    入力された数を表すために必要なビット幅を計算する
    @param[in] num 表現したい種類の数
    @return 必要なビット幅
- */
+*/
 unsigned
 FortRock::_get_required_bit_width
 (const unsigned & num) {
@@ -15,7 +15,7 @@ FortRock::_get_required_bit_width
    moduleの名前を取得
    @param[in] M モジュールの参照
    @return モジュールの名前
- */
+*/
 std::string
 FortRock::_get_module_name
 (const Module & M) {
@@ -34,7 +34,7 @@ FortRock::_get_module_name
 
 /**
    moduleの入出力を定義
- */
+*/
 void FortRock::_set_IO
 (const Module::FunctionListType::iterator & funct) {
   auto arg_it  = funct->arg_begin();
@@ -66,19 +66,19 @@ void FortRock::_set_IO
 
 /**
    FortRock passが最初に呼ばれる関数
- */
+*/
 bool FortRock::runOnModule
 (Module &M) {
   this->_module_gen = std::make_shared<CModuleGenerator>
-  ("output.v", this->_get_module_name(M));
+    ("output.v", this->_get_module_name(M));
 
   // -------------------- Functions --------------------
   auto it = M.begin();
   auto end = M.end();
 
   try {
-  if(++it != end)
-    throw "ERROR: 1つのファイルに記述できるのは1つのモジュールだけです";
+    if(++it != end)
+      throw "ERROR: 1つのファイルに記述できるのは1つのモジュールだけです";
   }
   catch (char * str) {
     std::cerr << str << std::endl;
@@ -89,17 +89,18 @@ bool FortRock::runOnModule
 
   _grub_labels(it);
   _grub_variables(it);
+  _grub_calculator(it);
 
   this->_module_gen->generate();
   // --------------------------------------------------
 
-   // std::string err;
-   // raw_fd_ostream file("output.txt", err, sys::fs::F_None);
-   // file << "test\n";
-   // file.close();
-                       //                       sys::fs::OpenFlags::F_Text);
+  // std::string err;
+  // raw_fd_ostream file("output.txt", err, sys::fs::F_None);
+  // file << "test\n";
+  // file.close();
+  //                       sys::fs::OpenFlags::F_Text);
 
-   // -------------------- debug --------------------
+  // -------------------- debug --------------------
   // std::list<Variable>::iterator debit = variables.begin();
   // std::list<Variable>::iterator debend = variables.end();
   // errs() << "/*\n";
@@ -122,7 +123,7 @@ bool FortRock::runOnModule
 /**
    各命令の処理関数を呼び出す
    @brief 処理関数がモジュールはDFGの登録などを行う
- */
+*/
 void FortRock::_parse_instructions
 (const Instruction * inst) {
   try {
@@ -170,7 +171,7 @@ void FortRock::_grub_variables
   std::shared_ptr<CDFG_Node> node;
 
   for (auto it = inst_begin(*funct); //funct->begin();
-           it != inst_end(*funct);   // funct->end();
+       it != inst_end(*funct);   // funct->end();
        ++it) {
 
     if (!it->use_empty()) {
@@ -277,7 +278,7 @@ void FortRock::_grub_variables
    @param[in] funct CFDの参照
    @note ラベルはNodeとしてインスタンス化され，追加される
    @attention このタイミングでState管理NodeがCModuleに追加される
- */
+*/
 void FortRock::_grub_labels
 (const Module::FunctionListType::iterator & funct) {
   int num_label
@@ -313,6 +314,64 @@ void FortRock::_grub_labels
                false,
                CDFG_Node::eNode::PREV_STATE));
 } // _grub_labels
+
+/**
+   演算器をモジュール内に確保する
+   @note 現状では1つの命令に対して1つの演算器を確保
+   @todo 外部ファイルによって演算器の確保する数を変更
+*/
+void FortRock::_grub_calculator
+(const Module::FunctionListType::iterator & funct) {
+  std::map<unsigned, unsigned> num_calc;
+
+  for (auto ite = inst_begin(*funct);
+       ite != inst_end(*funct);
+       ++ite) {
+
+    auto ope_code = ite->getOpcode();
+    if (num_calc[ope_code] != 0) //! @todo 複数演算器への対応
+      continue;
+
+    ++num_calc[ope_code];
+
+    std::string module_name("");
+    CDFG_Operator::eType type;
+    try {
+      switch (ope_code) { //! @todo 演算器の名前は外部ファイルで与える
+      case RET:    module_name = "my_ret";    type = CDFG_Operator::eType::RET;    break;
+      case BR:     module_name = "my_br";     type = CDFG_Operator::eType::BR;     break;
+      case LOAD:   module_name = "my_load";   type = CDFG_Operator::eType::LOAD;   break;
+      case STORE:  module_name = "my_store";  type = CDFG_Operator::eType::STORE;  break;
+      case ICMP:   module_name = "my_icmp";   type = CDFG_Operator::eType::ICMP;   break;
+      case PHI:    module_name = "my_phi";    type = CDFG_Operator::eType::PHI;    break;
+      case SELECT: module_name = "my_select"; type = CDFG_Operator::eType::SELECT; break;
+      case SREM:   module_name = "my_srem";   type = CDFG_Operator::eType::SREM;   break;
+      case MUL:    module_name = "my_mul";    type = CDFG_Operator::eType::MUL;    break;
+      case SDIV:   module_name = "my_sdiv";   type = CDFG_Operator::eType::SDIV;   break;
+      default:
+        throw std::string(std::string("ERROR:")
+                          + std::string(ite->getOpcodeName())
+                          + " "
+                          + std::to_string(ite->getOpcode())
+                          + " 未定義のオペランド\n");
+        break;
+      } // switch
+    } // try
+    catch (std::string err) {
+      errs() << err;
+      continue;
+    }
+
+    auto ope = std::make_shared<CDFG_Operator>
+      (CDFG_Operator(module_name + "1",
+                     module_name,
+                     1,
+                     type));
+
+    this->_module_gen->add_operator(ope);
+  } // ite
+} // _grub_calculator
+
 #if 0
 /**
  * moduleのI/Oやレジスタ，ワイヤの宣言の出力
