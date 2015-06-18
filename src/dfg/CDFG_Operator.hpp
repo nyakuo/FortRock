@@ -18,15 +18,19 @@ public:
     ADD = 0,
       SUB,
       ADD_SUB,
-      MUL,
       DIV,
       FUNC,
 
-      ICMP,
-      LOAD,
-      SELECT,
-      PHI,
       RET,
+      BR,
+      LOAD,
+      STORE,
+      ICMP,
+      PHI,
+      SELECT,
+      SREM,
+      MUL,
+      SDIV,
       };
 
   //! @todo 入出力Nodeを自動的に作成する機能
