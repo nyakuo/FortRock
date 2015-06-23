@@ -1,6 +1,5 @@
 CXXFLAGS         = -std=c++11 -fPIC
-#CXX            = clang++-3.6
-CXX            = g++
+CXX            = clang++-3.6
 INPUT_FORTRAN  = ../fortran/lcm/lcm.f
 INPUT_LLVM     = ../fortran/lcm/lcm.s
 OBJ_FILES = \
@@ -12,6 +11,9 @@ OBJ_FILES = \
 	./dfg/CModuleGenerator.o \
 	./dfg/CModule.o \
 	./core/fortrock.o
+	# ./xml/COperatorManager.o \
+	# ./xml/CInstancingOperator.o \
+
 
 .PHONY: fortrock
 fortrock: $(OBJ_FILES)
@@ -31,8 +33,11 @@ llvm:
 
 .PHONY: count
 count:;
-	wc -lc ./core/*.cpp ./core/*.hpp ./dfg/*.cpp ./dfg/*.hpp
+	wc -lc ./core/*.cpp ./core/*.hpp
+	wc -lc ./dfg/*.cpp ./dfg/*.hpp
+	wc -lc ./xml/*.cpp ./xml/*.hpp
+	wc -lc ./core/*.cpp ./core/*.hpp ./dfg/*.cpp ./dfg/*.hpp ./xml/*.cpp ./xml/*.hpp
 
 .PHONY: clean
 clean:
-	rm -f ./core/*.o ./dfg/*.o *.so
+	rm -f ./core/*.o ./dfg/*.o ./xml/*.o *.so
