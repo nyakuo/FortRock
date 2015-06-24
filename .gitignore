@@ -1,6 +1,7 @@
 fortran/*
 verilog/*
 document/*
+cpp_test_code/*
 
 *.s
 *.v
