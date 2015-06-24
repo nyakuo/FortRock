@@ -89,7 +89,12 @@ bool FortRock::runOnModule
 
   _grub_labels(it);
   _grub_variables(it);
-  _grub_calculator(it);
+
+  // 演算器のインスタンス化
+  CInstancingOperator cinst;
+  cinst.instancing_operators(this->_module_gen,
+                             this->_OPERATOR_CONFIG_FILENAME);
+  //  _grub_calculator(it);
 
   this->_module_gen->generate();
   // --------------------------------------------------
@@ -304,12 +309,12 @@ void FortRock::_grub_labels
 
   // state_nodeの追加
   auto state_node = std::make_shared<CDFG_Node>
-    (CDFG_Node(this->CUR_STATE_NAME,
+    (CDFG_Node(this->_CUR_STATE_NAME,
                label_bit_width,
                false,
                CDFG_Node::eNode::STATE));
   auto prev_state_node = std::make_shared<CDFG_Node>
-    (CDFG_Node(this->PREV_STATE_NAME,
+    (CDFG_Node(this->_PREV_STATE_NAME,
                label_bit_width,
                false,
                CDFG_Node::eNode::PREV_STATE));
@@ -497,11 +502,11 @@ std::string FortRock::print_RET(const Instruction * inst) {
 
   ret_str = PREV_STR_NAME;
   ret_str += " = ";
-  ret_str += CUR_STATE_NAME;
+  ret_str += _CUR_STATE_NAME;
   ret_str += ";\n";
 
   ret_str += indent();
-  ret_str += CUR_STATE_NAME;
+  ret_str += _CUR_STATE_NAME;
   ret_str += " = " + std::to_string(state_bit_width());
   ret_str += "'d" + std::to_string(labels.size());
   ret_str += ";";
@@ -526,10 +531,10 @@ std::string FortRock::print_BR(const Instruction * inst) {
 
   ret_str = PREV_STR_NAME;
   ret_str += " = ";
-  ret_str += CUR_STATE_NAME;
+  ret_str += _CUR_STATE_NAME;
   ret_str += ";\n";
   ret_str += indent();
-  ret_str += CUR_STATE_NAME;
+  ret_str += _CUR_STATE_NAME;
   ret_str += " = (1'b1 == ";
   value = bi->getCondition();
   var.set_asm_name(value->getName());
@@ -881,7 +886,7 @@ std::string FortRock::print_always(const Module::FunctionListType::iterator &fun
   ret_str += indent() + "fin = 1'b0;\n";
   ret_str += indent() + PREV_STR_NAME + " = "
     + std::to_string(state_bit_width()) + "'b0;\n";
-  ret_str += indent() + CUR_STATE_NAME + " = "
+  ret_str += indent() + _CUR_STATE_NAME + " = "
     + std::to_string(state_bit_width()) + "'b0;\n";
 
   std::list<Variable>::iterator v_it = variables.begin();
@@ -910,7 +915,7 @@ std::string FortRock::print_always(const Module::FunctionListType::iterator &fun
   Label label;
   std::list<Label>::iterator l_it;
 
-  ret_str += indent() + "case (" + CUR_STATE_NAME + ")\n";
+  ret_str += indent() + "case (" + _CUR_STATE_NAME + ")\n";
   indent_right();
   for(; bb_it!=bb_end; ++bb_it) {
     it = bb_it->begin();
@@ -960,10 +965,13 @@ std::string FortRock::print_always(const Module::FunctionListType::iterator &fun
   return ret_str + indent() + "end // always\n";
 }
 #endif
+
 char FortRock::ID = 0;
 
 // ==================================================
 // External Interface declaration
 // ==================================================
 
-static RegisterPass<FortRock> X("fortrock", "Fortran to Verilog", false, false);
+static RegisterPass<FortRock> X("fortrock", "Fortran to Verilog",
+                                false, /* Only looks at CFG */
+                                false  /* Analysis Pass */);
