@@ -1,0 +1,20 @@
+# Makefile.in
+
+CXX       := clang++-3.6
+CXXFLAGS  := -std=c++11 -fPIC `llvm-config --cflags` `xml2-config --cflags`
+LIBS      := `xml2-config --libs` `llvm-config --libs`
+LDFLAGS   := `llvm-config --ldflags`
+
+.PHONY: all
+all: $(TARGETS)
+
+%.o: %.cpp %.hpp
+	$(CXX) $(CXXFLAGS) -c $*.cpp
+
+.PHONY: count
+count: %.cpp %.hpp Makefile
+	wc -lc $*.cpp $*.hpp Makefile
+
+.PHONY: clean
+clean:
+	rm -f $(TARGETS) $(OBJS)
