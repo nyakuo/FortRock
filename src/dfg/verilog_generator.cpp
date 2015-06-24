@@ -8,7 +8,7 @@
 #include "CModuleGenerator.hpp"
 
 int main(int argc, char **argv) {
-  CModuleGenerator generator("output.v");
+  CModuleGenerator generator("output.v", "test_module");
   generator.generate();
 
   return 0;

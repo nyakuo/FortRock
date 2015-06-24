@@ -192,7 +192,7 @@ int CModuleGenerator::generate(void) {
 //  this->_generate_assign();
   this->_generate_calculator();
 //  this->_generate_always();
-//  this->_generate_footer();
+  this->_generate_footer();
 
   return 0;
 }
