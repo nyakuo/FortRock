@@ -1,0 +1,18 @@
+<config>
+  <IPCore>
+    <addInt>
+      <useIPCore>            true  </useIPCore>
+      <latency>              1     </latency>
+      <moduleName>           myAdd </moduleName>
+      <numModule>            1     </numModule>
+      <clockPortName>        clk   </clockPortName>
+      <leftOperandPortName>  a     </leftOperandPortName>
+      <rightOperandPortName> b     </rightOperandPortName>
+      <outPortName>          sum   </outPortName>
+      <leftPortBitWidth>     32    </leftPortBitWidth>
+      <rightPortBitWidth>    32    </rightPortBitWidth>
+      <outPortBitWidth>      32    </outPortBitWidth>
+      <clockEnablePortName>  ce    </clockEnablePortName>
+    </addInt>
+  </IPCore>
+</config>
