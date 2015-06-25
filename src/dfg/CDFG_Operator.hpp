@@ -20,7 +20,10 @@ public:
       ADD_SUB,
       DIV,
       FUNC,
-
+      MUL,
+      SDIV,
+    // ↑演算器使用のレイテンシあり
+    // ↓演算器不使用のレイテンシなし (代入など)
       RET,
       BR,
       LOAD,
@@ -29,8 +32,6 @@ public:
       PHI,
       SELECT,
       SREM,
-      MUL,
-      SDIV,
       };
 
   //! @todo 入出力Nodeを自動的に作成する機能
@@ -61,7 +62,6 @@ public:
                        std::shared_ptr<CDFG_Node> & node);
   void set_latency(const unsigned & latency);
   void set_type(const eType & type);
-  void set_num_input(const unsigned &);
 
 private:
   std::string _name;     /** インスタンス名 */
