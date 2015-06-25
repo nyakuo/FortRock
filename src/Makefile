@@ -11,7 +11,7 @@ all:
 
 .PHONY: use
 use: ./fortrock.so
-	opt -load ./fortrock.so -fortrock $(INPUT_LLVM) -S > /dev/null
+	opt -load ./fortrock.so -instnamer -fortrock $(INPUT_LLVM) -S
 
 .PHONY: llvm
 llvm:
