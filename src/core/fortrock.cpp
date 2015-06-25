@@ -237,6 +237,7 @@ void FortRock::_add_store_inst
 }
 
 /**
+   ICMP命令をモジュールのDFGに追加する
    @brief b = icmp cond a0 a1
    b = (a0 cond a1)
    @todo conditionへの対応
@@ -255,16 +256,42 @@ void FortRock::_add_icmp_inst
     (this->_get_value_name(inst->getOperand(1)));
   auto b = this->_module_gen->get_node(inst->getName());
 
-  errs() << b->get_verilog_name() << " <= "
-         << a0->get_verilog_name() << " cond "
-         << a1->get_verilog_name() << ";\n";
-
   elem->set_input(a0, 0);
   elem->set_input(a1, 1);
   elem->set_output(b, 0);
 
   this->_module_gen->add_element(elem);
 }
+
+/**
+   SELECT命令をモジュールのDFGに追加する
+   @brief b = select t/f a0 a1
+   b <= (a0 t/f a1)
+ */
+void FortRock::_add_select_inst
+(const Instruction * inst) {
+  auto elem = std::make_shared<CDFG_Element>
+    (CDFG_Element(CDFG_Operator::eType::SELECT,
+                  3, /* Number of operator input */
+                  this->_state,
+                  this->_step));
+
+  auto tf = this->_module_gen->get_node
+    (this->_get_value_name(inst->getOperand(0)));
+  auto a0 = this->_module_gen->get_node
+    (this->_get_value_name(inst->getOperand(1)));
+  auto a1 = this->_module_gen->get_node
+    (this->_get_value_name(inst->getOperand(2)));
+  auto b = this->_module_gen->get_node(inst->getName());
+
+  elem->set_input(tf, 0);
+  elem->set_input(a0, 1);
+  elem->set_input(a1, 2);
+  elem->set_output(b, 0);
+
+  this->_module_gen->add_element(elem);
+}
+
 
 /**
  * プログラムで使用するすべてのレジスタを取得し

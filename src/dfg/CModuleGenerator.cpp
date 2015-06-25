@@ -560,7 +560,6 @@ void CModuleGenerator::_generate_always(void) {
 
     case CDFG_Operator::eType::ICMP:
       {
-        break;
         auto in_0 = elem->get_input_at(0);
         auto in_1 = elem->get_input_at(1);
         auto out = elem->get_output_at(0);
@@ -571,6 +570,26 @@ void CModuleGenerator::_generate_always(void) {
                            + in_0->get_verilog_name()
                            + " > " //! @todo 他の比較条件へ対応
                            + in_1->get_verilog_name()
+                           + ");\n");
+
+        sm_gen.add_state_process(state,
+                                 step,
+                                 process_str);
+        break;
+      }
+    case CDFG_Operator::eType::SELECT:
+      {
+        auto tf = elem->get_input_at(0);
+        auto in_0 = elem->get_input_at(1);
+        auto in_1 = elem->get_input_at(2);
+        auto out = elem->get_output_at(0);
+
+        process_str.append(this->_cout.output_indent()
+                           + out->get_verilog_name()
+                           + " <= ( " + tf->get_verilog_name() + " ) ? "
+                           + in_0->get_verilog_name()
+                           + " : "
+                           + in_1->get_verilog_name()
                            + ";\n");
 
         sm_gen.add_state_process(state,
@@ -578,7 +597,6 @@ void CModuleGenerator::_generate_always(void) {
                                  process_str);
         break;
       }
-      // case CDFG_Operator::eType:::
       // case CDFG_Operator::eType:::
       // case CDFG_Operator::eType:::
       // case CDFG_Operator::eType:::
