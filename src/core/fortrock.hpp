@@ -81,9 +81,16 @@ private:
 
   // 命令パース
   void _parse_instructions(const Instruction * inst);
+  void _add_ret_inst(const Instruction * inst);
+  void _add_br_inst(const Instruction * inst);
   void _add_load_inst(const Instruction * inst);
   void _add_store_inst(const Instruction * inst);
   void _add_icmp_inst(const Instruction * inst);
+  void _add_phi_inst(const Instruction * inst);
+  void _add_select_inst(const Instruction * inst);
+  void _add_srem_inst(const Instruction * inst);
+  void _add_mul_inst(const Instruction * inst);
+  void _add_sdiv_inst(const Instruction * inst);
 
 }; // FortRock
 
