@@ -30,8 +30,10 @@ public:
   // FortRock本体のためのアクセサ
   void add_node(std::shared_ptr<CDFG_Node> & node);
   void add_operator(std::shared_ptr<CDFG_Operator> & ope);
-  bool find_node(std::string & node_name);
+  void add_element(std::shared_ptr<CDFG_Element> & elem);
+  bool find_node(const std::string & node_name);
   bool find_node(std::shared_ptr<CDFG_Node> & node);
+  std::shared_ptr<CDFG_Node> get_node(const std::string & node_name);
 
 private:
   COutput _cout;

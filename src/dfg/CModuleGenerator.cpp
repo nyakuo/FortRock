@@ -9,6 +9,42 @@ CModuleGenerator::CModuleGenerator(const std::string & filename,
                                    const std::string & module_name) {
   this->_module = std::make_shared<CModule>(module_name);
   this->_cout.open_ofstream(filename);
+
+  // 基本的なノードの確保
+  // 基本入出力
+  auto i_clk = std::make_shared<CDFG_Node>
+    (CDFG_Node("clk", 1, false, CDFG_Node::eNode::CLK));
+  auto i_res = std::make_shared<CDFG_Node>
+    (CDFG_Node("res_p", 1, false, CDFG_Node::eNode::RES));
+  auto i_req = std::make_shared<CDFG_Node>
+    (CDFG_Node("req_p", 1, false, CDFG_Node::eNode::REQ));
+  auto i_ce = std::make_shared<CDFG_Node>
+    (CDFG_Node("ce_p", 1, false, CDFG_Node::eNode::CE));
+  auto o_fin = std::make_shared<CDFG_Node>
+    (CDFG_Node("fin_p", 1, false, CDFG_Node::eNode::FIN));
+  // 定数
+  auto p_true = std::make_shared<CDFG_Node>
+    (CDFG_Node("TRUE", 1, false, CDFG_Node::eNode::PARAM, 1));
+  auto p_false = std::make_shared<CDFG_Node>
+    (CDFG_Node("FALSE", 1, false, CDFG_Node::eNode::PARAM, 0));
+  auto p_zero = std::make_shared<CDFG_Node>
+    (CDFG_Node("ZERO", 1, false, CDFG_Node::eNode::PARAM, 0));
+  // システム変数
+  auto s_state = std::make_shared<CDFG_Node>
+    (CDFG_Node("state", 8, false, CDFG_Node::eNode::STATE));
+  auto s_step = std::make_shared<CDFG_Node>
+    (CDFG_Node("step", 8, false, CDFG_Node::eNode::STEP));
+
+  this->_module->add_node(i_clk);
+  this->_module->add_node(i_res);
+  this->_module->add_node(i_req);
+  this->_module->add_node(i_ce);
+  this->_module->add_node(o_fin);
+  this->_module->add_node(p_true);
+  this->_module->add_node(p_false);
+  this->_module->add_node(p_zero);
+  this->_module->add_node(s_state);
+  this->_module->add_node(s_step);
 }
 
 /**
@@ -29,12 +65,20 @@ void CModuleGenerator::add_operator
 }
 
 /**
+   モジュールにElement(処理)を追加する
+ */
+void CModuleGenerator::add_element
+(std::shared_ptr<CDFG_Element> & elem) {
+  this->_module->add_element(elem);
+}
+
+/**
    モジュール内のノードを検索する
    @param[in] node_name 検索対象のアセンブリ上での名前
    @note FortRock 本体から呼び出すために使用
 */
 bool CModuleGenerator::find_node
-(std::string & node_name) {
+(const std::string & node_name) {
   return this->_module->find_node(node_name);
 }
 
@@ -45,6 +89,15 @@ bool CModuleGenerator::find_node
 bool CModuleGenerator::find_node
 (std::shared_ptr<CDFG_Node> & node) {
   return this->_module->find_node(node->get_asm_name());
+}
+
+/**
+   モジュール内のノードを取得する
+   @note FortRock 本体から呼び出すために使用
+ */
+std::shared_ptr<CDFG_Node>
+CModuleGenerator::get_node(const std::string & node_name){
+  return this->_module->get_node(node_name);
 }
 
 /**
@@ -191,7 +244,7 @@ int CModuleGenerator::generate(void) {
   this->_generate_define();
 //  this->_generate_assign();
   this->_generate_calculator();
-//  this->_generate_always();
+   this->_generate_always();
   this->_generate_footer();
 
   return 0;
@@ -443,39 +496,102 @@ void CModuleGenerator::_generate_always(void) {
     auto latency = ope->get_latency();
     std::string process_str ("");
 
-    // 入力の接続
-    ope = elem->get_operator();
-    for (auto i=0; i<ope->get_num_input(); ++i) {
-      auto node = ope->get_input_node_at(i);
-      if ((unsigned)node->get_type() &
-          ((unsigned)CDFG_Node::eNode::REG | (unsigned)CDFG_Node::eNode::OUT)) {
-        process_str.append(this->_cout.output_indent()
-                           + node->get_verilog_name()
-                           + " <= "
-                           + elem->get_input_at(i)->get_verilog_name()
-                           + ";\n");
-      }
-    }
-    sm_gen.add_state_process(state, step, process_str);
 
-    // 出力の接続
-    process_str = "";
-    for (auto i=0; i<ope->get_num_output(); ++i) {
-      auto node = ope->get_output_node_at(i);
 
-      if ((unsigned)node->get_type() &
-          ((unsigned)CDFG_Node::eNode::WIRE)) {
-        process_str.append(this->_cout.output_indent()
-                           + elem->get_output_at(i)->get_verilog_name()
-                           + " <= "
-                           + node->get_verilog_name()
-                           + ";\n");
+    switch (ope->get_type()) {
+    case CDFG_Operator::eType::ADD:
+    case CDFG_Operator::eType::SUB:
+    case CDFG_Operator::eType::ADD_SUB:
+    case CDFG_Operator::eType::DIV:
+    case CDFG_Operator::eType::FUNC:
+    case CDFG_Operator::eType::MUL:
+    case CDFG_Operator::eType::SDIV:
+      {
+        // 入力の接続
+        for (auto i=0; i<ope->get_num_input(); ++i) {
+          auto node = ope->get_input_node_at(i);
+          if ((unsigned)node->get_type() &
+              ((unsigned)CDFG_Node::eNode::REG | (unsigned)CDFG_Node::eNode::OUT)) {
+            process_str.append(this->_cout.output_indent()
+                               + node->get_verilog_name()
+                               + " <= "
+                               + elem->get_input_at(i)->get_verilog_name()
+                               + ";\n");
+          }
+        }
+        sm_gen.add_state_process(state, step, process_str);
+
+        // 出力の接続
+        process_str = "";
+        for (auto i=0; i<ope->get_num_output(); ++i) {
+          auto node = ope->get_output_node_at(i);
+
+          if ((unsigned)node->get_type() &
+              ((unsigned)CDFG_Node::eNode::WIRE)) {
+            process_str.append(this->_cout.output_indent()
+                               + elem->get_output_at(i)->get_verilog_name()
+                               + " <= "
+                               + node->get_verilog_name()
+                               + ";\n");
+          }
+        }
+        sm_gen.add_state_process(state,
+                                 step + latency + 1,
+                                 process_str);
+        break;
       }
-    }
-    sm_gen.add_state_process(state,
-                             step + latency + 1,
-                             process_str);
-  }
+
+    case CDFG_Operator::eType::LOAD:
+    case CDFG_Operator::eType::STORE:
+      {
+        auto in = elem->get_input_at(0);
+        auto out = elem->get_output_at(0);
+
+        process_str.append(this->_cout.output_indent()
+                           + out->get_verilog_name()
+                           + " <= "
+                           + in->get_verilog_name()
+                           + ";\n");
+        sm_gen.add_state_process(state,
+                                 step,
+                                 process_str);
+        break;
+      }
+
+    case CDFG_Operator::eType::ICMP:
+      {
+        break;
+        auto in_0 = elem->get_input_at(0);
+        auto in_1 = elem->get_input_at(1);
+        auto out = elem->get_output_at(0);
+
+        process_str.append(this->_cout.output_indent()
+                           + out->get_verilog_name()
+                           + " <= ("
+                           + in_0->get_verilog_name()
+                           + " > " //! @todo 他の比較条件へ対応
+                           + in_1->get_verilog_name()
+                           + ";\n");
+
+        sm_gen.add_state_process(state,
+                                 step,
+                                 process_str);
+        break;
+      }
+      // case CDFG_Operator::eType:::
+      // case CDFG_Operator::eType:::
+      // case CDFG_Operator::eType:::
+      // case CDFG_Operator::eType:::
+      // case CDFG_Operator::eType:::
+      // case CDFG_Operator::eType:::
+      //   break;
+
+      //! @todo 未対応の命令に対応
+
+    default:
+      break;
+    } // switch : ope type
+  } // for : element list
 
   this->_cout.indent_left(5);
 
