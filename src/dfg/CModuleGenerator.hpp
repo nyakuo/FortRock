@@ -34,6 +34,7 @@ public:
   bool find_node(const std::string & node_name);
   bool find_node(std::shared_ptr<CDFG_Node> & node);
   std::shared_ptr<CDFG_Node> get_node(const std::string & node_name);
+  std::shared_ptr<CDFG_Node> get_node(const CDFG_Node::eNode & type);
 
 private:
   COutput _cout;
