@@ -28,10 +28,9 @@ public:
   std::list<std::shared_ptr<CDFG_Node> > & get_node_list(void);
   std::list<std::shared_ptr<CDFG_Element> > & get_element_list(void);
   std::list<std::shared_ptr<CDFG_Operator> > & get_operator_list(void);
-  // std::shared_ptr<CDFG_Node> & get_state_node(void);
-  // std::shared_ptr<CDFG_Node> & get_step_node(void);
   std::shared_ptr<CDFG_Node> & get_node(CDFG_Node::eNode type);
-  bool find_node(std::string & asm_name);
+  std::shared_ptr<CDFG_Node> & get_node(const std::string & node_name);
+  bool find_node(const std::string & asm_name);
 
 private:
   std::string _module_name; /** モジュール名 */

@@ -78,17 +78,34 @@ CModule::get_operator_list(void) {
    @note state, step, clkなどシステムに関する信号の取得に利用
    @return 検索結果のノード
  */
-// std::shared_ptr<CDFG_Node> &
-// CModule::get_node(CDFG_Node::eNode type) {
-//   auto ite =
-//     std::find_if(this->_node_list.begin(),
-//                  this->_node_list.end(),
-//                  [type](std::shared_ptr<CDFG_Node> obj) -> bool {
-//                    return obj->get_type() == type;
-//                  }
-//                  );
-//   return *ite;
-// }
+std::shared_ptr<CDFG_Node> &
+CModule::get_node(CDFG_Node::eNode type) {
+  auto ite =
+    std::find_if(this->_node_list.begin(),
+                 this->_node_list.end(),
+                 [type](std::shared_ptr<CDFG_Node> obj) -> bool {
+                   return obj->get_type() == type;
+                 }
+                 );
+  return *ite;
+}
+
+/**
+   モジュール内のノードの検索
+   @param[in] node_name ノードの名前
+   @return 検索結果のノード
+ */
+std::shared_ptr<CDFG_Node> &
+CModule::get_node(const std::string & node_name) {
+  auto ite =
+    std::find_if(this->_node_list.begin(),
+                 this->_node_list.end(),
+                 [node_name](std::shared_ptr<CDFG_Node> obj) -> bool {
+                   return obj->get_asm_name() == node_name;
+                 }
+                 );
+  return *ite;
+}
 
 /**
    モジュール内のノードの検索
@@ -96,7 +113,7 @@ CModule::get_operator_list(void) {
    @return 検索結果 T/F
  */
 bool
-CModule::find_node(std::string & asm_name) {
+CModule::find_node(const std::string & asm_name) {
   auto ite =
     std::find_if(this->_node_list.begin(),
                  this->_node_list.end(),
