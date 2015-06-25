@@ -101,6 +101,15 @@ CModuleGenerator::get_node(const std::string & node_name){
 }
 
 /**
+   モジュール内のノードを取得する
+   @note FortRock 本体から呼び出すために使用 (stateなどの取得に使用)
+*/
+std::shared_ptr<CDFG_Node>
+CModuleGenerator::get_node(const CDFG_Node::eNode & type) {
+  return this->_module->get_node(type);
+}
+
+/**
    テストデータ(DFG)の生成
    @note テスト用
  */
@@ -496,8 +505,6 @@ void CModuleGenerator::_generate_always(void) {
     auto latency = ope->get_latency();
     std::string process_str ("");
 
-
-
     switch (ope->get_type()) {
     case CDFG_Operator::eType::ADD:
     case CDFG_Operator::eType::SUB:
@@ -578,6 +585,7 @@ void CModuleGenerator::_generate_always(void) {
         break;
       }
     case CDFG_Operator::eType::SELECT:
+    case CDFG_Operator::eType::BR:
       {
         auto tf = elem->get_input_at(0);
         auto in_0 = elem->get_input_at(1);

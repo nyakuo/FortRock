@@ -167,7 +167,7 @@ void FortRock::_parse_instructions
   try {
     switch (inst->getOpcode()) {
     // case RET:    this->_add_load_node(inst); break;
-    // case BR:     this->_add_load_node(inst); break;
+    case BR:     this->_add_br_inst(inst); break;
     case LOAD:   this->_add_load_inst(inst); break;
     case STORE:  this->_add_store_inst(inst); break;
     case ICMP:   this->_add_icmp_inst(inst); break;
@@ -292,6 +292,33 @@ void FortRock::_add_select_inst
   this->_module_gen->add_element(elem);
 }
 
+/**
+   BR命令をモジュールのDFGに追加する
+   @brief br cond ltrue, lfalse
+   state <= (cond) ? ltrue : lfalse;
+ */
+void FortRock::_add_br_inst
+(const Instruction * inst) {
+  auto elem = std::make_shared<CDFG_Element>
+    (CDFG_Element(CDFG_Operator::eType::BR,
+                  3, /* Number of operator input */
+                  this->_state,
+                  this->_step));
+  auto tf = this->_module_gen->get_node
+    (this->_get_value_name(inst->getOperand(0)));
+  auto lfalse = this->_module_gen->get_node
+    (this->_get_value_name(inst->getOperand(1)));
+  auto ltrue = this->_module_gen->get_node
+    (this->_get_value_name(inst->getOperand(2)));
+  auto state = this->_module_gen->get_node(CDFG_Node::eNode::STATE);
+
+  elem->set_input(tf, 0);
+  elem->set_input(ltrue, 1);
+  elem->set_input(lfalse, 2);
+  elem->set_output(state, 0);
+
+  this->_module_gen->add_element(elem);
+}
 
 /**
  * プログラムで使用するすべてのレジスタを取得し
