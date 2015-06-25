@@ -5,13 +5,13 @@
 #include "llvm/Pass.h"
 #include "llvm/Support/InstIterator.h"
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/IR/Constants.h"
 
 #include <iostream>
 #include <list>
 #include <map>
 #include <regex>
 
-#include "variable.hpp"
 #include "../dfg/CModule.hpp"
 #include "../dfg/COutput.hpp"
 #include "../dfg/CModuleGenerator.hpp"
@@ -44,7 +44,9 @@ class FortRock : public ModulePass  {
 public:
   static char ID;
   FortRock(void)
-    : ModulePass(ID)
+    : ModulePass(ID),
+      _step(0),
+      _state(1)
   {}
 
   bool runOnModule(Module & M);
@@ -54,6 +56,8 @@ public:
 
 private:
   std::shared_ptr<CModuleGenerator> _module_gen;
+  unsigned _step;  //! 現在処理中の命令の実行ステップ番号
+  unsigned _state; //! 現在処理中の命令の実行ステート番号
 
   //! ステートマシンの遷移前の状態を保持するレジスタの名前
   const std::string _PREV_STATE_NAME = "prev_state";
@@ -66,6 +70,7 @@ private:
 
   // 補助関数
   std::string _get_module_name(const Module & M);
+  std::string _get_value_name(const Value * v);
   unsigned _get_required_bit_width(const unsigned & num);
 
   // モジュール定義
@@ -76,7 +81,10 @@ private:
 
   // 命令パース
   void _parse_instructions(const Instruction * inst);
-  void _add_load_node(const Instruction * inst);
+  void _add_load_inst(const Instruction * inst);
+  void _add_store_inst(const Instruction * inst);
+  void _add_icmp_inst(const Instruction * inst);
+
 }; // FortRock
 
 #endif

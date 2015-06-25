@@ -32,6 +32,29 @@ FortRock::_get_module_name
   return mod_name;
 } // _get_module_name
 
+std::string
+FortRock::_get_value_name
+(const Value * v) {
+  std::string ret_str ("");
+  auto type = v->getType();
+
+  if (type->isPointerTy())
+    type = type->getPointerElementType();
+
+  if (!v->hasName()) { // 定数
+    if (type->isIntegerTy()) {
+      auto int_value = dyn_cast<ConstantInt>(v);
+      ret_str.append(int_value->getValue().toString(10, /* 基数 */
+                                                    true)); /* is signed */ //! @todo is signed 対応する
+    } // if
+  } // if
+  else { // 変数
+    ret_str.append(v->getName());
+  } // else
+
+  return ret_str;
+} // _get_value_name
+
 /**
    moduleの入出力を定義
 */
@@ -87,8 +110,8 @@ bool FortRock::runOnModule
 
   this->_set_IO(--it);
 
-  _grub_labels(it);
-  _grub_variables(it);
+  this->_grub_labels(it);
+  this->_grub_variables(it);
 
   // 演算器のインスタンス化
   CInstancingOperator cinst;
@@ -96,14 +119,20 @@ bool FortRock::runOnModule
                              this->_OPERATOR_CONFIG_FILENAME);
   //  _grub_calculator(it);
 
+  // 処理のDFG化
+  for (auto bb_it = it->begin(); // Basic Block
+       bb_it != it->end();
+       ++bb_it) {
+    for (auto inst = bb_it->begin();
+         inst != bb_it->end();
+         ++inst) { // Instruction
+      this->_parse_instructions(inst);
+    }
+  }
+
+  // モジュールのファイル出力
   this->_module_gen->generate();
   // --------------------------------------------------
-
-  // std::string err;
-  // raw_fd_ostream file("output.txt", err, sys::fs::F_None);
-  // file << "test\n";
-  // file.close();
-  //                       sys::fs::OpenFlags::F_Text);
 
   // -------------------- debug --------------------
   // std::list<Variable>::iterator debit = variables.begin();
@@ -133,16 +162,16 @@ void FortRock::_parse_instructions
 (const Instruction * inst) {
   try {
     switch (inst->getOpcode()) {
-    case RET:    this->_add_load_node(inst); break;
-    case BR:     this->_add_load_node(inst); break;
-    case LOAD:   this->_add_load_node(inst); break;
-    case STORE:  this->_add_load_node(inst); break;
-    case ICMP:   this->_add_load_node(inst); break;
-    case PHI:    this->_add_load_node(inst); break;
-    case SELECT: this->_add_load_node(inst); break;
-    case SREM:   this->_add_load_node(inst); break;
-    case MUL:    this->_add_load_node(inst); break;
-    case SDIV:   this->_add_load_node(inst); break;
+    // case RET:    this->_add_load_node(inst); break;
+    // case BR:     this->_add_load_node(inst); break;
+    case LOAD:   this->_add_load_inst(inst); break;
+    case STORE:  this->_add_store_inst(inst); break;
+    case ICMP:   this->_add_icmp_inst(inst); break;
+    // case PHI:    this->_add_load_node(inst); break;
+    // case SELECT: this->_add_load_node(inst); break;
+    // case SREM:   this->_add_load_node(inst); break;
+    // case MUL:    this->_add_load_node(inst); break;
+    // case SDIV:   this->_add_load_node(inst); break;
     default:
       throw std::string(std::string("ERROR:")
                         + std::string(inst->getOpcodeName())
@@ -156,10 +185,78 @@ void FortRock::_parse_instructions
   } // catch
 } // _parse_instructions
 
-void FortRock::_add_load_node
+/**
+   ADD命令をモジュールのDFGに追加する
+   @brief b = load a
+          b <= a; // latency == 0
+ */
+void FortRock::_add_load_inst
 (const Instruction * inst) {
-  //  auto elem = std::make_shared<CDFG_Element>
-  //    (CDFG_Element(
+  auto elem = std::make_shared<CDFG_Element>
+    (CDFG_Element(CDFG_Operator::eType::LOAD,
+                  1, /* Num operator input */
+                  this->_state,
+                  this->_step));
+
+  auto a = this->_module_gen->get_node(inst->getOperand(0)->getName().str());
+  auto b = this->_module_gen->get_node(inst->getName().str());
+
+  elem->set_input(a, 0);
+  elem->set_output(b, 0);
+
+  this->_module_gen->add_element(elem);
+}
+
+/**
+   STORE命令をモジュールのDFGに追加する
+   @brief store a b
+          b <= a; // latency == 0
+*/
+void FortRock::_add_store_inst
+(const Instruction * inst) {
+  auto elem = std::make_shared<CDFG_Element>
+    (CDFG_Element(CDFG_Operator::eType::STORE,
+                  1, /* Number of operator input */
+                  this->_state,
+                  this->_step));
+
+  auto a = this->_module_gen->get_node(inst->getOperand(0)->getName().str());
+  auto b = this->_module_gen->get_node(inst->getOperand(1)->getName().str());
+
+  elem->set_input(a, 0);
+  elem->set_output(b, 0);
+
+  this->_module_gen->add_element(elem);
+}
+
+/**
+   @brief b = icmp cond a0 a1
+   b = (a0 cond a1)
+   @todo conditionへの対応
+ */
+void FortRock::_add_icmp_inst
+(const Instruction * inst) {
+  auto elem = std::make_shared<CDFG_Element>
+    (CDFG_Element(CDFG_Operator::eType::ICMP,
+                  2, /* Number of operator input */
+                  this->_state,
+                  this->_step));
+
+  auto a0 = this->_module_gen->get_node
+    (this->_get_value_name(inst->getOperand(0)));
+  auto a1 = this->_module_gen->get_node
+    (this->_get_value_name(inst->getOperand(1)));
+  auto b = this->_module_gen->get_node(inst->getName());
+
+  errs() << b->get_verilog_name() << " <= "
+         << a0->get_verilog_name() << " cond "
+         << a1->get_verilog_name() << ";\n";
+
+  elem->set_input(a0, 0);
+  elem->set_input(a1, 1);
+  elem->set_output(b, 0);
+
+  this->_module_gen->add_element(elem);
 }
 
 /**
@@ -172,7 +269,6 @@ void FortRock::_grub_variables
   BranchInst * binst;
   Value      * value;
   Type       * type;
-  Variable     var;
   std::shared_ptr<CDFG_Node> node;
 
   for (auto it = inst_begin(*funct); //funct->begin();
@@ -206,15 +302,22 @@ void FortRock::_grub_variables
         if(type->isPointerTy())
           type = type->getPointerElementType();
 
-        if(!value->hasName()) //! @todo 定数はパスしている
-          continue;
+        auto name = this->_get_value_name(value);
 
-        node = std::make_shared<CDFG_Node>
-          (CDFG_Node(value->getName(),
-                     type->getPrimitiveSizeInBits(),
-                     true, //! @todo is signedが常にtrue
-                     CDFG_Node::eNode::REG));
-
+        if(!value->hasName()) { // 定数
+          node = std::make_shared<CDFG_Node>
+            (CDFG_Node(name,
+                       type->getPrimitiveSizeInBits(),
+                       true, //! @todo is signedが常にtrue
+                       CDFG_Node::eNode::PARAM));
+        }
+        else { // 変数
+          node = std::make_shared<CDFG_Node>
+            (CDFG_Node(name,
+                       type->getPrimitiveSizeInBits(),
+                       true, //! @todo is signedが常にtrue
+                       CDFG_Node::eNode::REG));
+        }
         if (!this->_module_gen->find_node(node))
           this->_module_gen->add_node(node);
       } // for
