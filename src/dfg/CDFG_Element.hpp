@@ -16,6 +16,10 @@
 */
 class CDFG_Element {
 public:
+  CDFG_Element(const CDFG_Operator::eType & type,
+               const unsigned & num_input,
+               const unsigned & state,
+               const unsigned & step);
   CDFG_Element(std::shared_ptr<CDFG_Operator> & ope);
   ~CDFG_Element(void) {}
 

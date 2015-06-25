@@ -1,5 +1,34 @@
 #include "CDFG_Element.hpp"
 
+/**
+   デフォルトコンストラクタ
+   @param[in] type 演算の種類
+   @param[in] state 演算の実行ステート
+   @param[in] step 演算の実行ステップ
+   @note load命令やphi命令など演算器を必要としない
+         命令のDFG化にに使用
+ */
+CDFG_Element::CDFG_Element
+(const CDFG_Operator::eType & type,
+ const unsigned & num_input,
+ const unsigned & state,
+ const unsigned & step) {
+  auto phony_ope = std::make_shared<CDFG_Operator>
+    ("phony",
+     "phony_mod",
+     0, /* latency */
+     type);
+  this->_input_list.resize(num_input);
+  this->_output_list.resize(1); //! @todo 演算器の出力を1つに限定
+  this->_ope = phony_ope;
+  this->_state = state;
+  this->_step = step;
+}
+
+/**
+   コンストラクタ
+   @param[in] ope 演算に使用する演算器の参照
+ */
 CDFG_Element::CDFG_Element(std::shared_ptr<CDFG_Operator> & ope) {
   this->set_operator(ope);
 }
