@@ -73,14 +73,18 @@ void FortRock::_set_IO
 
     //! @todo 浮動小数点対応
     if(type->isIntegerTy()) {
+      CDFG_Node::eNode in_out;
+      if (num !=  funct->arg_size()) // 最後以外は引数
+        in_out = CDFG_Node::eNode::IN;
+
+      else  // 最後の引数は返り値
+        in_out = CDFG_Node::eNode::OUT;
+
       auto node = std::make_shared<CDFG_Node>
         (CDFG_Node(arg_it->getName(),
                    type->getPrimitiveSizeInBits(),
                    true, //! @todo isSigned対応
-                   CDFG_Node::eNode::IN));
-
-      if(num == funct->arg_size()) // 最後の引数は返り値
-        node->set_type(CDFG_Node::eNode::OUT);
+                   in_out));
 
       this->_module_gen->add_node(node);
     } // if
