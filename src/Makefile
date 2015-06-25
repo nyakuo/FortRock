@@ -36,6 +36,9 @@ count:
 	cd core; make count
 	cd dfg; make count
 	cd xml; make count
+	wc -lc dfg/*.cpp dfg/*.hpp dfg/Makefile \
+		core/*.cpp core/*.hpp core/Makefile \
+		xml/*.cpp xml/*.hpp xml/Makefile
 
 .PHONY: clean
 clean:
