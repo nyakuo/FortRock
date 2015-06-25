@@ -12,8 +12,8 @@ all: $(TARGETS)
 	$(CXX) $(CXXFLAGS) -c $*.cpp
 
 .PHONY: count
-count: %.cpp %.hpp Makefile
-	wc -lc $*.cpp $*.hpp Makefile
+count:
+	wc -lc ./*.cpp ./*.hpp ./Makefile
 
 .PHONY: clean
 clean:

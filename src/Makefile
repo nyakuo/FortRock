@@ -20,6 +20,7 @@ llvm:
 		-fplugin-arg-dragonegg-emit-ir -S -o $(INPUT_LLVM)
 
 .PHONY: count
+count:
 	cd core; make count
 	cd dfg; make count
 	cd xml; make count
