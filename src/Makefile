@@ -9,6 +9,18 @@ all:
 	cd xml; make
 	cd core; make
 
+.PHONY:dfg
+dfg:
+	cd dfg; make
+
+.PHONY: xml
+xml:
+	cd xml; make
+
+.PHONY: core
+core:
+	cd core; make
+
 .PHONY: use
 use: ./fortrock.so
 	opt -load ./fortrock.so -instnamer -fortrock $(INPUT_LLVM) -S
