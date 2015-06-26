@@ -251,7 +251,7 @@ void CModuleGenerator::_generate_test_data(void) {
 int CModuleGenerator::generate(void) {
   this->_generate_header();
   this->_generate_define();
-//  this->_generate_assign();
+  this->_generate_assign();
   this->_generate_calculator();
    this->_generate_always();
   this->_generate_footer();
@@ -376,11 +376,58 @@ void CModuleGenerator::_generate_define(void) {
 /**
    moduleのassign文の定義
    演算器の入出力ポートの割り当て
-
-   @note phi命令の実装に使用する
+   @note phi命令を出力する (セレクタ)
+   @attention 少なくとも2つ以上の条件が存在すると仮定
 */
 void CModuleGenerator::_generate_assign(void) {
-}
+  auto prev_state =
+    this->_module->get_node(CDFG_Node::eNode::PREV_STATE);
+
+  for (auto & elem : this->_module->get_element_list()) {
+    auto ope = elem->get_operator();
+    if (ope->get_type() == CDFG_Operator::eType::PHI) {
+
+      auto o_node = elem->get_output_at(0);
+
+      // 先頭の代入文の出力
+      this->_cout  << "assign "
+                   << o_node->get_verilog_name()
+                   << " = ("
+                   << prev_state->get_verilog_name()
+                   << " == "
+                   << elem->get_input_at(0)->get_verilog_name()
+                   << " ) ? "
+                   << elem->get_input_at(1)->get_verilog_name()
+                   << " :\n";
+
+      this->_cout.indent_right(5);
+
+      // 最終行以外の出力
+      unsigned i;
+      for (i = 2;
+           i < ope->get_num_input() - 2;
+           i += 2)
+        this->_cout << "( "
+                    << prev_state->get_verilog_name()
+                    << " == "
+                    << elem->get_input_at(i)->get_verilog_name()
+                    << " ) ? "
+                    << elem->get_input_at(i+1)->get_verilog_name()
+                    << " :\n";
+
+      // 最終行の出力
+      this->_cout << "( "
+                  << prev_state->get_verilog_name()
+                  << " == "
+                  << elem->get_input_at(i)->get_verilog_name()
+                  << " ) ? "
+                  << elem->get_input_at(i+1)->get_verilog_name()
+                  << ";\n";
+
+      this->_cout.indent_left(5);
+    } // if : ope->get_type()
+  } // for elem
+} // _generate_assign
 
 /**
    moduleの演算器定義の出力
