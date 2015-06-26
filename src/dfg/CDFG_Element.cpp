@@ -21,6 +21,7 @@ CDFG_Element::CDFG_Element
   this->_input_list.resize(num_input);
   this->_output_list.resize(1); //! @todo 演算器の出力を1つに限定
   this->_ope = phony_ope;
+  this->_ope->set_num_input(num_input);
   this->_state = state;
   this->_step = step;
 }
