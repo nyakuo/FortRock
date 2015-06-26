@@ -62,6 +62,7 @@ public:
                        std::shared_ptr<CDFG_Node> & node);
   void set_latency(const unsigned & latency);
   void set_type(const eType & type);
+  void set_num_input(const unsigned & num);
 
 private:
   std::string _name;     /** インスタンス名 */
