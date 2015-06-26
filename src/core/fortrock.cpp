@@ -171,7 +171,7 @@ void FortRock::_parse_instructions
     case LOAD:   this->_add_load_inst(inst); break;
     case STORE:  this->_add_store_inst(inst); break;
     case ICMP:   this->_add_icmp_inst(inst); break;
-    // case PHI:    this->_add_load_node(inst); break;
+    case PHI:    this->_add_phi_inst(inst); break;
     case SELECT: this->_add_select_inst(inst); break;
     // case SREM:   this->_add_load_node(inst); break;
     // case MUL:    this->_add_load_node(inst); break;
@@ -319,6 +319,49 @@ void FortRock::_add_br_inst
 
   this->_module_gen->add_element(elem);
 }
+
+/**
+   BR命令をモジュールのDFGに追加する
+   @brief b = phi [a0 x] [a1 y] ...
+   assign b = (prev_state == x) ? a :
+              (prev_state == y) ? b;
+ */
+void FortRock::_add_phi_inst
+(const Instruction * inst) {
+  auto phinode = dynamic_cast<PHINode*>(const_cast<Instruction*>(inst));
+  auto elem = std::make_shared<CDFG_Element>
+    (CDFG_Element(CDFG_Operator::eType::PHI,
+                  phinode->getNumIncomingValues() << 1, /* Number of operator input */
+                  this->_state,
+                  this->_step));
+
+  errs() << phinode->getNumIncomingValues() << "\n";
+
+  for (auto i = 0;
+       i < phinode->getNumIncomingValues();
+       ++i) {
+    auto label_name = phinode->getIncomingBlock(i)->getName();
+    auto prev_label = this->_module_gen->get_node(label_name);
+
+    auto value_name = phinode->getIncomingValue(i)->getName();
+    auto in = this->_module_gen->get_node(value_name);
+
+    errs() << prev_label->get_verilog_name()
+           << ' '
+           << in->get_verilog_name()
+           << "\n\n";
+
+    elem->set_input(prev_label, i << 1);
+    elem->set_input(in, (i << 1) + 1);
+  }
+
+  auto destination_node = this->_module_gen->get_node(inst->getName());
+
+  elem->set_output(destination_node, 0);
+
+  this->_module_gen->add_element(elem);
+}
+
 
 /**
  * プログラムで使用するすべてのレジスタを取得し
@@ -482,6 +525,10 @@ void FortRock::_grub_labels
                label_bit_width,
                false,
                CDFG_Node::eNode::PREV_STATE));
+
+  this->_module_gen->add_node(state_node);
+  this->_module_gen->add_node(prev_state_node);
+
 } // _grub_labels
 
 /**
