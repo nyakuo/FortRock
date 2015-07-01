@@ -65,6 +65,9 @@ private:
   //! ステートマシンの現在の状態を保持するレジスタの名前
   const std::string _CUR_STATE_NAME = "current_state";
 
+  //! ステートマシンの終了状態のステート(label)名
+  const std::string _FINISH_STATE_NAME = "finish_state";
+
   //! 演算器の設定ファイル名
   const std::string _OPERATOR_CONFIG_FILENAME = "./config/operator_config.xml";
 
