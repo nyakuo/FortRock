@@ -4,11 +4,26 @@
    入力された数を表すために必要なビット幅を計算する
    @param[in] num 表現したい種類の数
    @return 必要なビット幅
+   @attention unsignedのビット幅を32ビットと仮定
 */
 unsigned
 FortRock::_get_required_bit_width
 (const unsigned & num) {
-  return (unsigned)round(sqrt(num + 1));
+  unsigned val = num;
+
+  val |= val >> 1;
+  val |= val >> 2;
+  val |= val >> 4;
+  val |= val >> 8;
+  val |= val >> 16;
+
+  val = val - ((val >> 1) & 0x55555555);
+  val = (val & 0x33333333) + ((val >> 2) & 0x33333333);
+  val = (val + (val >> 4)) & 0x0f0f0f0f;
+  val += val >> 8;
+  val += val >> 16;
+
+  return val;
 }
 
 /**
@@ -166,14 +181,14 @@ void FortRock::_parse_instructions
 (const Instruction * inst) {
   try {
     switch (inst->getOpcode()) {
-    // case RET:    this->_add_load_node(inst); break;
+    case RET:    this->_add_ret_inst(inst); break;
     case BR:     this->_add_br_inst(inst); break;
     case LOAD:   this->_add_load_inst(inst); break;
     case STORE:  this->_add_store_inst(inst); break;
     case ICMP:   this->_add_icmp_inst(inst); break;
     case PHI:    this->_add_phi_inst(inst); break;
     case SELECT: this->_add_select_inst(inst); break;
-    // case SREM:   this->_add_load_node(inst); break;
+    //    case SREM:   this->_add_load_node(inst); break;
     // case MUL:    this->_add_load_node(inst); break;
     // case SDIV:   this->_add_load_node(inst); break;
     default:
@@ -335,8 +350,6 @@ void FortRock::_add_phi_inst
                   this->_state,
                   this->_step));
 
-  errs() << phinode->getNumIncomingValues() << "\n";
-
   for (auto i = 0;
        i < phinode->getNumIncomingValues();
        ++i) {
@@ -345,11 +358,6 @@ void FortRock::_add_phi_inst
 
     auto value_name = phinode->getIncomingValue(i)->getName();
     auto in = this->_module_gen->get_node(value_name);
-
-    errs() << prev_label->get_verilog_name()
-           << ' '
-           << in->get_verilog_name()
-           << "\n\n";
 
     elem->set_input(prev_label, i << 1);
     elem->set_input(in, (i << 1) + 1);
@@ -362,6 +370,26 @@ void FortRock::_add_phi_inst
   this->_module_gen->add_element(elem);
 }
 
+/**
+   RET命令をモジュールのDFGに追加する
+ */
+void FortRock::_add_ret_inst
+(const Instruction * inst) {
+
+  auto finish_state_label
+    = this->_module_gen->get_node
+    (CDFG_Node::eNode::FINISH_LABEL);
+
+  auto elem = std::make_shared<CDFG_Element>
+    (CDFG_Element(CDFG_Operator::eType::RET,
+                  1, /* Number of operator input */
+                  finish_state_label->get_parameter() /* state */,
+                  0 /* step */));
+
+  elem->set_input(finish_state_label, 0);
+
+  this->_module_gen->add_element(elem);
+}
 
 /**
  * プログラムで使用するすべてのレジスタを取得し
@@ -496,7 +524,7 @@ void FortRock::_grub_labels
   int num_label
     = std::distance(funct->begin(), funct->end());
   auto label_bit_width
-    = this->_get_required_bit_width(num_label + 1);
+    = this->_get_required_bit_width(num_label + 2 /* + (reset + finish) */);
 
   // labelの追加
   auto ite = funct->begin();
@@ -508,7 +536,7 @@ void FortRock::_grub_labels
                  label_bit_width,
                  false,
                  CDFG_Node::eNode::LABEL,
-                 i));
+                 i /* label parameter */));
 
     if (!this->_module_gen->find_node(label_node))
       this->_module_gen->add_node(label_node);
@@ -529,6 +557,15 @@ void FortRock::_grub_labels
   this->_module_gen->add_node(state_node);
   this->_module_gen->add_node(prev_state_node);
 
+  // 終了状態ステート(label)の追加
+  auto finish_label = std::make_shared<CDFG_Node>
+    (CDFG_Node(this->_FINISH_STATE_NAME,
+               label_bit_width,
+               false,
+               CDFG_Node::eNode::FINISH_LABEL,
+               i + 1/* label parameter */));
+
+  this->_module_gen->add_node(finish_label);
 } // _grub_labels
 
 /**
@@ -543,7 +580,6 @@ void FortRock::_grub_calculator
   for (auto ite = inst_begin(*funct);
        ite != inst_end(*funct);
        ++ite) {
-
     auto ope_code = ite->getOpcode();
     if (num_calc[ope_code] != 0) //! @todo 複数演算器への対応
       continue;
