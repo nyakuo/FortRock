@@ -24,6 +24,7 @@ core:
 .PHONY: use
 use: ./fortrock.so
 	opt -load ./fortrock.so -instnamer -fortrock $(INPUT_LLVM) -S
+	cat output.v
 
 .PHONY: llvm
 llvm:
