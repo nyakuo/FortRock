@@ -252,6 +252,7 @@ int CModuleGenerator::generate(void) {
   this->_generate_header();
   this->_generate_define();
   this->_generate_assign();
+  this->_generate_function();
   this->_generate_calculator();
    this->_generate_always();
   this->_generate_footer();
@@ -381,59 +382,72 @@ void CModuleGenerator::_generate_define(void) {
 
 /**
    moduleのassign文の定義
-   演算器の入出力ポートの割り当て
-   @note phi命令を出力する (セレクタ)
-   @attention 少なくとも2つ以上の条件が存在すると仮定
 */
 void CModuleGenerator::_generate_assign(void) {
+} // _generate_assign
+
+/**
+   module の function 文の定義
+   @note PHI命令の実装に用いる
+   @attention 少なくとも2つ以上の条件が存在すると仮定
+ */
+void CModuleGenerator::_generate_function(void) {
   auto prev_state =
-    this->_module->get_node(CDFG_Node::eNode::PREV_STATE);
+    this->get_node(CDFG_Node::eNode::PREV_STATE);
 
   for (auto & elem : this->_module->get_element_list()) {
     auto ope = elem->get_operator();
+
     if (ope->get_type() == CDFG_Operator::eType::PHI) {
-
-      auto o_node = elem->get_output_at(0);
-
-      // 先頭の代入文の出力
-      this->_cout  << "assign "
-                   << o_node->get_verilog_name()
-                   << " = ("
-                   << prev_state->get_verilog_name()
-                   << " == "
-                   << elem->get_input_at(0)->get_verilog_name()
-                   << " ) ? "
-                   << elem->get_input_at(1)->get_verilog_name()
-                   << " :\n";
-
-      this->_cout.indent_right(5);
-
-      // 最終行以外の出力
-      unsigned i;
-      for (i = 2;
-           i < ope->get_num_input() - 2;
-           i += 2)
-        this->_cout << "( "
-                    << prev_state->get_verilog_name()
-                    << " == "
-                    << elem->get_input_at(i)->get_verilog_name()
-                    << " ) ? "
-                    << elem->get_input_at(i+1)->get_verilog_name()
-                    << " :\n";
-
-      // 最終行の出力
-      this->_cout << "( "
-                  << prev_state->get_verilog_name()
-                  << " == "
-                  << elem->get_input_at(i)->get_verilog_name()
-                  << " ) ? "
-                  << elem->get_input_at(i+1)->get_verilog_name()
+      auto dest_node = elem->get_output_at(0);
+      this->_cout << "function ["
+                  << dest_node->get_bit_width() - 1
+                  << ":0] "
+                  << dest_node->get_verilog_name()
                   << ";\n";
 
-      this->_cout.indent_left(5);
-    } // if : ope->get_type()
-  } // for elem
-} // _generate_assign
+      this->_cout.indent_right();
+
+      this->_cout << "input ["
+                  << prev_state->get_bit_width() - 1
+                  << ":0]"
+                  << prev_state->get_verilog_name()
+                  << ";\n";
+      this->_cout << "begin\n";
+
+      this->_cout.indent_right();
+
+      this->_cout << "case ("
+                  << prev_state->get_verilog_name()
+                  << ")\n";
+
+      this->_cout.indent_right();
+
+      for (auto i = 0;
+           i < ope->get_num_input();
+           i += 2) {
+        this->_cout << elem->get_input_at(i)->get_verilog_name()
+                    << ": "
+                    << dest_node->get_verilog_name()
+                    << " = "
+                    << elem->get_input_at(i+1)->get_verilog_name()
+                    << ";\n";
+      } // for : i
+
+      this->_cout.indent_left();
+
+      this->_cout << "endcase\n";
+
+      this->_cout.indent_left();
+
+      this->_cout << "end\n";
+
+      this->_cout.indent_left();
+
+      this->_cout << "endfunction\n\n";
+    } // if : phi
+  } // for : elem
+} // _generate_function
 
 /**
    moduleの演算器定義の出力

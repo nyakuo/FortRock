@@ -44,6 +44,7 @@ private:
   void _generate_header(void);
   void _generate_define(void);
   void _generate_assign(void);
+  void _generate_function(void);
   void _generate_calculator(void);
   void _generate_always(void);
   void _generate_footer(void);
