@@ -49,6 +49,9 @@ CDFG_Node::CDFG_Node(const std::string & asm_name,
   case eNode::OUT: prefix = "o_";
     break;
 
+  case eNode::TRUE:
+  case eNode::FALSE:
+  case eNode::ZERO:
   case eNode::PARAM: prefix = "p_"; break;
 
   case eNode::STATE:
@@ -59,7 +62,7 @@ CDFG_Node::CDFG_Node(const std::string & asm_name,
   case eNode::LABEL: prefix = "l_"; break;
 
   default:
-    prefix = "nodef_";
+    prefix = "undef_";
     break;
   } // switch
 
