@@ -24,11 +24,11 @@ CModuleGenerator::CModuleGenerator(const std::string & filename,
     (CDFG_Node("fin_p", 1, false, CDFG_Node::eNode::FIN));
   // 定数
   auto p_true = std::make_shared<CDFG_Node>
-    (CDFG_Node("TRUE", 1, false, CDFG_Node::eNode::PARAM, 1));
+    (CDFG_Node("TRUE", 1, false, CDFG_Node::eNode::TRUE, 1));
   auto p_false = std::make_shared<CDFG_Node>
-    (CDFG_Node("FALSE", 1, false, CDFG_Node::eNode::PARAM, 0));
+    (CDFG_Node("FALSE", 1, false, CDFG_Node::eNode::FALSE, 0));
   auto p_zero = std::make_shared<CDFG_Node>
-    (CDFG_Node("ZERO", 1, false, CDFG_Node::eNode::PARAM, 0));
+    (CDFG_Node("ZERO", 1, false, CDFG_Node::eNode::ZERO, 0));
   // システム変数
   auto s_state = std::make_shared<CDFG_Node>
     (CDFG_Node("state", 8, false, CDFG_Node::eNode::STATE));
@@ -332,6 +332,7 @@ void CModuleGenerator::_generate_define(void) {
     switch(node->get_type()) {
     case CDFG_Node::eNode::REG:
     case CDFG_Node::eNode::STATE:
+    case CDFG_Node::eNode::PREV_STATE:
     case CDFG_Node::eNode::STEP:
       type = reg;
       break;
@@ -340,6 +341,9 @@ void CModuleGenerator::_generate_define(void) {
       type = wire;
       break;
 
+    case CDFG_Node::eNode::TRUE:
+    case CDFG_Node::eNode::FALSE:
+    case CDFG_Node::eNode::ZERO:
     case CDFG_Node::eNode::LABEL:
     case CDFG_Node::eNode::PARAM:
       type = param;
@@ -361,9 +365,11 @@ void CModuleGenerator::_generate_define(void) {
 
     streams[type] << node->get_verilog_name();
 
-    if (type == param)
+    if (type == param) {
       streams[param] << " = " << node->get_bit_width()
                      << "'h" << std::hex << node->get_parameter();
+      streams[param] << std::dec;
+    }
 
     streams[type] << ";\n";
   }
@@ -473,6 +479,7 @@ void CModuleGenerator::_generate_always(void) {
   // 出力に必要な情報(信号名など)を取得
   for (auto & node : this->_module->get_node_list()) {
     auto type = node->get_type();
+
     if (type == CDFG_Node::eNode::CLK)
       clk_name = node->get_verilog_name();
 
@@ -493,30 +500,49 @@ void CModuleGenerator::_generate_always(void) {
 
     else if (type == CDFG_Node::eNode::FIN)
       fin_name = node->get_verilog_name();
-  }
+  } // for
 
   this->_cout << "always @(posedge "
               << clk_name
               << ')' << std::endl;
+
+  auto true_node = this->get_node(CDFG_Node::eNode::TRUE);
+  auto false_node = this->get_node(CDFG_Node::eNode::FALSE);
+  auto zero_node = this->get_node(CDFG_Node::eNode::ZERO);
 
   // リセットの出力
   this->_cout.indent_right();
   this->_cout << "begin" << std::endl;
   this->_cout.indent_right();
   this->_cout << "if ("
-              << res_name << " ==  TRUE)\n";
+              << res_name
+              << " ==  "
+              << true_node->get_verilog_name()
+              << ")\n";
   this->_cout.indent_right();
   this->_cout << "begin\n";
   this->_cout.indent_right();
-  this->_cout << fin_name << " <= FALSE;\n";
-  this->_cout << node_state->get_verilog_name() << " <= ZERO;\n";
-  this->_cout << node_step->get_verilog_name() << " <= ZERO;\n";
+  this->_cout << fin_name << " <= "
+              << false_node->get_verilog_name()
+              << ";\n";
+  this->_cout << node_state->get_verilog_name()
+              << " <= "
+              << zero_node->get_verilog_name()
+              << ";\n";
+  this->_cout << node_step->get_verilog_name()
+              << " <= "
+              << zero_node->get_verilog_name()
+              << ";\n";
   this->_cout.indent_left();
   this->_cout << "end\n";
   this->_cout.indent_left();
 
   // clock enable == TRUE
-  this->_cout << "else if (" << ce_name << " == TRUE)\n";
+  this->_cout << "else if ("
+              << ce_name
+              << " == "
+              << true_node->get_verilog_name()
+              << ")\n";
   this->_cout.indent_right();
   this->_cout << "begin\n";
   this->_cout.indent_right();
@@ -528,8 +554,14 @@ void CModuleGenerator::_generate_always(void) {
   this->_cout.indent_right();
   this->_cout << "begin\n";
   this->_cout.indent_right();
-  this->_cout << fin_name << " <= FALSE;\n";
-  this->_cout << node_step->get_verilog_name() << " <= ZERO;\n";
+  this->_cout << fin_name
+              << " <= "
+              << false_node->get_verilog_name()
+              << ";\n";
+  this->_cout << node_step->get_verilog_name()
+              << " <= "
+              << zero_node->get_verilog_name()
+              << ";\n";
   this->_cout << "if (" << req_name << ")\n";
   this->_cout.indent_right();
   this->_cout << "begin\n";
@@ -652,7 +684,41 @@ void CModuleGenerator::_generate_always(void) {
                                  process_str);
         break;
       }
-      // case CDFG_Operator::eType:::
+      case CDFG_Operator::eType::RET:
+        {
+
+          auto fin_node= this->get_node(CDFG_Node::eNode::FIN);
+          auto state_node = this->get_node(CDFG_Node::eNode::STATE);
+          auto TRUE_node = this->get_node(CDFG_Node::eNode::TRUE);
+          auto ZERO_node = this->get_node(CDFG_Node::eNode::ZERO);
+
+          // todo ステート変更
+
+          //! @todo 返り値への対応
+
+          // 終了状態への遷移
+          //          process_str.append(this->_cout.output_indent()
+          //                             + ls
+
+          // 終了状態
+          process_str.assign(this->_cout.output_indent()
+                             + fin_node->get_verilog_name()
+                             + " <= "
+                             + TRUE_node->get_verilog_name()
+                             + ";\n"
+                             + this->_cout.output_indent()
+                             + state_node->get_verilog_name()
+                             + " <= "
+                             + ZERO_node->get_verilog_name()
+                             + ";\n");
+
+          sm_gen.add_state_process(state,
+                                   step,
+                                   process_str);
+
+          break;
+        }
+
       // case CDFG_Operator::eType:::
       // case CDFG_Operator::eType:::
       // case CDFG_Operator::eType:::
