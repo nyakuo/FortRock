@@ -59,7 +59,9 @@ CDFG_Node::CDFG_Node(const std::string & asm_name,
   case eNode::STEP: prefix = "r_sys_";
     break;
 
-  case eNode::LABEL: prefix = "l_"; break;
+  case eNode::FINISH_LABEL:
+  case eNode::LABEL: prefix = "l_";
+    break;
 
   default:
     prefix = "undef_";
