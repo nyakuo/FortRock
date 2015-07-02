@@ -22,6 +22,7 @@ public:
       FUNC,
       MUL,
       SDIV,
+      SREM,
     // ↑演算器使用のレイテンシあり
     // ↓演算器不使用のレイテンシなし (代入など)
       RET,
@@ -31,7 +32,6 @@ public:
       ICMP,
       PHI,
       SELECT,
-      SREM,
       };
 
   //! @todo 入出力Nodeを自動的に作成する機能
@@ -70,7 +70,7 @@ private:
   unsigned _latency;     /** レイテンシ */
   eType _type;           /** モジュールの種類 */
 
-  std::vector<std::pair<std::string, std::shared_ptr<CDFG_Node> > > _input_list; /** 入力ポート定義リスト */
+  std::vector<std::pair<std::string, std::shared_ptr<CDFG_Node> > > _input_list;  /** 入力ポート定義リスト */
   std::vector<std::pair<std::string, std::shared_ptr<CDFG_Node> > > _output_list; /** 出力ポート定義リスト */
 };
 
