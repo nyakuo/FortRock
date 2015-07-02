@@ -41,6 +41,7 @@ public:
   ~CDFG_Node(){}
 
   /* ゲッター */
+  std::string get_safe_name(void);
   std::string & get_asm_name(void);
   std::string & get_verilog_name(void);
   unsigned & get_bit_width(void);

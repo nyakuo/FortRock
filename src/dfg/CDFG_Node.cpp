@@ -27,10 +27,7 @@ CDFG_Node::CDFG_Node(const std::string & asm_name,
   _access_port(access_port)
 {
   // 変数に使用できない文字の置換
-  int at;
-  std::string safe_name = asm_name;
-  while((at = safe_name.find('.', 0)) != std::string::npos)
-    safe_name.replace(at, 1, "_");
+  std::string safe_name = this->get_safe_name();
 
   // 変数名に接頭語をつける
   std::string prefix("");
@@ -70,6 +67,23 @@ CDFG_Node::CDFG_Node(const std::string & asm_name,
 
   this->_verilog_name = prefix + safe_name;
 } // CDFG_Node
+
+/**
+   Node名に含まれる'.'文字を'_'に変換する
+   @param[in] name 変換する名前
+   @return 変換後の名前
+   @note CModuleGeneratorでPHI命令の出力に使用
+ */
+std::string
+CDFG_Node::get_safe_name(void) {
+  auto safe_name = this->_asm_name;
+
+  int at;
+  while((at = safe_name.find('.', 0)) != std::string::npos)
+    safe_name.replace(at, 1, "_");
+
+  return safe_name;
+}
 
 /**
    NodeのLLVM IR上での信号名を取得
