@@ -710,6 +710,22 @@ void CModuleGenerator::_generate_always(void) {
         sm_gen.add_state_process(state,
                                  step,
                                  process_str);
+
+        // prev_stateの変更
+        if (ope->get_type() == CDFG_Operator::eType::BR) {
+          auto prev_state = this->get_node
+            (CDFG_Node::eNode::PREV_STATE);
+
+          process_str.assign(this->_cout.output_indent()
+                             + prev_state->get_verilog_name()
+                             + " <= "
+                             + out->get_verilog_name()
+                             + ";\n");
+
+          sm_gen.add_state_process(state,
+                                   step,
+                                   process_str);
+        }
         break;
       }
       case CDFG_Operator::eType::RET:
