@@ -85,8 +85,7 @@ CModule::get_node(CDFG_Node::eNode type) {
                  this->_node_list.end(),
                  [type](std::shared_ptr<CDFG_Node> obj) -> bool {
                    return obj->get_type() == type;
-                 }
-                 );
+                 });
   return *ite;
 }
 
