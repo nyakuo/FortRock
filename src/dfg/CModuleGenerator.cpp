@@ -29,11 +29,6 @@ CModuleGenerator::CModuleGenerator(const std::string & filename,
     (CDFG_Node("FALSE", 1, false, CDFG_Node::eNode::FALSE, 0));
   auto p_zero = std::make_shared<CDFG_Node>
     (CDFG_Node("ZERO", 1, false, CDFG_Node::eNode::ZERO, 0));
-  // システム変数
-  auto s_state = std::make_shared<CDFG_Node>
-    (CDFG_Node("state", 8, false, CDFG_Node::eNode::STATE));
-  auto s_step = std::make_shared<CDFG_Node>
-    (CDFG_Node("step", 8, false, CDFG_Node::eNode::STEP));
 
   this->_module->add_node(i_clk);
   this->_module->add_node(i_res);
@@ -43,8 +38,6 @@ CModuleGenerator::CModuleGenerator(const std::string & filename,
   this->_module->add_node(p_true);
   this->_module->add_node(p_false);
   this->_module->add_node(p_zero);
-  this->_module->add_node(s_state);
-  this->_module->add_node(s_step);
 }
 
 /**
@@ -131,6 +124,16 @@ CModuleGenerator::get_operator
   return *ite;
 }
 
+/**
+   モジュールの最大ステップを取得
+   @note step信号を定義する際にのビット幅を
+         調べるためにFortRockが使用
+   @return step信号に必要なビット幅
+ */
+unsigned
+CModuleGenerator::get_max_step(void) {
+  return this->_module->get_max_step();
+}
 
 /**
    テストデータ(DFG)の生成
@@ -277,7 +280,7 @@ int CModuleGenerator::generate(void) {
   this->_generate_assign();
   this->_generate_function();
   this->_generate_calculator();
-   this->_generate_always();
+  this->_generate_always();
   this->_generate_footer();
 
   return 0;
@@ -447,11 +450,12 @@ void CModuleGenerator::_generate_function(void) {
 
       this->_cout.indent_right();
 
+      // 条件による代入文
       for (auto i = 0;
            i < ope->get_num_input();
            i += 2) {
         this->_cout << elem->get_input_at(i)->get_verilog_name()
-                    << ": "
+                    << ": phi_"
                     << dest_node->get_verilog_name()
                     << " = "
                     << elem->get_input_at(i+1)->get_verilog_name()
@@ -483,19 +487,29 @@ void CModuleGenerator::_generate_calculator(void) {
                 << module->get_name() << "(\n";
 
     this->_cout.indent_right();
-    for (unsigned at = 0; at < module->get_num_input(); ++at) {
+
+    // 入力の接続
+    unsigned at;
+    for (at = 0; at < module->get_num_input(); ++at) {
       this->_cout << '.'
                   << module->get_input_signal_at(at)
                   << '(' << module->get_input_node_at(at)->get_verilog_name() << "),"
                   << std::endl;
     }
 
-    for (unsigned at = 0; at < module->get_num_output(); ++at) {
+    // 出力の接続
+    for (at = 0; at < module->get_num_output() - 1; ++at) {
       this->_cout << '.'
                   << module->get_output_signal_at(at)
-                  << '(' << module->get_output_node_at(at)->get_verilog_name() << ')'
+                  << '(' << module->get_output_node_at(at)->get_verilog_name() << "),"
                   << std::endl;
     }
+
+    // 最後の出力の接続
+    this->_cout << '.'
+                << module->get_output_signal_at(at)
+                << '(' << module->get_output_node_at(at)->get_verilog_name() << ')'
+                << std::endl;
 
     this->_cout.indent_left();
     this->_cout << ");\n" << std::endl;
@@ -506,47 +520,21 @@ void CModuleGenerator::_generate_calculator(void) {
    moduleのステートマシンの出力
 */
 void CModuleGenerator::_generate_always(void) {
-  std::string clk_name;
-  std::string res_name;
-  std::string req_name;
-  std::string ce_name;
-  std::shared_ptr<CDFG_Node> node_state;
-  std::shared_ptr<CDFG_Node> node_step;
-  std::string fin_name;
-
   // 出力に必要な情報(信号名など)を取得
-  for (auto & node : this->_module->get_node_list()) {
-    auto type = node->get_type();
-
-    if (type == CDFG_Node::eNode::CLK)
-      clk_name = node->get_verilog_name();
-
-    else if (type == CDFG_Node::eNode::RES)
-      res_name = node->get_verilog_name();
-
-    else if (type == CDFG_Node::eNode::REQ)
-      req_name = node->get_verilog_name();
-
-    else if (type == CDFG_Node::eNode::CE)
-      ce_name = node->get_verilog_name();
-
-    else if (type == CDFG_Node::eNode::STATE)
-      node_state = node;
-
-    else if (type == CDFG_Node::eNode::STEP)
-      node_step = node;
-
-    else if (type == CDFG_Node::eNode::FIN)
-      fin_name = node->get_verilog_name();
-  } // for
+  auto clk_name   = this->get_node(CDFG_Node::eNode::CLK)->get_verilog_name();
+  auto res_name   = this->get_node(CDFG_Node::eNode::RES)->get_verilog_name();
+  auto req_name   = this->get_node(CDFG_Node::eNode::REQ)->get_verilog_name();
+  auto ce_name    = this->get_node(CDFG_Node::eNode::CE)->get_verilog_name();
+  auto node_state = this->get_node(CDFG_Node::eNode::STATE);
+  auto node_step  = this->get_node(CDFG_Node::eNode::STEP);
+  auto fin_name   = this->get_node(CDFG_Node::eNode::FIN)->get_verilog_name();
+  auto true_node  = this->get_node(CDFG_Node::eNode::TRUE);
+  auto false_node = this->get_node(CDFG_Node::eNode::FALSE);
+  auto zero_node  = this->get_node(CDFG_Node::eNode::ZERO);
 
   this->_cout << "always @(posedge "
               << clk_name
               << ')' << std::endl;
-
-  auto true_node = this->get_node(CDFG_Node::eNode::TRUE);
-  auto false_node = this->get_node(CDFG_Node::eNode::FALSE);
-  auto zero_node = this->get_node(CDFG_Node::eNode::ZERO);
 
   // リセットの出力
   this->_cout.indent_right();
