@@ -136,7 +136,6 @@ bool FortRock::runOnModule
   CInstancingOperator cinst;
   cinst.instancing_operators(this->_module_gen,
                              this->_OPERATOR_CONFIG_FILENAME);
-  //  _grub_calculator(it);
 
   // 処理のDFG化
   for (auto bb_it = it->begin(); // Basic Block
@@ -147,7 +146,19 @@ bool FortRock::runOnModule
          ++inst) { // Instruction
       this->_parse_instructions(inst);
     }
+    ++this->_state;
   }
+
+  // step信号の追加
+  auto step_bit_width = this->_get_required_bit_width
+    (this->_module_gen->get_max_step());
+  auto step_node = std::make_shared<CDFG_Node>
+    (CDFG_Node(this->_STEP_NAME,
+               step_bit_width,
+               false, /* is signed */
+               CDFG_Node::eNode::STEP));
+
+  this->_module_gen->add_node(step_node);
 
   // モジュールのファイル出力
   this->_module_gen->generate();
@@ -225,6 +236,8 @@ void FortRock::_add_load_inst
   elem->set_output(b, 0);
 
   this->_module_gen->add_element(elem);
+
+  ++this->_step;
 }
 
 /**
@@ -249,6 +262,8 @@ void FortRock::_add_store_inst
   elem->set_output(b, 0);
 
   this->_module_gen->add_element(elem);
+
+  ++this->_step;
 }
 
 /**
@@ -276,6 +291,8 @@ void FortRock::_add_icmp_inst
   elem->set_output(b, 0);
 
   this->_module_gen->add_element(elem);
+
+  ++this->_step;
 }
 
 /**
@@ -305,6 +322,8 @@ void FortRock::_add_select_inst
   elem->set_output(b, 0);
 
   this->_module_gen->add_element(elem);
+
+  ++this->_step;
 }
 
 /**
@@ -335,14 +354,72 @@ void FortRock::_add_srem_inst
   elem->set_output(b, 0);
 
   this->_module_gen->add_element(elem);
+
+  this->_step += srem->get_latency();
 }
 
+/**
+   SDIV命令を module の DFG に追加
+   @brief b = sdiv a0 a1
+         演算器の信号線による接続
+   @todo 使用した演算器にフラグを立てる
+         上位ビット(全体の半分)を接続するように変更
+ */
 void FortRock::_add_sdiv_inst
 (const Instruction * inst) {
+  auto sdiv = this->_module_gen->get_operator
+    (CDFG_Operator::eType::SDIV);
+
+  auto elem = std::make_shared<CDFG_Element>(sdiv);
+  elem->set_state(this->_state);
+  elem->set_step(this->_step);
+
+  auto a0 = this->_module_gen->get_node
+    (inst->getOperand(0)->getName());
+  auto a1 = this->_module_gen->get_node
+    (inst->getOperand(1)->getName());
+  auto b = this->_module_gen->get_node
+    (inst->getName());
+
+  elem->set_input(a0, 0);
+  elem->set_input(a1, 1);
+  elem->set_output(b, 0);
+
+  this->_module_gen->add_element(elem);
+
+  this->_step += sdiv->get_latency();
 }
 
+/**
+   MUL命令をモジュールの DFG に追加
+   @brief b = mul a0 a1
+         演算器の信号線による接続
+
+   @todo 使用した演算器にフラグを立てる
+ */
 void FortRock::_add_mul_inst
 (const Instruction * inst) {
+  auto mul = this->_module_gen->get_operator
+    (CDFG_Operator::eType::MUL);
+
+  auto elem = std::make_shared<CDFG_Element>(mul);
+  elem->set_state(this->_state);
+  elem->set_step(this->_step);
+
+  auto a0 = this->_module_gen->get_node
+    (inst->getOperand(0)->getName());
+  auto a1 = this->_module_gen->get_node
+    (inst->getOperand(1)->getName());
+  auto b = this->_module_gen->get_node
+    (inst->getName());
+
+  elem->set_input(a0, 0);
+  elem->set_input(a1, 1);
+  elem->set_output(b, 0);
+
+  this->_module_gen->add_element(elem);
+
+  this->_step += mul->get_latency();
 }
 
 /**
@@ -371,6 +448,8 @@ void FortRock::_add_br_inst
   elem->set_output(state, 0);
 
   this->_module_gen->add_element(elem);
+
+  ++this->_step;
 }
 
 /**
@@ -419,6 +498,8 @@ void FortRock::_add_phi_inst
   elem->set_output(destination_node, 0);
 
   this->_module_gen->add_element(elem);
+
+  ++this->_step;
 }
 
 /**
@@ -439,6 +520,8 @@ void FortRock::_add_ret_inst
   elem->set_input(finish_state_label, 0);
 
   this->_module_gen->add_element(elem);
+
+  this->_step = 0;
 }
 
 /**
