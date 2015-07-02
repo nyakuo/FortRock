@@ -14,5 +14,51 @@
       <outPortBitWidth>      32    </outPortBitWidth>
       <clockEnablePortName>  ce    </clockEnablePortName>
     </addInt>
+
+    <mul>
+      <useIPCore>            true       </useIPCore>
+      <latency>              1          </latency>
+      <moduleName>           multiplier </moduleName>
+      <numModule>            1          </numModule>
+      <clockPortName>        clk        </clockPortName>
+      <leftOperandPortName>  a          </leftOperandPortName>
+      <rightOperandPortName> b          </rightOperandPortName>
+      <outPortName>          p          </outPortName>
+      <leftPortBitWidth>     32         </leftPortBitWidth>
+      <rightPortBitWidth>    32         </rightPortBitWidth>
+      <outPortBitWidth>      32         </outPortBitWidth>
+      <clockEnablePortName>  ce         </clockEnablePortName>
+    </mul>
+
+    <sRem>
+      <useIPCore>            true                  </useIPCore>
+      <latency>              1                     </latency>
+      <moduleName>           srem_div_v4           </moduleName>
+      <numModule>            1                     </numModule>
+      <clockPortName>        aclk                  </clockPortName>
+      <leftOperandPortName>  s_axis_divisor_tdata  </leftOperandPortName>
+      <rightOperandPortName> s_axis_dividend_tdata </rightOperandPortName>
+      <outPortName>          m_axis_dout_tdata     </outPortName>
+      <leftPortBitWidth>     32                    </leftPortBitWidth>
+      <rightPortBitWidth>    32                    </rightPortBitWidth>
+      <outPortBitWidth>      64                    </outPortBitWidth>
+      <clockEnablePortName>  ce                    </clockEnablePortName>
+    </sRem>
+
+    <sDiv>
+      <useIPCore>            true                  </useIPCore>
+      <latency>              1                     </latency>
+      <moduleName>           div_gen_v4_0          </moduleName>
+      <numModule>            1                     </numModule>
+      <clockPortName>        aclk                  </clockPortName>
+      <leftOperandPortName>  s_axis_divisor_tdata  </leftOperandPortName>
+      <rightOperandPortName> s_axis_dividend_tdata </rightOperandPortName>
+      <outPortName>          m_axis_dout_tdata     </outPortName>
+      <leftPortBitWidth>     32                    </leftPortBitWidth>
+      <rightPortBitWidth>    32                    </rightPortBitWidth>
+      <outPortBitWidth>      64                    </outPortBitWidth>
+      <clockEnablePortName>  ce                    </clockEnablePortName>
+    </sDiv>
+
   </IPCore>
 </config>
