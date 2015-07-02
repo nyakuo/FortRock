@@ -426,7 +426,7 @@ void CModuleGenerator::_generate_function(void) {
       auto dest_node = elem->get_output_at(0);
       this->_cout << "function ["
                   << dest_node->get_bit_width() - 1
-                  << ":0] "
+                  << ":0] phi_"
                   << dest_node->get_verilog_name()
                   << ";\n";
 
@@ -629,6 +629,7 @@ void CModuleGenerator::_generate_always(void) {
     case CDFG_Operator::eType::DIV:
     case CDFG_Operator::eType::FUNC:
     case CDFG_Operator::eType::MUL:
+    case CDFG_Operator::eType::SREM:
     case CDFG_Operator::eType::SDIV:
       {
         // 入力の接続
@@ -701,6 +702,7 @@ void CModuleGenerator::_generate_always(void) {
                                  process_str);
         break;
       }
+
     case CDFG_Operator::eType::SELECT:
     case CDFG_Operator::eType::BR:
       {
@@ -767,8 +769,25 @@ void CModuleGenerator::_generate_always(void) {
           break;
         }
 
-      // case CDFG_Operator::eType:::
-      // case CDFG_Operator::eType:::
+    case CDFG_Operator::eType::PHI:
+      {
+        auto dest_node = elem->get_output_at(0);
+        auto prev_state = this->get_node(CDFG_Node::eNode::PREV_STATE);
+
+        process_str.append(this->_cout.output_indent()
+                           + dest_node->get_verilog_name()
+                           + " <= phi_"
+                           + dest_node->get_verilog_name()
+                           + "("
+                           + prev_state->get_verilog_name()
+                           + ");\n");
+
+        sm_gen.add_state_process(state,
+                                 step,
+                                 process_str);
+
+        break;
+      }
       // case CDFG_Operator::eType:::
       // case CDFG_Operator::eType:::
       //   break;

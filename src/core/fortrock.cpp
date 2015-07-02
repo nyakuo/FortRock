@@ -181,16 +181,16 @@ void FortRock::_parse_instructions
 (const Instruction * inst) {
   try {
     switch (inst->getOpcode()) {
-    case RET:    this->_add_ret_inst(inst); break;
-    case BR:     this->_add_br_inst(inst); break;
-    case LOAD:   this->_add_load_inst(inst); break;
-    case STORE:  this->_add_store_inst(inst); break;
-    case ICMP:   this->_add_icmp_inst(inst); break;
-    case PHI:    this->_add_phi_inst(inst); break;
+    case RET:    this->_add_ret_inst(inst);    break;
+    case BR:     this->_add_br_inst(inst);     break;
+    case LOAD:   this->_add_load_inst(inst);   break;
+    case STORE:  this->_add_store_inst(inst);  break;
+    case ICMP:   this->_add_icmp_inst(inst);   break;
+    case PHI:    this->_add_phi_inst(inst);    break;
     case SELECT: this->_add_select_inst(inst); break;
-    case SREM:   this->_add_load_inst(inst); break;
-    // case MUL:    this->_add_load_node(inst); break;
-    // case SDIV:   this->_add_load_node(inst); break;
+    case SREM:   this->_add_srem_inst(inst);   break;
+    case MUL:    this->_add_mul_inst(inst);    break;
+    case SDIV:   this->_add_sdiv_inst(inst);   break;
     default:
       throw std::string(std::string("ERROR:")
                         + std::string(inst->getOpcodeName())
@@ -312,6 +312,7 @@ void FortRock::_add_select_inst
    @brief b = srem a0 a1
          演算器の信号線による接続
    @todo 使用した演算器にフラグを立てる
+         下位ビット(全体の半分)を接続するように変更
  */
 void FortRock::_add_srem_inst
 (const Instruction * inst) {
@@ -334,6 +335,14 @@ void FortRock::_add_srem_inst
   elem->set_output(b, 0);
 
   this->_module_gen->add_element(elem);
+}
+
+void FortRock::_add_sdiv_inst
+(const Instruction * inst) {
+}
+
+void FortRock::_add_mul_inst
+(const Instruction * inst) {
 }
 
 /**
@@ -369,7 +378,7 @@ void FortRock::_add_br_inst
 
    @brief b = phi [a0 x] [a1 y] ...
 
-   function [bit-width] b;
+   function [bit-width] phi_b;
      input [bit-width] prev_state;
      begin
        case (prev_state)
@@ -378,6 +387,10 @@ void FortRock::_add_br_inst
        endcase
      end
    endfunction
+
+   ...
+
+   b = phi_b(prev_state);
  */
 void FortRock::_add_phi_inst
 (const Instruction * inst) {
