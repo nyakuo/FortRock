@@ -188,7 +188,7 @@ void FortRock::_parse_instructions
     case ICMP:   this->_add_icmp_inst(inst); break;
     case PHI:    this->_add_phi_inst(inst); break;
     case SELECT: this->_add_select_inst(inst); break;
-    //    case SREM:   this->_add_load_node(inst); break;
+    case SREM:   this->_add_load_inst(inst); break;
     // case MUL:    this->_add_load_node(inst); break;
     // case SDIV:   this->_add_load_node(inst); break;
     default:
@@ -308,6 +308,35 @@ void FortRock::_add_select_inst
 }
 
 /**
+   SREM命令を module の DFG に追加
+   @brief b = srem a0 a1
+         演算器の信号線による接続
+   @todo 使用した演算器にフラグを立てる
+ */
+void FortRock::_add_srem_inst
+(const Instruction * inst) {
+  auto srem = this->_module_gen->get_operator
+    (CDFG_Operator::eType::SREM);
+
+  auto elem = std::make_shared<CDFG_Element>(srem);
+  elem->set_state(this->_state);
+  elem->set_step(this->_step);
+
+  auto a0 = this->_module_gen->get_node
+    (inst->getOperand(0)->getName());
+  auto a1 = this->_module_gen->get_node
+    (inst->getOperand(1)->getName());
+  auto b = this->_module_gen->get_node
+    (inst->getName());
+
+  elem->set_input(a0, 0);
+  elem->set_input(a1, 1);
+  elem->set_output(b, 0);
+
+  this->_module_gen->add_element(elem);
+}
+
+/**
    BR命令をモジュールのDFGに追加する
    @brief br cond ltrue, lfalse
    state <= (cond) ? ltrue : lfalse;
@@ -336,10 +365,19 @@ void FortRock::_add_br_inst
 }
 
 /**
-   BR命令をモジュールのDFGに追加する
+   PHI命令をモジュールの DFG に追加する
+
    @brief b = phi [a0 x] [a1 y] ...
-   assign b = (prev_state == x) ? a :
-              (prev_state == y) ? b;
+
+   function [bit-width] b;
+     input [bit-width] prev_state;
+     begin
+       case (prev_state)
+         x : b = a0;
+         y : b = a1;
+       endcase
+     end
+   endfunction
  */
 void FortRock::_add_phi_inst
 (const Instruction * inst) {
@@ -375,7 +413,6 @@ void FortRock::_add_phi_inst
  */
 void FortRock::_add_ret_inst
 (const Instruction * inst) {
-
   auto finish_state_label
     = this->_module_gen->get_node
     (CDFG_Node::eNode::FINISH_LABEL);
@@ -383,7 +420,7 @@ void FortRock::_add_ret_inst
   auto elem = std::make_shared<CDFG_Element>
     (CDFG_Element(CDFG_Operator::eType::RET,
                   1, /* Number of operator input */
-                  finish_state_label->get_parameter() /* state */,
+                  this->_state,
                   0 /* step */));
 
   elem->set_input(finish_state_label, 0);
