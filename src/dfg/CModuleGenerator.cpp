@@ -409,8 +409,31 @@ void CModuleGenerator::_generate_define(void) {
 
 /**
    moduleのassign文の定義
+   @note function文の assign に使用
 */
 void CModuleGenerator::_generate_assign(void) {
+  auto prev_state_node = this->get_node
+    (CDFG_Node::eNode::PREV_STATE);
+
+  for (auto & elem : this->_module->get_element_list()) {
+    if (elem->get_operator()->get_type()
+        == CDFG_Operator::eType::PHI) {
+      auto dest_node = elem->get_output_at(0);
+
+      this->_cout << "wire ["
+                  << dest_node->get_bit_width() - 1
+                  << ":0] w_phi_"
+                  << dest_node->get_safe_name()
+                  << ";\n";
+
+      this->_cout << "assign w_phi_"
+                  << dest_node->get_safe_name()
+                  << " = phi_" << dest_node->get_verilog_name()
+                  << "("
+                  << prev_state_node->get_verilog_name()
+                  << ");\n\n";
+    } // if
+  } // for
 } // _generate_assign
 
 /**
@@ -780,11 +803,9 @@ void CModuleGenerator::_generate_always(void) {
 
         process_str.append(this->_cout.output_indent()
                            + dest_node->get_verilog_name()
-                           + " <= phi_"
-                           + dest_node->get_verilog_name()
-                           + "("
-                           + prev_state->get_verilog_name()
-                           + ");\n");
+                           + " <= w_phi_"
+                           + dest_node->get_safe_name()
+                           + ";\n");
 
         sm_gen.add_state_process(state,
                                  step,
