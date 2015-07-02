@@ -96,18 +96,41 @@ bool CModuleGenerator::find_node
    @note FortRock 本体から呼び出すために使用
  */
 std::shared_ptr<CDFG_Node>
-CModuleGenerator::get_node(const std::string & node_name){
+CModuleGenerator::get_node
+(const std::string & node_name){
   return this->_module->get_node(node_name);
 }
 
 /**
    モジュール内のノードを取得する
-   @note FortRock 本体から呼び出すために使用 (stateなどの取得に使用)
+   @note FortRock 本体から呼び出すために使用
+         (stateなどの取得に使用)
 */
 std::shared_ptr<CDFG_Node>
-CModuleGenerator::get_node(const CDFG_Node::eNode & type) {
+CModuleGenerator::get_node
+(const CDFG_Node::eNode & type) {
   return this->_module->get_node(type);
 }
+
+/**
+   モジュール内の演算器の取得
+   @note FortRock本体から取得するために使用
+   @todo 取得する演算器の番号による指定など
+   @attention 暫定版
+ */
+std::shared_ptr<CDFG_Operator>
+CModuleGenerator::get_operator
+(const CDFG_Operator::eType & type) {
+  auto l = this->_module->get_operator_list();
+  auto ite =
+    std::find_if(l.begin(), l.end(),
+                 [type](std::shared_ptr<CDFG_Operator> obj) -> bool {
+                   return obj->get_type() == type;
+                 });
+
+  return *ite;
+}
+
 
 /**
    テストデータ(DFG)の生成
@@ -345,6 +368,7 @@ void CModuleGenerator::_generate_define(void) {
     case CDFG_Node::eNode::TRUE:
     case CDFG_Node::eNode::FALSE:
     case CDFG_Node::eNode::ZERO:
+    case CDFG_Node::eNode::FINISH_LABEL:
     case CDFG_Node::eNode::LABEL:
     case CDFG_Node::eNode::PARAM:
       type = param;
@@ -703,16 +727,26 @@ void CModuleGenerator::_generate_always(void) {
 
           auto fin_node= this->get_node(CDFG_Node::eNode::FIN);
           auto state_node = this->get_node(CDFG_Node::eNode::STATE);
+          auto step_node = this->get_node(CDFG_Node::eNode::STEP);
           auto TRUE_node = this->get_node(CDFG_Node::eNode::TRUE);
           auto ZERO_node = this->get_node(CDFG_Node::eNode::ZERO);
-
-          // todo ステート変更
+          auto finish_state_label = elem->get_input_at(0);
 
           //! @todo 返り値への対応
 
           // 終了状態への遷移
-          //          process_str.append(this->_cout.output_indent()
-          //                             + ls
+          process_str.append(this->_cout.output_indent()
+                             + state_node->get_verilog_name()
+                             + " <= "
+                             + finish_state_label->get_verilog_name()
+                             + ";\n"
+                             + this->_cout.output_indent()
+                             + step_node->get_verilog_name()
+                             + " <= 0;\n");
+
+          sm_gen.add_state_process(state,
+                                   step,
+                                   process_str);
 
           // 終了状態
           process_str.assign(this->_cout.output_indent()
@@ -726,8 +760,8 @@ void CModuleGenerator::_generate_always(void) {
                              + ZERO_node->get_verilog_name()
                              + ";\n");
 
-          sm_gen.add_state_process(state,
-                                   step,
+          sm_gen.add_state_process(finish_state_label->get_parameter(),
+                                   0 /* step */,
                                    process_str);
 
           break;
