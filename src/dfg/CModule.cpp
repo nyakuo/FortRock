@@ -101,8 +101,7 @@ CModule::get_node(const std::string & node_name) {
                  this->_node_list.end(),
                  [node_name](std::shared_ptr<CDFG_Node> obj) -> bool {
                    return obj->get_asm_name() == node_name;
-                 }
-                 );
+                 });
   return *ite;
 }
 
@@ -118,7 +117,23 @@ CModule::find_node(const std::string & asm_name) {
                  this->_node_list.end(),
                  [asm_name](std::shared_ptr<CDFG_Node> obj) -> bool {
                    return obj->get_asm_name() == asm_name;
-                 }
-                 );
+                 });
   return ite != this->_node_list.end();
+}
+
+/**
+   モジュールの最大ステップを取得
+   @note step信号を定義する際にのビット幅を
+         調べるためにFortRockが使用
+   @return step信号に必要なビット幅
+ */
+unsigned
+CModule::get_max_step(void) {
+  unsigned max_step = 0;
+
+  for (auto & obj : this->_dfg)
+    if (max_step < obj->get_step())
+      max_step = obj->get_step();
+
+  return max_step;
 }
