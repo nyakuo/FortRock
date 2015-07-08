@@ -548,12 +548,13 @@ void CModuleGenerator::_generate_always(void) {
   auto res_name   = this->get_node(CDFG_Node::eNode::RES)->get_verilog_name();
   auto req_name   = this->get_node(CDFG_Node::eNode::REQ)->get_verilog_name();
   auto ce_name    = this->get_node(CDFG_Node::eNode::CE)->get_verilog_name();
-  auto node_state = this->get_node(CDFG_Node::eNode::STATE);
-  auto node_step  = this->get_node(CDFG_Node::eNode::STEP);
+  auto state_node = this->get_node(CDFG_Node::eNode::STATE);
+  auto step_node  = this->get_node(CDFG_Node::eNode::STEP);
   auto fin_name   = this->get_node(CDFG_Node::eNode::FIN)->get_verilog_name();
   auto true_node  = this->get_node(CDFG_Node::eNode::TRUE);
   auto false_node = this->get_node(CDFG_Node::eNode::FALSE);
   auto zero_node  = this->get_node(CDFG_Node::eNode::ZERO);
+  auto prev_state = this->get_node(CDFG_Node::eNode::PREV_STATE);
 
   this->_cout << "always @(posedge "
               << clk_name
@@ -574,11 +575,11 @@ void CModuleGenerator::_generate_always(void) {
   this->_cout << fin_name << " <= "
               << false_node->get_verilog_name()
               << ";\n";
-  this->_cout << node_state->get_verilog_name()
+  this->_cout << state_node->get_verilog_name()
               << " <= "
               << zero_node->get_verilog_name()
               << ";\n";
-  this->_cout << node_step->get_verilog_name()
+  this->_cout << step_node->get_verilog_name()
               << " <= "
               << zero_node->get_verilog_name()
               << ";\n";
@@ -597,9 +598,9 @@ void CModuleGenerator::_generate_always(void) {
   this->_cout.indent_right();
 
   // ステートマシンのリセット
-  this->_cout << "case (" << node_state->get_verilog_name() <<  ")\n";
+  this->_cout << "case (" << state_node->get_verilog_name() <<  ")\n";
   this->_cout.indent_right();
-  this->_cout << node_state->get_bit_width() << "'h0:\n";
+  this->_cout << state_node->get_bit_width() << "'h0:\n";
   this->_cout.indent_right();
   this->_cout << "begin\n";
   this->_cout.indent_right();
@@ -607,7 +608,7 @@ void CModuleGenerator::_generate_always(void) {
               << " <= "
               << false_node->get_verilog_name()
               << ";\n";
-  this->_cout << node_step->get_verilog_name()
+  this->_cout << step_node->get_verilog_name()
               << " <= "
               << zero_node->get_verilog_name()
               << ";\n";
@@ -615,8 +616,8 @@ void CModuleGenerator::_generate_always(void) {
   this->_cout.indent_right();
   this->_cout << "begin\n";
   this->_cout.indent_right();
-  this->_cout << node_state->get_verilog_name() << " <= "
-              << node_state->get_bit_width() << "'h1;\n";
+  this->_cout << state_node->get_verilog_name() << " <= "
+              << state_node->get_bit_width() << "'h1;\n";
   this->_cout.indent_left();
   this->_cout << "end\n";
   this->_cout.indent_left(2);
@@ -734,11 +735,8 @@ void CModuleGenerator::_generate_always(void) {
                                  step,
                                  process_str);
 
-        // prev_stateの変更
         if (ope->get_type() == CDFG_Operator::eType::BR) {
-          auto prev_state = this->get_node
-            (CDFG_Node::eNode::PREV_STATE);
-
+          // prev_stateの変更
           process_str.assign(this->_cout.output_indent()
                              + prev_state->get_verilog_name()
                              + " <= "
@@ -748,17 +746,16 @@ void CModuleGenerator::_generate_always(void) {
           sm_gen.add_state_process(state,
                                    step,
                                    process_str);
+
+          // stepの初期化
+          process_str.assign(this->_cout.output_indent()
+                             + step_node->get_verilog_name()
+                             + " <= 0;\n");
         }
         break;
       }
       case CDFG_Operator::eType::RET:
         {
-
-          auto fin_node= this->get_node(CDFG_Node::eNode::FIN);
-          auto state_node = this->get_node(CDFG_Node::eNode::STATE);
-          auto step_node = this->get_node(CDFG_Node::eNode::STEP);
-          auto TRUE_node = this->get_node(CDFG_Node::eNode::TRUE);
-          auto ZERO_node = this->get_node(CDFG_Node::eNode::ZERO);
           auto finish_state_label = elem->get_input_at(0);
 
           //! @todo 返り値への対応
@@ -779,14 +776,14 @@ void CModuleGenerator::_generate_always(void) {
 
           // 終了状態
           process_str.assign(this->_cout.output_indent()
-                             + fin_node->get_verilog_name()
+                             + fin_name
                              + " <= "
-                             + TRUE_node->get_verilog_name()
+                             + true_node->get_verilog_name()
                              + ";\n"
                              + this->_cout.output_indent()
                              + state_node->get_verilog_name()
                              + " <= "
-                             + ZERO_node->get_verilog_name()
+                             + zero_node->get_verilog_name()
                              + ";\n");
 
           sm_gen.add_state_process(finish_state_label->get_parameter(),
@@ -799,7 +796,6 @@ void CModuleGenerator::_generate_always(void) {
     case CDFG_Operator::eType::PHI:
       {
         auto dest_node = elem->get_output_at(0);
-        auto prev_state = this->get_node(CDFG_Node::eNode::PREV_STATE);
 
         process_str.append(this->_cout.output_indent()
                            + dest_node->get_verilog_name()
@@ -831,22 +827,22 @@ void CModuleGenerator::_generate_always(void) {
   for(auto ite_state_step = state_step_list.begin();
       ite_state_step != state_step_list.end(); ) {
     // ステートの出力
-    this->_cout << node_state->get_bit_width()
+    this->_cout << state_node->get_bit_width()
                 << "'h" << std::hex << ite_state_step->first << ":\n";
     this->_cout.indent_right();
     this->_cout << "begin\n";
 
     // ステップの出力
     this->_cout.indent_right();
-    this->_cout << node_step->get_verilog_name() << " <= "
-                << node_step->get_verilog_name() << " + 1'h1;\n";
-    this->_cout << "case (" << node_step->get_verilog_name() << ")\n";
+    this->_cout << step_node->get_verilog_name() << " <= "
+                << step_node->get_verilog_name() << " + 1'h1;\n";
+    this->_cout << "case (" << step_node->get_verilog_name() << ")\n";
     auto range = state_step_list.equal_range(ite_state_step->first);
     for (auto ite = range.first;
          ite != range.second;
          ++ite, ++ite_state_step) {
       this->_cout.indent_right();
-      this->_cout << node_step->get_bit_width()
+      this->_cout << step_node->get_bit_width()
                   << "'h" << std::hex << ite->second << ":\n";
       this->_cout.indent_right();
       this->_cout << "begin\n";
