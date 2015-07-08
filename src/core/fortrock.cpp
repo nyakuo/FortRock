@@ -146,6 +146,7 @@ bool FortRock::runOnModule
          ++inst) { // Instruction
       this->_parse_instructions(inst);
     }
+    this->_step = 0;
     ++this->_state;
   }
 
