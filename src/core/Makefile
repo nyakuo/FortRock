@@ -11,6 +11,7 @@ EXTRA_OBJS := \
 	../dfg/CModuleGenerator.o \
 	../dfg/CModule.o \
 	../xml/CInstancingOperator.o \
+	../xml/COperatorGenerator.o \
 
 TARGET := ../fortrock.so
 TARGETS := $(TARGET)
