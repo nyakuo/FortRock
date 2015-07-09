@@ -463,9 +463,6 @@ void CModuleGenerator::_generate_function(void) {
                   << ":0]"
                   << prev_state->get_verilog_name()
                   << ";\n";
-      this->_cout << "begin\n";
-
-      this->_cout.indent_right();
 
       this->_cout << "case ("
                   << prev_state->get_verilog_name()
@@ -485,13 +482,16 @@ void CModuleGenerator::_generate_function(void) {
                     << ";\n";
       } // for : i
 
+      auto zero_node = this->get_node(CDFG_Node::eNode::ZERO);
+      this->_cout << "default: phi_"
+                  << dest_node->get_verilog_name()
+                  << " = "
+                  << zero_node->get_verilog_name()
+                  << ";\n";
+
       this->_cout.indent_left();
 
       this->_cout << "endcase\n";
-
-      this->_cout.indent_left();
-
-      this->_cout << "end\n";
 
       this->_cout.indent_left();
 
@@ -628,9 +628,9 @@ void CModuleGenerator::_generate_always(void) {
   this->_cout.indent_right(4);
   CStateMachineGen sm_gen;
   for (auto & elem : this->_module->get_element_list()) {
-    auto ope = elem->get_operator();
-    auto state = elem->get_state();
-    auto step = elem->get_step();
+    auto ope     = elem->get_operator();
+    auto state   = elem->get_state();
+    auto step    = elem->get_step();
     auto latency = ope->get_latency();
     std::string process_str ("");
 
@@ -648,7 +648,8 @@ void CModuleGenerator::_generate_always(void) {
         for (auto i=0; i<ope->get_num_input(); ++i) {
           auto node = ope->get_input_node_at(i);
           if ((unsigned)node->get_type() &
-              ((unsigned)CDFG_Node::eNode::REG | (unsigned)CDFG_Node::eNode::OUT)) {
+              ((unsigned)CDFG_Node::eNode::REG | // clk など回避
+               (unsigned)CDFG_Node::eNode::OUT)) {
             process_str.append(this->_cout.output_indent()
                                + node->get_verilog_name()
                                + " <= "
@@ -659,24 +660,24 @@ void CModuleGenerator::_generate_always(void) {
         sm_gen.add_state_process(state, step, process_str);
 
         // 出力の接続
-        process_str = "";
-        for (auto i=0; i<ope->get_num_output(); ++i) {
-          auto node = ope->get_output_node_at(i);
+        auto at = 0;
+        if (ope->get_type() == CDFG_Operator::eType::SREM) // 2入力2出力演算器
+          at = 1;
 
-          if ((unsigned)node->get_type() &
-              ((unsigned)CDFG_Node::eNode::WIRE)) {
-            process_str.append(this->_cout.output_indent()
-                               + elem->get_output_at(i)->get_verilog_name()
-                               + " <= "
-                               + node->get_verilog_name()
-                               + ";\n");
-          }
-        }
-        sm_gen.add_state_process(state,
-                                 step + latency + 1,
-                                 process_str);
+        process_str = "";
+        auto ope_node = ope->get_output_node_at(at);
+
+        process_str.append(this->_cout.output_indent()
+                           + elem->get_output_at(at)->get_verilog_name()
+                           + " <= "
+                           + ope_node->get_verilog_name()
+                           + ";\n");
+
+      sm_gen.add_state_process(state,
+                               step + latency + 1,
+                               process_str);
         break;
-      }
+      } // case
 
     case CDFG_Operator::eType::LOAD:
     case CDFG_Operator::eType::STORE:
