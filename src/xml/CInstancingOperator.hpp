@@ -9,6 +9,7 @@
 #include <libxml/parser.h>
 #include <libxml/xmlmemory.h>
 
+#include "COperatorGenerator.hpp"
 #include "../dfg/CModuleGenerator.hpp"
 #include "../dfg/CDFG_Operator.hpp"
 #include "../dfg/CDFG_Node.hpp"
