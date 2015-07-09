@@ -299,6 +299,7 @@ void CModuleGenerator::_generate_header(void) {
   // 入出力信号の出力
   for (auto & io : this->_module->get_node_list()) {
     std::string io_str;
+
     switch (io->get_type()) {
     case CDFG_Node::eNode::IN:
     case CDFG_Node::eNode::CLK:
