@@ -752,6 +752,10 @@ void CModuleGenerator::_generate_always(void) {
           process_str.assign(this->_cout.output_indent()
                              + step_node->get_verilog_name()
                              + " <= 0;\n");
+
+          sm_gen.add_state_process(state,
+                                   step,
+                                   process_str);
         }
         break;
       }
