@@ -4,6 +4,7 @@ OBJS := \
 	CInstancingOperator.o \
 	instance_test.o \
 	COperatorManager.o \
+	COperatorGenerator.o \
 
 EXTRA_OBJS := \
 	../dfg/CDFG_Operator.o \
@@ -27,3 +28,5 @@ instance_test.o: instance_test.cpp
 COperatorManager.o: COperatorManager.cpp COperatorManager.hpp
 
 CInstancingOperator.o: CInstancingOperator.cpp CInstancingOperator.hpp
+
+COperatorGenerator.o: COperatorGenerator.cpp COperatorGenerator.hpp
