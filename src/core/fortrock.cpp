@@ -332,7 +332,8 @@ void FortRock::_add_select_inst
    @brief b = srem a0 a1
          演算器の信号線による接続
    @todo 使用した演算器にフラグを立てる
-         下位ビット(全体の半分)を接続するように変更
+         div命令と演算器の共有
+   @note dividerの余剰に接続
  */
 void FortRock::_add_srem_inst
 (const Instruction * inst) {
@@ -352,11 +353,11 @@ void FortRock::_add_srem_inst
 
   elem->set_input(a0, 0);
   elem->set_input(a1, 1);
-  elem->set_output(b, 0);
+  elem->set_output(b, 1); // 余剰に接続
 
   this->_module_gen->add_element(elem);
 
-  this->_step += srem->get_latency();
+  this->_step += srem->get_latency() + 2;
 }
 
 /**
@@ -388,7 +389,7 @@ void FortRock::_add_sdiv_inst
 
   this->_module_gen->add_element(elem);
 
-  this->_step += sdiv->get_latency();
+  this->_step += sdiv->get_latency() + 2;
 }
 
 /**
@@ -420,7 +421,7 @@ void FortRock::_add_mul_inst
 
   this->_module_gen->add_element(elem);
 
-  this->_step += mul->get_latency();
+  this->_step += mul->get_latency() + 2;
 }
 
 /**
@@ -670,7 +671,7 @@ void FortRock::_grub_labels
                  label_bit_width,
                  false,
                  CDFG_Node::eNode::LABEL,
-                 i /* label parameter */));
+                 i + 1 /* label parameter ( + reset) */));
 
     if (!this->_module_gen->find_node(label_node))
       this->_module_gen->add_node(label_node);
