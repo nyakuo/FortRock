@@ -21,18 +21,22 @@ void COperatorGenerator::generate_operator
     for (auto & inode : this->_inode_info) {
       std::shared_ptr<CDFG_Node> node;
       if (inode->get_type() == CDFG_Node::eNode::CLK ||
-          inode->get_type() == CDFG_Node::eNode::CE)
+          inode->get_type() == CDFG_Node::eNode::CE) {
         node = module_gen->get_node(inode->get_type());
+        ope->add_input_port(inode->get_name(),
+                            node);
+      }
       else {
         node = std::make_shared<CDFG_Node>
           (this->_instance_name + '_' + inode->get_name(),
            inode->get_bit_width(),
            inode->get_is_signed(),
            inode->get_type());
+
+        ope->add_input_port(inode->get_name(),
+                            node);
+        module_gen->add_node(node);
       }
-      ope->add_input_port(inode->get_name(),
-                          node);
-      module_gen->add_node(node);
     }
 
     // 出力ポートのインスタンス化
