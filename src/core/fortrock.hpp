@@ -69,7 +69,7 @@ private:
   const std::string _FINISH_STATE_NAME = "finish_state";
 
   //! ステートマシンのステップ信号名
-  const std::string _STEP_NAME = "step_name";
+  const std::string _STEP_NAME = "step";
 
   //! 演算器の設定ファイル名
   const std::string _OPERATOR_CONFIG_FILENAME = "./config/operator_config.xml";
