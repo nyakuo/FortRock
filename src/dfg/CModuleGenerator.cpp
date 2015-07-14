@@ -431,10 +431,18 @@ void CModuleGenerator::_generate_assign(void) {
                   << dest_node->get_safe_name()
                   << " = phi_" << dest_node->get_verilog_name()
                   << "("
-                  << prev_state_node->get_verilog_name()
-                  << ");\n\n";
-    } // if
-  } // for
+                  << prev_state_node->get_verilog_name();
+
+      for (auto i=1;
+           i < elem->get_num_input();
+           i += 2) {
+        this->_cout <<= ", " + elem->get_input_at(i)->get_verilog_name();
+      } // for : i
+
+      this->_cout <<= ");\n\n";
+
+    } // if : PHI
+  } // for : elem
 } // _generate_assign
 
 /**
@@ -461,9 +469,19 @@ void CModuleGenerator::_generate_function(void) {
 
       this->_cout << "input ["
                   << prev_state->get_bit_width() - 1
-                  << ":0]"
+                  << ":0] "
                   << prev_state->get_verilog_name()
                   << ";\n";
+
+      for (auto i=1;
+           i < elem->get_num_input();
+           i += 2) {
+        this->_cout << "input ["
+                    << elem->get_input_at(i)->get_bit_width() - 1
+                    << ":0] "
+                    << elem->get_input_at(i)->get_verilog_name()
+                    << ";\n";
+      }
 
       this->_cout << "case ("
                   << prev_state->get_verilog_name()
@@ -481,7 +499,7 @@ void CModuleGenerator::_generate_function(void) {
                     << " = "
                     << elem->get_input_at(i+1)->get_verilog_name()
                     << ";\n";
-      } // for : i
+      }
 
       auto zero_node = this->get_node(CDFG_Node::eNode::ZERO);
       this->_cout << "default: phi_"
@@ -707,7 +725,7 @@ void CModuleGenerator::_generate_always(void) {
                            + out->get_verilog_name()
                            + " <= ("
                            + in_0->get_verilog_name()
-                           + " > " //! @todo 他の比較条件へ対応
+                           + " < " //! @todo 他の比較条件へ対応
                            + in_1->get_verilog_name()
                            + ");\n");
 
