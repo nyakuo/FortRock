@@ -2,7 +2,7 @@
   <ip_core>
     <!-- clk,ceなどを除くInput/Outputは定義順序は接続順序と揃える -->
     <add_int>
-      <use_ip_core>  false  </use_ip_core>
+      <use_ip_core>  true  </use_ip_core>
       <latency>      1      </latency>
       <module_name>  myAdd  </module_name>
       <instance_name> add    </instance_name>
@@ -20,17 +20,17 @@
           <type> input </type>
         </info>
         <info>
-          <port_name> ce </port_name>
-          <bit_width> 1 </bit_width>
-          <type> clock_enable </type>
-        </info>
-        <info>
           <port_name> clk </port_name>
           <bit_width> 32 </bit_width>
           <type> clock </type>
         </info>
         <info>
-          <port_name> sum </port_name>
+          <port_name> ce </port_name>
+          <bit_width> 1 </bit_width>
+          <type> clock_enable </type>
+        </info>
+        <info>
+          <port_name> s </port_name>
           <bit_width> 32 </bit_width>
           <type> output </type>
         </info>
