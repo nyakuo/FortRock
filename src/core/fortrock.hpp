@@ -19,22 +19,22 @@
 
 using namespace llvm;
 
-/**
- * LLVMのInstructionのOpcode
- * @todo LLVMのものに置き換える
- */
-enum inst_opcode {
-  RET    = 1,
-  BR     = 2,
-  LOAD   = 27,
-  STORE  = 28,
-  ICMP   = 46,
-  PHI    = 48,
-  SELECT = 50,
-  SREM   = 18,
-  MUL    = 12,
-  SDIV   = 15,
-};
+// /**
+//  * LLVMのInstructionのOpcode
+//  * @todo LLVMのものに置き換える
+//  */
+// enum inst_opcode {
+//   RET    = 1,
+//   BR     = 2,
+//   LOAD   = 27,
+//   STORE  = 28,
+//   ICMP   = 46,
+//   PHI    = 48,
+//   SELECT = 50,
+//   SREM   = 18,
+//   MUL    = 12,
+//   SDIV   = 15,
+// };
 
 /**
  * @class FortRock
@@ -83,7 +83,6 @@ private:
   void _set_IO(const Module::FunctionListType::iterator & funct);
   void _grub_variables(const Module::FunctionListType::iterator &funct);
   void _grub_labels(const Module::FunctionListType::iterator &funct);
-  void _grub_calculator(const Module::FunctionListType::iterator & funct);
 
   // 命令パース
   void _parse_instructions(const Instruction * inst);

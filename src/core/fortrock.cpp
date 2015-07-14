@@ -199,16 +199,16 @@ void FortRock::_parse_instructions
 (const Instruction * inst) {
   try {
     switch (inst->getOpcode()) {
-    case RET:    this->_add_ret_inst(inst);    break;
-    case BR:     this->_add_br_inst(inst);     break;
-    case LOAD:   this->_add_load_inst(inst);   break;
-    case STORE:  this->_add_store_inst(inst);  break;
-    case ICMP:   this->_add_icmp_inst(inst);   break;
-    case PHI:    this->_add_phi_inst(inst);    break;
-    case SELECT: this->_add_select_inst(inst); break;
-    case SREM:   this->_add_srem_inst(inst);   break;
-    case MUL:    this->_add_mul_inst(inst);    break;
-    case SDIV:   this->_add_sdiv_inst(inst);   break;
+    case Instruction::Ret:    this->_add_ret_inst(inst);    break;
+    case Instruction::Br:     this->_add_br_inst(inst);     break;
+    case Instruction::Load:   this->_add_load_inst(inst);   break;
+    case Instruction::Store:  this->_add_store_inst(inst);  break;
+    case Instruction::ICmp:   this->_add_icmp_inst(inst);   break;
+    case Instruction::PHI:    this->_add_phi_inst(inst);    break;
+    case Instruction::Select: this->_add_select_inst(inst); break;
+    case Instruction::SRem:   this->_add_srem_inst(inst);   break;
+    case Instruction::Mul:    this->_add_mul_inst(inst);    break;
+    case Instruction::SDiv:   this->_add_sdiv_inst(inst);   break;
     default:
       throw std::string(std::string("ERROR:")
                         + std::string(inst->getOpcodeName())
@@ -553,13 +553,13 @@ void FortRock::_grub_variables
       // 命令に対応するオペランド数の指定
       int getop = 1;
       switch(it->getOpcode()) {
-      case LOAD:   getop = 1; break;
-      case ICMP:   getop = 2; break;
-      case PHI:    getop = 2; break;
-      case SELECT: getop = 3; break;
-      case SREM:   getop = 2; break;
-      case MUL:    getop = 2; break;
-      case SDIV:   getop = 2; break;
+      case Instruction::Load:   getop = 1; break;
+      case Instruction::ICmp:   getop = 2; break;
+      case Instruction::PHI:    getop = 2; break;
+      case Instruction::Select: getop = 3; break;
+      case Instruction::SRem:   getop = 2; break;
+      case Instruction::Mul:    getop = 2; break;
+      case Instruction::SDiv:   getop = 2; break;
       default:
         errs() << "ERROR:"
                << it->getOpcodeName() << " "
@@ -600,10 +600,10 @@ void FortRock::_grub_variables
     else {
       try {
         switch(it->getOpcode()) {
-        case RET:
+        case Instruction::Ret:
           break;
 
-        case BR:
+        case Instruction::Br:
           binst = dyn_cast<BranchInst>(&*it);
           value = binst->getCondition();
           type = value->getType();
@@ -621,7 +621,7 @@ void FortRock::_grub_variables
             this->_module_gen->add_node(node);
           break;
 
-        case STORE:
+        case Instruction::Store:
           for(auto i=0; i<2; ++i) {
             value = it->getOperand(i);
             type = value->getType();
@@ -710,62 +710,6 @@ void FortRock::_grub_labels
 
   this->_module_gen->add_node(finish_label);
 } // _grub_labels
-
-/**
-   演算器をモジュール内に確保する
-   @note 現状では1つの命令に対して1つの演算器を確保
-   @todo 外部ファイルによって演算器の確保する数を変更
-*/
-void FortRock::_grub_calculator
-(const Module::FunctionListType::iterator & funct) {
-  std::map<unsigned, unsigned> num_calc;
-
-  for (auto ite = inst_begin(*funct);
-       ite != inst_end(*funct);
-       ++ite) {
-    auto ope_code = ite->getOpcode();
-    if (num_calc[ope_code] != 0) //! @todo 複数演算器への対応
-      continue;
-
-    ++num_calc[ope_code];
-
-    std::string module_name("");
-    CDFG_Operator::eType type;
-    try {
-      switch (ope_code) { //! @todo 演算器の名前は外部ファイルで与える
-      case RET:    module_name = "my_ret";    type = CDFG_Operator::eType::RET;    break;
-      case BR:     module_name = "my_br";     type = CDFG_Operator::eType::BR;     break;
-      case LOAD:   module_name = "my_load";   type = CDFG_Operator::eType::LOAD;   break;
-      case STORE:  module_name = "my_store";  type = CDFG_Operator::eType::STORE;  break;
-      case ICMP:   module_name = "my_icmp";   type = CDFG_Operator::eType::ICMP;   break;
-      case PHI:    module_name = "my_phi";    type = CDFG_Operator::eType::PHI;    break;
-      case SELECT: module_name = "my_select"; type = CDFG_Operator::eType::SELECT; break;
-      case SREM:   module_name = "my_srem";   type = CDFG_Operator::eType::SREM;   break;
-      case MUL:    module_name = "my_mul";    type = CDFG_Operator::eType::MUL;    break;
-      case SDIV:   module_name = "my_sdiv";   type = CDFG_Operator::eType::SDIV;   break;
-      default:
-        throw std::string(std::string("ERROR:")
-                          + std::string(ite->getOpcodeName())
-                          + " "
-                          + std::to_string(ite->getOpcode())
-                          + " 未定義のオペランド\n");
-        break;
-      } // switch
-    } // try
-    catch (std::string err) {
-      errs() << err;
-      continue;
-    }
-
-    auto ope = std::make_shared<CDFG_Operator>
-      (CDFG_Operator(module_name + "1",
-                     module_name,
-                     1,
-                     type));
-
-    this->_module_gen->add_operator(ope);
-  } // ite
-} // _grub_calculator
 
 #if 0
 /**
