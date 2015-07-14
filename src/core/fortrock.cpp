@@ -47,6 +47,12 @@ FortRock::_get_module_name
   return mod_name;
 } // _get_module_name
 
+/**
+   llvm::Value型の変数から変数名を取得する
+   @param[in] v 取得対象のValue型変数
+   @return 変数名
+   @note 引数vが定数の場合は定数値のstringを返す
+ */
 std::string
 FortRock::_get_value_name
 (const Value * v) {
@@ -333,7 +339,7 @@ void FortRock::_add_select_inst
          演算器の信号線による接続
    @todo 使用した演算器にフラグを立てる
          div命令と演算器の共有
-   @note dividerの余剰に接続
+   @note dividerのfractionalに接続
  */
 void FortRock::_add_srem_inst
 (const Instruction * inst) {
@@ -365,7 +371,8 @@ void FortRock::_add_srem_inst
    @brief b = sdiv a0 a1
          演算器の信号線による接続
    @todo 使用した演算器にフラグを立てる
-         上位ビット(全体の半分)を接続するように変更
+         rem命令と演算器の共有
+   @note dividerのquotientに接続
  */
 void FortRock::_add_sdiv_inst
 (const Instruction * inst) {
@@ -514,10 +521,10 @@ void FortRock::_add_ret_inst
     (CDFG_Node::eNode::FINISH_LABEL);
 
   auto elem = std::make_shared<CDFG_Element>
-    (CDFG_Element(CDFG_Operator::eType::RET,
-                  1, /* Number of operator input */
-                  this->_state,
-                  0 /* step */));
+    (CDFG_Operator::eType::RET,
+     1, /* Number of operator input */
+     this->_state,
+     this->_step);
 
   elem->set_input(finish_state_label, 0);
 
@@ -573,10 +580,11 @@ void FortRock::_grub_variables
 
         if(!value->hasName()) { // 定数
           node = std::make_shared<CDFG_Node>
-            (CDFG_Node(name,
-                       type->getPrimitiveSizeInBits(),
-                       true, //! @todo is signedが常にtrue
-                       CDFG_Node::eNode::PARAM));
+            (name,
+             type->getPrimitiveSizeInBits(),
+             true, //! @todo is signedが常にtrue
+             CDFG_Node::eNode::PARAM,
+             std::stol(this->_get_value_name(value)));
         }
         else { // 変数
           node = std::make_shared<CDFG_Node>
@@ -604,10 +612,10 @@ void FortRock::_grub_variables
             type = type->getPointerElementType();
 
           node = std::make_shared<CDFG_Node>
-            (CDFG_Node(value->getName(),
-                       type->getPrimitiveSizeInBits(),
-                       true,
-                       CDFG_Node::eNode::REG));
+            (value->getName(),
+             type->getPrimitiveSizeInBits(),
+             true,
+             CDFG_Node::eNode::REG);
 
           if (!this->_module_gen->find_node(node))
             this->_module_gen->add_node(node);
