@@ -191,11 +191,13 @@ void FortRock::_parse_instructions
     case Instruction::SRem:   this->_add_srem_inst(inst);   break;
     case Instruction::Mul:    this->_add_mul_inst(inst);    break;
     case Instruction::SDiv:   this->_add_sdiv_inst(inst);   break;
+    case Instruction::Add:    this->_add_add_inst(inst);    break;
     default:
       throw std::string(std::string("ERROR:")
                         + std::string(inst->getOpcodeName())
                         + " "
                         + std::to_string(inst->getOpcode())
+                        + std::to_string(Instruction ::Add)
                         + " 未定義のオペランド\n");
     } // switch
   } // try
@@ -516,6 +518,45 @@ void FortRock::_add_ret_inst
 }
 
 /**
+   ADD命令をモジュールのDFGに追加する
+   @brief b = add a0, a1
+ */
+void FortRock::_add_add_inst
+(const Instruction * inst) {
+  auto add = this->_module_gen->get_operator
+    (CDFG_Operator::eType::ADD);
+
+  auto elem = std::make_shared<CDFG_Element>(add);
+  elem->set_state(this->_state);
+  elem->set_step(this->_step);
+
+  // 入力
+  auto a0 = this->_module_gen->get_node
+    (inst->getOperand(0)->getName());
+  auto a1 = this->_module_gen->get_node
+    (inst->getOperand(1)->getName());
+
+  // 入力の定数対応
+  if (!inst->getOperand(0)->hasName())
+    a1 = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(0)));
+  if (!inst->getOperand(1)->hasName())
+    a1 = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(1)));
+
+  // 出力
+  auto b = this->_module_gen->get_node
+    (inst->getName());
+
+  elem->set_input(a0, 0);
+  elem->set_input(a1, 1);
+  elem->set_output(b, 0);
+
+  this->_module_gen->add_element(elem);
+  this->_step += add->get_latency() + 2;
+}
+
+/**
  * プログラムで使用するすべてのレジスタを取得し
  * variablesに格納する
  * Labelについても列挙し，格納する
@@ -542,6 +583,7 @@ void FortRock::_grub_variables
       case Instruction::SRem:   getop = 2; break;
       case Instruction::Mul:    getop = 2; break;
       case Instruction::SDiv:   getop = 2; break;
+      case Instruction::Add:    getop = 2; break;
       default:
         errs() << "ERROR:"
                << it->getOpcodeName() << " "
