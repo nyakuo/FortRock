@@ -82,6 +82,9 @@ CDFG_Node::get_safe_name(void) {
   while((at = safe_name.find('.', 0)) != std::string::npos)
     safe_name.replace(at, 1, "_");
 
+  while((at = safe_name.find('-', 0)) != std::string::npos)
+    safe_name.replace(at, 1, "m");
+
   return safe_name;
 }
 
