@@ -218,9 +218,16 @@ void FortRock::_add_load_inst
                   1, /* Num operator input */
                   this->_state,
                   this->_step));
-
+  // 入力
   auto a = this->_module_gen->get_node
     (this->_get_value_name(inst->getOperand(0)));
+
+  // 入力の定数対応
+  if (!inst->getOperand(0)->hasName())
+    a = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(0)));
+
+  // 出力
   auto b = this->_module_gen->get_node(inst->getName().str());
 
   elem->set_input(a, 0);
@@ -243,9 +250,16 @@ void FortRock::_add_store_inst
                   1, /* Number of operator input */
                   this->_state,
                   this->_step));
-
+  // 入力
   auto a = this->_module_gen->get_node
     (this->_get_value_name(inst->getOperand(0)));
+
+  // 入力の定数対応
+  if (!inst->getOperand(0)->hasName())
+    a = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(0)));
+
+  // 出力
   auto b = this->_module_gen->get_node
     (this->_get_value_name(inst->getOperand(1)));
 
@@ -271,10 +285,21 @@ void FortRock::_add_icmp_inst
                   this->_state,
                   this->_step));
 
+  // 入力
   auto a0 = this->_module_gen->get_node
     (this->_get_value_name(inst->getOperand(0)));
   auto a1 = this->_module_gen->get_node
     (this->_get_value_name(inst->getOperand(1)));
+
+  // 入力の定数対応
+  if (!inst->getOperand(0)->hasName())
+    a0 = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(0)));
+  if (!inst->getOperand(1)->hasName())
+    a1 = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(1)));
+
+  // 出力
   auto b = this->_module_gen->get_node(inst->getName());
 
   elem->set_input(a0, 0);
@@ -298,13 +323,25 @@ void FortRock::_add_select_inst
                   3, /* Number of operator input */
                   this->_state,
                   this->_step));
-
+  // cond
   auto tf = this->_module_gen->get_node
     (this->_get_value_name(inst->getOperand(0)));
+
+  // 入力
   auto a0 = this->_module_gen->get_node
     (this->_get_value_name(inst->getOperand(1)));
   auto a1 = this->_module_gen->get_node
     (this->_get_value_name(inst->getOperand(2)));
+
+  // 入力の定数対応
+  if (!inst->getOperand(0)->hasName())
+    a0 = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(0)));
+  if (!inst->getOperand(1)->hasName())
+    a1 = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(1)));
+
+  // 出力
   auto b = this->_module_gen->get_node(inst->getName());
 
   elem->set_input(tf, 0);
@@ -334,10 +371,21 @@ void FortRock::_add_srem_inst
   elem->set_state(this->_state);
   elem->set_step(this->_step);
 
+  // 入力
   auto a0 = this->_module_gen->get_node
     (inst->getOperand(0)->getName());
   auto a1 = this->_module_gen->get_node
     (inst->getOperand(1)->getName());
+
+  // 入力の定数対応
+  if (!inst->getOperand(0)->hasName())
+    a0 = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(0)));
+  if (!inst->getOperand(1)->hasName())
+    a1 = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(1)));
+
+  // 出力
   auto b = this->_module_gen->get_node
     (inst->getName());
 
@@ -367,10 +415,21 @@ void FortRock::_add_sdiv_inst
   elem->set_state(this->_state);
   elem->set_step(this->_step);
 
+  // 入力
   auto a0 = this->_module_gen->get_node
     (inst->getOperand(0)->getName());
   auto a1 = this->_module_gen->get_node
     (inst->getOperand(1)->getName());
+
+  // 入力の定数対応
+  if (!inst->getOperand(0)->hasName())
+    a0 = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(0)));
+  if (!inst->getOperand(1)->hasName())
+    a1 = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(1)));
+
+  // 出力
   auto b = this->_module_gen->get_node
     (inst->getName());
 
@@ -399,10 +458,21 @@ void FortRock::_add_mul_inst
   elem->set_state(this->_state);
   elem->set_step(this->_step);
 
+  // 入力
   auto a0 = this->_module_gen->get_node
     (inst->getOperand(0)->getName());
   auto a1 = this->_module_gen->get_node
     (inst->getOperand(1)->getName());
+
+  // 入力の定数対応
+  if (!inst->getOperand(0)->hasName())
+    a0 = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(0)));
+  if (!inst->getOperand(1)->hasName())
+    a1 = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(1)));
+
+  // 出力
   auto b = this->_module_gen->get_node
     (inst->getName());
 
@@ -538,7 +608,7 @@ void FortRock::_add_add_inst
 
   // 入力の定数対応
   if (!inst->getOperand(0)->hasName())
-    a1 = this->_module_gen->get_node
+    a0 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(0)));
   if (!inst->getOperand(1)->hasName())
     a1 = this->_module_gen->get_node
