@@ -169,24 +169,6 @@ bool FortRock::runOnModule
 
   // モジュールのファイル出力
   this->_module_gen->generate();
-  // --------------------------------------------------
-
-  // -------------------- debug --------------------
-  // std::list<Variable>::iterator debit = variables.begin();
-  // std::list<Variable>::iterator debend = variables.end();
-  // errs() << "/*\n";
-
-  // for(;debit != debend; ++debit)
-  //   errs() << debit->to_string() << "\n";
-
-  // std::list<Label>::iterator l_it = labels.begin();
-  // std::list<Label>::iterator l_end = labels.end();
-
-  // for(; l_it != l_end; ++l_it)
-  //   errs() << l_it->to_string() << "\n";
-
-  // errs() << "*/\n";
-  // -----------------------------------------------
 
   return false;
 } // runOnModule
