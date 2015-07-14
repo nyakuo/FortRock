@@ -123,6 +123,25 @@ CDFG_Element::get_output_at(const unsigned & at) {
 }
 
 /**
+   接続されている演算器の入力の数を取得
+   @return 接続されている演算器の入力の数
+ */
+unsigned
+CDFG_Element::get_num_input(void) {
+  return this->_ope->get_num_input();
+}
+
+/**
+   接続されている演算器の出力の数を取得
+   @return 接続されている演算器の出力の数
+ */
+
+unsigned
+CDFG_Element::get_num_output(void) {
+  return this->_ope->get_num_output();
+}
+
+/**
    演算に用いる演算器の取得
    @return 演算に用いる演算器
  */

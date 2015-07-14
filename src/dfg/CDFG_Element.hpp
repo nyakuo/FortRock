@@ -35,6 +35,8 @@ public:
   /* ゲッター */
   std::shared_ptr<CDFG_Node> & get_input_at(const unsigned & at);
   std::shared_ptr<CDFG_Node> & get_output_at(const unsigned & at);
+  unsigned get_num_input(void);
+  unsigned get_num_output(void);
   std::shared_ptr<CDFG_Operator> & get_operator(void);
   unsigned get_state(void);
   unsigned get_step(void);
