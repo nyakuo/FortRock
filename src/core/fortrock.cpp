@@ -641,7 +641,7 @@ void FortRock::_grub_variables
   for (auto it = inst_begin(*funct); //funct->begin();
        it != inst_end(*funct);   // funct->end();
        ++it) {
-
+    errs() << it->getOpcodeName() << "\n";
     if (!it->use_empty()) {
       // 命令に対応するオペランド数の指定
       int getop = 1;
@@ -699,11 +699,16 @@ void FortRock::_grub_variables
 
         case Instruction::Br:
           binst = dyn_cast<BranchInst>(&*it);
-          value = binst->getCondition();
-          type = value->getType();
+          if (binst->isConditional()) { // 条件付き分岐
+            value = binst->getCondition();
+            type = value->getType();
 
-          if(type->isPointerTy())
-            type = type->getPointerElementType();
+            if(type->isPointerTy())
+              type = type->getPointerElementType();
+          }
+          else { // 無条件分岐
+            value = binst->getSuccessor(0);
+          }
 
           node = std::make_shared<CDFG_Node>
             (value->getName(),
@@ -713,9 +718,11 @@ void FortRock::_grub_variables
 
           if (!this->_module_gen->find_node(node))
             this->_module_gen->add_node(node);
+          std::cout << "after parse branch instruction" << std::endl;
           break;
 
         case Instruction::Store:
+          // 未定義のregの追加
           for(auto i=0; i<2; ++i) {
             value = it->getOperand(i);
             type = value->getType();
@@ -723,12 +730,23 @@ void FortRock::_grub_variables
             if(type->isPointerTy())
               type = type->getPointerElementType();
 
-            node = std::make_shared<CDFG_Node>
-              (CDFG_Node(value->getName(),
-                         type->getPrimitiveSizeInBits(),
-                         true,
-                         CDFG_Node::eNode::REG));
+            auto name = this->_get_value_name(value);
 
+            if(!value->hasName()) { // 定数
+              node = std::make_shared<CDFG_Node>
+                (name,
+                 type->getPrimitiveSizeInBits(),
+                 true, //! @todo is signedが常にtrue
+                 CDFG_Node::eNode::PARAM,
+                 std::stol(this->_get_value_name(value)));
+            }
+            else { // 変数
+              node = std::make_shared<CDFG_Node>
+                (CDFG_Node(name,
+                           type->getPrimitiveSizeInBits(),
+                           true, //! @todo is signedが常にtrue
+                           CDFG_Node::eNode::REG));
+            }
             if (!this->_module_gen->find_node(node))
               this->_module_gen->add_node(node);
           }
