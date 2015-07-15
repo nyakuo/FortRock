@@ -192,8 +192,9 @@ void FortRock::_parse_instructions
     case Instruction::Mul:    this->_add_mul_inst(inst);    break;
     case Instruction::SDiv:   this->_add_sdiv_inst(inst);   break;
     case Instruction::Add:    this->_add_add_inst(inst);    break;
+    case Instruction::Sub:    this->_add_sub_inst(inst);    break;
     default:
-      throw std::string(std::string("ERROR:")
+      throw std::string(std::string("ERROR (") + __func__ + " :"
                         + std::string(inst->getOpcodeName())
                         + " "
                         + std::to_string(inst->getOpcode())
@@ -642,6 +643,41 @@ void FortRock::_add_add_inst
   this->_step += add->get_latency() + 2;
 }
 
+void FortRock::_add_sub_inst(const Instruction * inst) {
+  auto sub = this->_module_gen->get_operator
+    (CDFG_Operator::eType::SUB);
+
+  auto elem = std::make_shared<CDFG_Element>(sub);
+  elem->set_state(this->_state);
+  elem->set_step(this->_step);
+
+  // 入力
+  // 入力
+  auto a0 = this->_module_gen->get_node
+    (inst->getOperand(0)->getName());
+  auto a1 = this->_module_gen->get_node
+    (inst->getOperand(1)->getName());
+
+  // 入力の定数対応
+  if (!inst->getOperand(0)->hasName())
+    a0 = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(0)));
+  if (!inst->getOperand(1)->hasName())
+    a1 = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(1)));
+
+  // 出力
+  auto b = this->_module_gen->get_node
+    (inst->getName());
+
+  elem->set_input(a0, 0);
+  elem->set_input(a1, 1);
+  elem->set_output(b, 0);
+
+  this->_module_gen->add_element(elem);
+  this->_step += sub->get_latency() + 2;
+}
+
 /**
  * プログラムで使用するすべてのレジスタを取得し
  * variablesに格納する
@@ -670,8 +706,11 @@ void FortRock::_grub_variables
       case Instruction::Mul:    getop = 2; break;
       case Instruction::SDiv:   getop = 2; break;
       case Instruction::Add:    getop = 2; break;
+      case Instruction::Sub:    getop = 2; break;
       default:
-        errs() << "ERROR:"
+        errs() << "ERROR ("
+               << __func__
+               << "):"
                << it->getOpcodeName() << " "
                << it->getOpcode() << " 未定義のオペランド\n";
         getop = 0;
@@ -768,7 +807,7 @@ void FortRock::_grub_variables
           break;
 
         default:
-          throw std::string(std::string("ERROR:")
+          throw std::string(std::string("ERROR (") + __func__ + "):"
                             + std::string(it->getOpcodeName())
                             + " "
                             + std::to_string(it->getOpcode())

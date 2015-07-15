@@ -67,6 +67,9 @@ void CInstancingOperator::_parse_operator_info
     if (xmlStrcmp(cur->name, (const xmlChar*)"add_int") == 0)
       ope_gen->set_type(CDFG_Operator::eType::ADD);
 
+    else if (xmlStrcmp(cur->name, (const xmlChar*)"sub_int") == 0)
+      ope_gen->set_type(CDFG_Operator::eType::SUB);
+
     else if (xmlStrcmp(cur->name, (const xmlChar*)"mul") == 0)
       ope_gen->set_type(CDFG_Operator::eType::MUL);
 

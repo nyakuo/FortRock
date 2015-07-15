@@ -79,6 +79,7 @@ private:
   void _add_mul_inst(const Instruction * inst);
   void _add_sdiv_inst(const Instruction * inst);
   void _add_add_inst(const Instruction * inst);
+  void _add_sub_inst(const Instruction * inst);
 
 }; // FortRock
 
