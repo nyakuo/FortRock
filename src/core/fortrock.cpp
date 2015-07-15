@@ -492,22 +492,38 @@ void FortRock::_add_mul_inst
  */
 void FortRock::_add_br_inst
 (const Instruction * inst) {
+  unsigned num_ope_input = 1;
+  auto binst = dyn_cast<BranchInst>(&*inst);
+
+  // 条件付き分岐かどうか
+  if (binst->isConditional())
+    num_ope_input = 3;
+
   auto elem = std::make_shared<CDFG_Element>
     (CDFG_Element(CDFG_Operator::eType::BR,
-                  3, /* Number of operator input */
+                  num_ope_input,
                   this->_state,
                   this->_step));
-  auto tf = this->_module_gen->get_node
-    (this->_get_value_name(inst->getOperand(0)));
-  auto lfalse = this->_module_gen->get_node
-    (this->_get_value_name(inst->getOperand(1)));
-  auto ltrue = this->_module_gen->get_node
-    (this->_get_value_name(inst->getOperand(2)));
-  auto state = this->_module_gen->get_node(CDFG_Node::eNode::STATE);
 
-  elem->set_input(tf, 0);
-  elem->set_input(ltrue, 1);
-  elem->set_input(lfalse, 2);
+  if (binst->isConditional()) { // 条件付き分岐
+    auto tf = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(0)));
+    auto lfalse = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(1)));
+    auto ltrue = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(2)));
+    elem->set_input(tf, 0);
+    elem->set_input(ltrue, 1);
+    elem->set_input(lfalse, 2);
+  }
+  else { // 無条件分岐
+    auto label = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(0)));
+    elem->set_input(label, 0);
+  }
+
+  auto state = this->_module_gen->get_node
+    (CDFG_Node::eNode::STATE);
   elem->set_output(state, 0);
 
   this->_module_gen->add_element(elem);
@@ -718,7 +734,6 @@ void FortRock::_grub_variables
 
           if (!this->_module_gen->find_node(node))
             this->_module_gen->add_node(node);
-          std::cout << "after parse branch instruction" << std::endl;
           break;
 
         case Instruction::Store:
