@@ -4,7 +4,7 @@
     <add_int>
       <use_ip_core>  true  </use_ip_core>
       <latency>      1      </latency>
-      <module_name>  myAdd  </module_name>
+      <module_name>  Add  </module_name>
       <instance_name> add    </instance_name>
       <num_module>   1      </num_module>
 
