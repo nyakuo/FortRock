@@ -16,25 +16,7 @@
 #include "../dfg/COutput.hpp"
 #include "../dfg/CModuleGenerator.hpp"
 #include "../xml/CInstancingOperator.hpp"
-
 using namespace llvm;
-
-// /**
-//  * LLVMのInstructionのOpcode
-//  * @todo LLVMのものに置き換える
-//  */
-// enum inst_opcode {
-//   RET    = 1,
-//   BR     = 2,
-//   LOAD   = 27,
-//   STORE  = 28,
-//   ICMP   = 46,
-//   PHI    = 48,
-//   SELECT = 50,
-//   SREM   = 18,
-//   MUL    = 12,
-//   SDIV   = 15,
-// };
 
 /**
  * @class FortRock
