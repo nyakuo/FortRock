@@ -32,6 +32,7 @@ public:
       ICMP,
       PHI,
       SELECT,
+      SWITCH,
       };
 
   //! @todo 入出力Nodeを自動的に作成する機能
