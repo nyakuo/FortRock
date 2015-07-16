@@ -2,6 +2,7 @@
 #define _CDFG_NODE_H
 
 #include <string>
+#include <cmath>
 
 /**
    @class CDFG_Node
@@ -46,8 +47,11 @@ public:
   std::string & get_verilog_name(void);
   unsigned & get_bit_width(void);
   bool & get_is_signed(void);
+  bool get_is_float(void);
   CDFG_Node::eNode & get_type(void);
-  double & get_parameter(void);
+  double & get_fparameter(void);
+  long get_parameter(void);
+  std::string get_param_str(void);
   long & get_address(void);
   long & get_access_port(void);
 
@@ -59,6 +63,7 @@ private:
   std::string _verilog_name; //! Verilog HDL上での名前
   unsigned _bit_width;       //! ビット幅
   bool _is_signed;           //! signedかどうか
+  bool _is_float;            //! 浮動小数点かどうか
   CDFG_Node::eNode _type;    //! ノードの種類
   double _parameter;         //! parameter用定数
   long _address;             //! アドレス (only array)
