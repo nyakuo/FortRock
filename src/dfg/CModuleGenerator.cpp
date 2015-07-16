@@ -13,22 +13,22 @@ CModuleGenerator::CModuleGenerator(const std::string & filename,
   // 基本的なノードの確保
   // 基本入出力
   auto i_clk = std::make_shared<CDFG_Node>
-    (CDFG_Node("clk", 1, false, CDFG_Node::eNode::CLK));
+    ("clk", 1, false, CDFG_Node::eNode::CLK);
   auto i_res = std::make_shared<CDFG_Node>
-    (CDFG_Node("res_p", 1, false, CDFG_Node::eNode::RES));
+    ("res_p", 1, false, CDFG_Node::eNode::RES);
   auto i_req = std::make_shared<CDFG_Node>
-    (CDFG_Node("req_p", 1, false, CDFG_Node::eNode::REQ));
+    ("req_p", 1, false, CDFG_Node::eNode::REQ);
   auto i_ce = std::make_shared<CDFG_Node>
-    (CDFG_Node("ce_p", 1, false, CDFG_Node::eNode::CE));
+    ("ce_p", 1, false, CDFG_Node::eNode::CE);
   auto o_fin = std::make_shared<CDFG_Node>
-    (CDFG_Node("fin_p", 1, false, CDFG_Node::eNode::FIN));
+    ("fin_p", 1, false, CDFG_Node::eNode::FIN);
   // 定数
   auto p_true = std::make_shared<CDFG_Node>
-    (CDFG_Node("TRUE", 1, false, CDFG_Node::eNode::TRUE, 1));
+    ("TRUE", 1, false, CDFG_Node::eNode::TRUE, 1);
   auto p_false = std::make_shared<CDFG_Node>
-    (CDFG_Node("FALSE", 1, false, CDFG_Node::eNode::FALSE, 0));
+    ("FALSE", 1, false, CDFG_Node::eNode::FALSE, 0);
   auto p_zero = std::make_shared<CDFG_Node>
-    (CDFG_Node("ZERO", 1, false, CDFG_Node::eNode::ZERO, 0));
+    ("ZERO", 1, false, CDFG_Node::eNode::ZERO, 0);
 
   this->_module->add_node(i_clk);
   this->_module->add_node(i_res);
@@ -143,60 +143,60 @@ void CModuleGenerator::_generate_test_data(void) {
   // ノード確保
   // 基本入出力
   auto i_clk = std::make_shared<CDFG_Node>
-    (CDFG_Node("i_clk", 1, false, CDFG_Node::eNode::CLK));
+    ("i_clk", 1, false, CDFG_Node::eNode::CLK);
   auto i_res = std::make_shared<CDFG_Node>
-    (CDFG_Node("i_res_p", 1, false, CDFG_Node::eNode::RES));
+    ("i_res_p", 1, false, CDFG_Node::eNode::RES);
   auto i_req = std::make_shared<CDFG_Node>
-    (CDFG_Node("i_req_p", 1, false, CDFG_Node::eNode::REQ));
+    ("i_req_p", 1, false, CDFG_Node::eNode::REQ);
   auto i_ce = std::make_shared<CDFG_Node>
-    (CDFG_Node("i_ce_p", 1, false, CDFG_Node::eNode::CE));
+    ("i_ce_p", 1, false, CDFG_Node::eNode::CE);
   auto o_fin = std::make_shared<CDFG_Node>
-    (CDFG_Node("o_fin_p", 1, false, CDFG_Node::eNode::FIN));
+    ("o_fin_p", 1, false, CDFG_Node::eNode::FIN);
 
   // 入力
   auto a = std::make_shared<CDFG_Node>
-    (CDFG_Node("i_a", 8, true, CDFG_Node::eNode::IN));
+    ("i_a", 8, true, CDFG_Node::eNode::IN);
   auto b = std::make_shared<CDFG_Node>
-    (CDFG_Node("i_b", 8, true, CDFG_Node::eNode::IN));
+    ("i_b", 8, true, CDFG_Node::eNode::IN);
 
   // 出力
   auto out = std::make_shared<CDFG_Node>
-    (CDFG_Node("o_out", 8, true, CDFG_Node::eNode::OUT));
+    ("o_out", 8, true, CDFG_Node::eNode::OUT);
 
   // 定数
   auto p_3 = std::make_shared<CDFG_Node>
-    (CDFG_Node("p_3", 8, true, CDFG_Node::eNode::PARAM, 3));
+    ("p_3", 8, true, CDFG_Node::eNode::PARAM, 3);
   auto p_true = std::make_shared<CDFG_Node>
-    (CDFG_Node("TRUE", 1, false, CDFG_Node::eNode::PARAM, 1));
+    ("TRUE", 1, false, CDFG_Node::eNode::PARAM, 1);
   auto p_false = std::make_shared<CDFG_Node>
-    (CDFG_Node("FALSE", 1, false, CDFG_Node::eNode::PARAM, 0));
+    ("FALSE", 1, false, CDFG_Node::eNode::PARAM, 0);
   auto p_zero = std::make_shared<CDFG_Node>
-    (CDFG_Node("ZERO", 1, false, CDFG_Node::eNode::PARAM, 0));
+    ("ZERO", 1, false, CDFG_Node::eNode::PARAM, 0);
 
   // テンプレートレジスタ
   auto t1 = std::make_shared<CDFG_Node>
-    (CDFG_Node("t1", 8, true, CDFG_Node::eNode::REG));
+    ("t1", 8, true, CDFG_Node::eNode::REG);
 
   // 演算器の入出力
   auto adder1_i_a = std::make_shared<CDFG_Node>
-    (CDFG_Node("mr_adder1_i_a", 8, true, CDFG_Node::eNode::REG));
+    ("mr_adder1_i_a", 8, true, CDFG_Node::eNode::REG);
   auto adder1_i_b = std::make_shared<CDFG_Node>
-    (CDFG_Node("mr_adder1_i_b", 8, true, CDFG_Node::eNode::REG));
+    ("mr_adder1_i_b", 8, true, CDFG_Node::eNode::REG);
   auto adder1_out = std::make_shared<CDFG_Node>
-    (CDFG_Node("mw_adder1_output", 8, true, CDFG_Node::eNode::WIRE));
+    ("mw_adder1_output", 8, true, CDFG_Node::eNode::WIRE);
 
   auto adder2_i_a = std::make_shared<CDFG_Node>
-    (CDFG_Node("mr_adder2_i_a", 8, true, CDFG_Node::eNode::REG));
+    ("mr_adder2_i_a", 8, true, CDFG_Node::eNode::REG);
   auto adder2_i_b = std::make_shared<CDFG_Node>
-    (CDFG_Node("mr_adder2_i_b", 8, true, CDFG_Node::eNode::REG));
+    ("mr_adder2_i_b", 8, true, CDFG_Node::eNode::REG);
   auto adder2_out = std::make_shared<CDFG_Node>
-    (CDFG_Node("mw_adder2_output", 8, true, CDFG_Node::eNode::WIRE));
+    ("mw_adder2_output", 8, true, CDFG_Node::eNode::WIRE);
 
   // システム変数
   auto s_state = std::make_shared<CDFG_Node>
-    (CDFG_Node("r_sys_state", 8, false, CDFG_Node::eNode::STATE));
+    ("r_sys_state", 8, false, CDFG_Node::eNode::STATE);
   auto s_step = std::make_shared<CDFG_Node>
-    (CDFG_Node("r_sys_step", 8, false, CDFG_Node::eNode::STEP));
+    ("r_sys_step", 8, false, CDFG_Node::eNode::STEP);
 
   // 信号登録
   this->_module->add_node(i_clk);
@@ -224,10 +224,10 @@ void CModuleGenerator::_generate_test_data(void) {
   // 演算器
   //! @todo CLKやCEの接続を行うとElementの入出力と整合性がとれなくなる
   auto add = std::make_shared<CDFG_Operator>
-    (CDFG_Operator("my_add1",
-                   "my_add",
-                   1,
-                   CDFG_Operator::eType::ADD));
+    ("my_add1",
+     "my_add",
+     1,
+     CDFG_Operator::eType::ADD);
 
   add->add_input_port("i_a", adder1_i_a);
   add->add_input_port("i_b", adder1_i_b);
@@ -236,10 +236,10 @@ void CModuleGenerator::_generate_test_data(void) {
   add->add_input_port("ce", i_ce);
 
   auto sub = std::make_shared<CDFG_Operator>
-    (CDFG_Operator("my_sub1",
-                   "my_sub",
-                   1,
-                   CDFG_Operator::eType::SUB));
+    ("my_sub1",
+     "my_sub",
+     1,
+     CDFG_Operator::eType::SUB);
 
   sub->add_input_port("i_a", adder2_i_a);
   sub->add_input_port("i_b", adder2_i_b);
@@ -253,7 +253,7 @@ void CModuleGenerator::_generate_test_data(void) {
 
   // DFG
   // t1 = input_a + input_b
-  auto elem1 = std::make_shared<CDFG_Element>(CDFG_Element(add));
+  auto elem1 = std::make_shared<CDFG_Element>(add);
   elem1->set_input(a, 0);
   elem1->set_input(b, 1);
   elem1->set_output(t1, 0);
@@ -262,7 +262,7 @@ void CModuleGenerator::_generate_test_data(void) {
   this->_module->add_element(elem1);
 
   // out = t1 + p_3
-  auto elem2 = std::make_shared<CDFG_Element>(CDFG_Element(sub));
+  auto elem2 = std::make_shared<CDFG_Element>(sub);
   elem2->set_input(t1, 0);
   elem2->set_input(p_3, 1);
   elem2->set_output(out, 0);

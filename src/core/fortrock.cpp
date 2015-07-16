@@ -102,10 +102,10 @@ void FortRock::_set_IO
         in_out = CDFG_Node::eNode::OUT;
 
       auto node = std::make_shared<CDFG_Node>
-        (CDFG_Node(arg_it->getName(),
-                   type->getPrimitiveSizeInBits(),
-                   true, //! @todo isSigned対応
-                   in_out));
+        (arg_it->getName(),
+         type->getPrimitiveSizeInBits(),
+         true, //! @todo isSigned対応
+         in_out);
 
       this->_module_gen->add_node(node);
     } // if
@@ -161,10 +161,10 @@ bool FortRock::runOnModule
   auto step_bit_width = this->_get_required_bit_width
     (this->_module_gen->get_max_step());
   auto step_node = std::make_shared<CDFG_Node>
-    (CDFG_Node(this->_STEP_NAME,
-               step_bit_width,
-               false, /* is signed */
-               CDFG_Node::eNode::STEP));
+    (this->_STEP_NAME,
+     step_bit_width,
+     false, /* is signed */
+     CDFG_Node::eNode::STEP);
 
   this->_module_gen->add_node(step_node);
 
@@ -217,10 +217,11 @@ void FortRock::_parse_instructions
 void FortRock::_add_load_inst
 (const Instruction * inst) {
   auto elem = std::make_shared<CDFG_Element>
-    (CDFG_Element(CDFG_Operator::eType::LOAD,
-                  1, /* Num operator input */
-                  this->_state,
-                  this->_step));
+    (CDFG_Operator::eType::LOAD,
+     1, /* Num operator input */
+     this->_state,
+     this->_step);
+
   // 入力
   auto a = this->_module_gen->get_node
     (this->_get_value_name(inst->getOperand(0)));
@@ -249,10 +250,11 @@ void FortRock::_add_load_inst
 void FortRock::_add_store_inst
 (const Instruction * inst) {
   auto elem = std::make_shared<CDFG_Element>
-    (CDFG_Element(CDFG_Operator::eType::STORE,
-                  1, /* Number of operator input */
-                  this->_state,
-                  this->_step));
+    (CDFG_Operator::eType::STORE,
+     1, /* Number of operator input */
+     this->_state,
+     this->_step);
+
   // 入力
   auto a = this->_module_gen->get_node
     (this->_get_value_name(inst->getOperand(0)));
@@ -283,10 +285,10 @@ void FortRock::_add_store_inst
 void FortRock::_add_icmp_inst
 (const Instruction * inst) {
   auto elem = std::make_shared<CDFG_Element>
-    (CDFG_Element(CDFG_Operator::eType::ICMP,
-                  2, /* Number of operator input */
-                  this->_state,
-                  this->_step));
+    (CDFG_Operator::eType::ICMP,
+     2, /* Number of operator input */
+     this->_state,
+     this->_step);
 
   // 入力
   auto a0 = this->_module_gen->get_node
@@ -322,10 +324,11 @@ void FortRock::_add_icmp_inst
 void FortRock::_add_select_inst
 (const Instruction * inst) {
   auto elem = std::make_shared<CDFG_Element>
-    (CDFG_Element(CDFG_Operator::eType::SELECT,
-                  3, /* Number of operator input */
-                  this->_state,
-                  this->_step));
+    (CDFG_Operator::eType::SELECT,
+     3, /* Number of operator input */
+     this->_state,
+     this->_step);
+
   // cond
   auto tf = this->_module_gen->get_node
     (this->_get_value_name(inst->getOperand(0)));
@@ -503,10 +506,10 @@ void FortRock::_add_br_inst
     num_ope_input = 3;
 
   auto elem = std::make_shared<CDFG_Element>
-    (CDFG_Element(CDFG_Operator::eType::BR,
-                  num_ope_input,
-                  this->_state,
-                  this->_step));
+    (CDFG_Operator::eType::BR,
+     num_ope_input,
+     this->_state,
+     this->_step);
 
   if (binst->isConditional()) { // 条件付き分岐
     auto tf = this->_module_gen->get_node
@@ -557,10 +560,10 @@ void FortRock::_add_phi_inst
 (const Instruction * inst) {
   auto phinode = dynamic_cast<PHINode*>(const_cast<Instruction*>(inst));
   auto elem = std::make_shared<CDFG_Element>
-    (CDFG_Element(CDFG_Operator::eType::PHI,
-                  phinode->getNumIncomingValues() << 1, /* Number of operator input */
-                  this->_state,
-                  this->_step));
+    (CDFG_Operator::eType::PHI,
+     phinode->getNumIncomingValues() << 1, /* Number of operator input */
+     this->_state,
+     this->_step);
 
   for (auto i = 0;
        i < phinode->getNumIncomingValues();
@@ -804,10 +807,10 @@ void FortRock::_grub_variables
         }
         else { // 変数
           node = std::make_shared<CDFG_Node>
-            (CDFG_Node(name,
-                       type->getPrimitiveSizeInBits(),
-                       true, //! @todo is signedが常にtrue
-                       CDFG_Node::eNode::REG));
+            (name,
+             type->getPrimitiveSizeInBits(),
+             true, //! @todo is signedが常にtrue
+             CDFG_Node::eNode::REG);
         }
         if (!this->_module_gen->find_node(node))
           this->_module_gen->add_node(node);
@@ -863,10 +866,10 @@ void FortRock::_grub_variables
             }
             else { // 変数
               node = std::make_shared<CDFG_Node>
-                (CDFG_Node(name,
-                           type->getPrimitiveSizeInBits(),
-                           true, //! @todo is signedが常にtrue
-                           CDFG_Node::eNode::REG));
+                (name,
+                 type->getPrimitiveSizeInBits(),
+                 true, //! @todo is signedが常にtrue
+                 CDFG_Node::eNode::REG);
             }
             if (!this->_module_gen->find_node(node))
               this->_module_gen->add_node(node);
@@ -908,11 +911,11 @@ void FortRock::_grub_labels
   for(;ite != funct->end();
       ++ite, ++i) {
     auto label_node = std::make_shared<CDFG_Node>
-      (CDFG_Node(ite->getName(),
-                 label_bit_width,
-                 false,
-                 CDFG_Node::eNode::LABEL,
-                 i + 1 /* label parameter ( + reset) */));
+      (ite->getName(),
+       label_bit_width,
+       false,
+       CDFG_Node::eNode::LABEL,
+       i + 1 /* label parameter ( + reset) */);
 
     if (!this->_module_gen->find_node(label_node))
       this->_module_gen->add_node(label_node);
@@ -920,26 +923,26 @@ void FortRock::_grub_labels
 
   // state_nodeの追加
   auto state_node = std::make_shared<CDFG_Node>
-    (CDFG_Node(this->_CUR_STATE_NAME,
-               label_bit_width,
-               false,
-               CDFG_Node::eNode::STATE));
+    (this->_CUR_STATE_NAME,
+     label_bit_width,
+     false,
+     CDFG_Node::eNode::STATE);
   auto prev_state_node = std::make_shared<CDFG_Node>
-    (CDFG_Node(this->_PREV_STATE_NAME,
-               label_bit_width,
-               false,
-               CDFG_Node::eNode::PREV_STATE));
+    (this->_PREV_STATE_NAME,
+     label_bit_width,
+     false,
+     CDFG_Node::eNode::PREV_STATE);
 
   this->_module_gen->add_node(state_node);
   this->_module_gen->add_node(prev_state_node);
 
   // 終了状態ステート(label)の追加
   auto finish_label = std::make_shared<CDFG_Node>
-    (CDFG_Node(this->_FINISH_STATE_NAME,
-               label_bit_width,
-               false,
-               CDFG_Node::eNode::FINISH_LABEL,
-               i + 1/* label parameter */));
+    (this->_FINISH_STATE_NAME,
+     label_bit_width,
+     false,
+     CDFG_Node::eNode::FINISH_LABEL,
+     i + 1/* label parameter */);
 
   this->_module_gen->add_node(finish_label);
 } // _grub_labels

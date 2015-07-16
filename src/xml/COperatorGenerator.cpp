@@ -42,10 +42,10 @@ void COperatorGenerator::generate_operator
     // 出力ポートのインスタンス化
     for (auto & onode : this->_onode_info) {
       auto node = std::make_shared<CDFG_Node>
-        (CDFG_Node(this->_instance_name + '_' + onode->get_name(),
-                   onode->get_bit_width(),
-                   onode->get_is_signed(),
-                   onode->get_type()));
+        (this->_instance_name + '_' + onode->get_name(),
+         onode->get_bit_width(),
+         onode->get_is_signed(),
+         onode->get_type());
       ope->add_output_port(onode->get_name(),
                            node);
       module_gen->add_node(node);
