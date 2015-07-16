@@ -147,14 +147,15 @@ bool FortRock::runOnModule
   for (auto bb_it = it->begin(); // Basic Block
        bb_it != it->end();
        ++bb_it) {
+
     for (auto inst = bb_it->begin();
          inst != bb_it->end();
-         ++inst) { // Instruction
+         ++inst)  // Instruction
       this->_parse_instructions(inst);
-    }
+
     this->_step = 0;
     ++this->_state;
-  }
+  } // for : bb_it
 
   // step信号の追加
   auto step_bit_width = this->_get_required_bit_width
