@@ -925,9 +925,15 @@ void CModuleGenerator::_generate_always(void) {
   auto state_step_list = sm_gen.get_state_step_list();
   for(auto ite_state_step = state_step_list.begin();
       ite_state_step != state_step_list.end(); ) {
-    // ステートの出力
-    this->_cout << state_node->get_bit_width()
-                << "'h" << std::hex << ite_state_step->first << ":\n";
+    // caseの出力
+    auto label_node = this->_module->get_label_node
+      (ite_state_step->first);
+
+    this->_cout << label_node->get_param_str()
+                << ": //"
+                << label_node->get_verilog_name()
+                << "\n";
+
     this->_cout.indent_right();
     this->_cout << "begin\n";
 
@@ -936,7 +942,9 @@ void CModuleGenerator::_generate_always(void) {
     this->_cout << step_node->get_verilog_name() << " <= "
                 << step_node->get_verilog_name() << " + 1'h1;\n";
     this->_cout << "case (" << step_node->get_verilog_name() << ")\n";
+
     auto range = state_step_list.equal_range(ite_state_step->first);
+
     for (auto ite = range.first;
          ite != range.second;
          ++ite, ++ite_state_step) {
