@@ -394,18 +394,9 @@ void CModuleGenerator::_generate_define(void) {
 
     streams[type] << node->get_verilog_name();
 
-    if (type == param) {
-      streams[param] << " = ";
-
-      if (node->get_parameter() < 0) // 負の数
-        streams[param] << "-";
-
-      streams[param] << node->get_bit_width()
-                     << "'h"
-                     << std::hex << std::abs(node->get_parameter());
-
-      streams[param] << std::dec;
-    }
+    if (type == param)
+      streams[param] << " = "
+                     << node->get_param_str();
 
     streams[type] << ";\n";
   }
@@ -852,9 +843,74 @@ void CModuleGenerator::_generate_always(void) {
 
         break;
       }
-      // case CDFG_Operator::eType:::
-      // case CDFG_Operator::eType:::
-      //   break;
+
+    case CDFG_Operator::eType::SWITCH:
+      {
+        auto condition_node = elem->get_input_at(0);
+        auto default_label = elem->get_input_at(1);
+
+        process_str.append(this->_cout.output_indent()
+                           + "case ("
+                           + condition_node->get_verilog_name()
+                           + ")\n");
+
+        this->_cout.indent_right();
+
+        // case文の内部を出力
+        for (auto i=2; i<elem->get_num_input(); i+=2) {
+          auto val_node = elem->get_input_at(i);
+          auto label_node = elem->get_input_at(i+1);
+
+          process_str.append(this->_cout.output_indent());
+
+          if (val_node->get_parameter() < 0) // 負の数
+            process_str.append("-");
+
+          auto asm_name = val_node->get_asm_name();
+          asm_name.erase
+            (std::remove(asm_name.begin(),
+                         asm_name.end(),
+                         '-'),
+             asm_name.end());
+
+          process_str.append(val_node->get_param_str()
+                             + ": "
+                             + state_node->get_verilog_name()
+                             + " <= "
+                             + label_node->get_verilog_name()
+                             + ";\n");
+        }
+
+        // defaultの出力
+        process_str.append(this->_cout.output_indent()
+                           + "default: "
+                           + state_node->get_verilog_name()
+                           + " <= "
+                           + default_label->get_verilog_name()
+                           + ";\n");
+
+        this->_cout.indent_left();
+
+        process_str.append(this->_cout.output_indent()
+                           + "endcase\n");
+
+        // prev_stateの保存
+        process_str.append(this->_cout.output_indent()
+                           + prev_state->get_verilog_name()
+                           + " <= "
+                           + state_node->get_verilog_name()
+                           + ";\n");
+
+        // stepノードの初期化
+        process_str.append(this->_cout.output_indent()
+                           + step_node->get_verilog_name()
+                           + " <= 0;\n");
+
+        sm_gen.add_state_process(state,
+                                 step,
+                                 process_str);
+        break;
+      }
 
       //! @todo 未対応の命令に対応
 

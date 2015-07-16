@@ -193,6 +193,7 @@ void FortRock::_parse_instructions
     case Instruction::SDiv:   this->_add_sdiv_inst(inst);   break;
     case Instruction::Add:    this->_add_add_inst(inst);    break;
     case Instruction::Sub:    this->_add_sub_inst(inst);    break;
+    case Instruction::Switch: this->_add_switch_inst(inst); break;
     default:
       throw std::string(std::string("ERROR (") + __func__ + " :"
                         + std::string(inst->getOpcodeName())
@@ -643,7 +644,12 @@ void FortRock::_add_add_inst
   this->_step += add->get_latency() + 2;
 }
 
-void FortRock::_add_sub_inst(const Instruction * inst) {
+/**
+   SUB命令をモジュールのDFGに追加する
+   @brief b = sub a0, a1
+ */
+void FortRock::_add_sub_inst
+(const Instruction * inst) {
   auto sub = this->_module_gen->get_operator
     (CDFG_Operator::eType::SUB);
 
@@ -651,7 +657,6 @@ void FortRock::_add_sub_inst(const Instruction * inst) {
   elem->set_state(this->_state);
   elem->set_step(this->_step);
 
-  // 入力
   // 入力
   auto a0 = this->_module_gen->get_node
     (inst->getOperand(0)->getName());
@@ -676,6 +681,67 @@ void FortRock::_add_sub_inst(const Instruction * inst) {
 
   this->_module_gen->add_element(elem);
   this->_step += sub->get_latency() + 2;
+}
+
+/**
+   switch命令をモジュールのDFGに追加する
+   @brief switch %val, label %otherwise
+            [ 0, label %onzero
+              1, label %onone
+              2, label %ontwo
+              ...]
+
+          case (val)
+            0: state <= onzero;
+            1: state <= onone;
+            2: state <= ontwo;
+            default: state <= otherwise;
+          endcase
+ */
+void FortRock::_add_switch_inst
+(const Instruction * inst) {
+  auto sw_inst = dyn_cast<SwitchInst>(&*inst);
+
+  auto elem = std::make_shared<CDFG_Element>
+    (CDFG_Operator::eType::SWITCH,
+     2 + (sw_inst->getNumCases() << 1), // condition + default +  (vals + labels) * cases
+     this->_state,
+     this->_step);
+
+  // 条件変数
+  auto condition_node = this->_module_gen->get_node
+    (sw_inst->getCondition()->getName());
+  elem->set_input(condition_node, 0);
+
+  // default遷移先
+  auto default_label = this->_module_gen->get_node
+    (sw_inst->getDefaultDest()->getName());
+  elem->set_input(default_label, 1);
+
+  // case文内の出力
+  auto i = 2;
+  for (auto ite = sw_inst->case_begin();
+       ite != sw_inst->case_end();
+       ++ite, i+=2) {
+    int val = ite.getCaseValue()->getSExtValue();
+    auto label = ite.getCaseSuccessor();
+
+    auto val_node = std::make_shared<CDFG_Node>
+      (std::to_string(val),
+       this->_get_required_bit_width(val),
+       true, /* is signed */ //! @todo 常にtrue
+       CDFG_Node::eNode::PARAM,
+       val);
+
+    auto label_node = this->_module_gen->get_node
+      (label->getName());
+
+    elem->set_input(val_node, i);
+    elem->set_input(label_node, i+1);
+  }
+
+  this->_module_gen->add_element(elem);
+  this->_step += 1;
 }
 
 /**
