@@ -106,6 +106,24 @@ CModule::get_node(const std::string & node_name) {
 }
 
 /**
+   指定されたステップに対応するラベルNodeを取得する
+   @param[in] state ステート番号
+   @return ラベルNode
+*/
+std::shared_ptr<CDFG_Node> &
+CModule::get_label_node(const unsigned & state) {
+  auto ite =
+    std::find_if(this->_node_list.begin(),
+                 this->_node_list.end(),
+                 [state](std::shared_ptr<CDFG_Node> obj) -> bool {
+                   return (obj->get_type() == CDFG_Node::eNode::LABEL
+                           || obj->get_type() == CDFG_Node::eNode::FINISH_LABEL)
+                     && obj->get_parameter() == state;
+                 });
+  return *ite;
+}
+
+/**
    モジュール内のノードの検索
    @param[in] asm_name ノードLLVM IR上での名前
    @return 検索結果 T/F
