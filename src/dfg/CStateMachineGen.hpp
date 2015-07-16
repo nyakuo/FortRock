@@ -15,16 +15,20 @@ public:
   CStateMachineGen(void) {}
   ~CStateMachineGen(void) {}
 
+  /** ステートマシンの処理を出力 */
   std::string gen_state_machine(const unsigned & state,
-                                const unsigned & step); /** ステートマシンの処理を出力 */
+                                const unsigned & step);
 
+  /** ステートマシンの処理をリストに追加 */
   void add_state_process(const unsigned & state,
                          const unsigned & step,
-                         const std::string & process); /** ステートマシンの処理をリストに追加 */
-
-  std::multimap<unsigned, unsigned> get_state_step_list(void); /** ステートマシンに存在する
-                                                                                       すべてのステート・ステップの
-                                                                                       ペアのリストを取得 */
+                         const std::string & process);
+  /**
+     ステートマシンに存在する
+     すべてのステート・ステップの
+     ペアのリストを取得
+  */
+  std::multimap<unsigned, unsigned> get_state_step_list(void);
 
 private:
   /**
