@@ -395,8 +395,15 @@ void CModuleGenerator::_generate_define(void) {
     streams[type] << node->get_verilog_name();
 
     if (type == param) {
-      streams[param] << " = " << node->get_bit_width()
-                     << "'h" << std::hex << node->get_parameter();
+      streams[param] << " = ";
+
+      if (node->get_parameter() < 0) // 負の数
+        streams[param] << "-";
+
+      streams[param] << node->get_bit_width()
+                     << "'h"
+                     << std::hex << std::abs(node->get_parameter());
+
       streams[param] << std::dec;
     }
 
