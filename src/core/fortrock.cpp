@@ -289,7 +289,7 @@ void FortRock::_add_icmp_inst
 (const Instruction * inst) {
   auto elem = std::make_shared<CDFG_Element>
     (CDFG_Operator::eType::ICMP,
-     2, /* Number of operator input */
+     3, /* 入力の数 (a0, a1, condition) */
      this->_state,
      this->_step);
 
@@ -307,11 +307,50 @@ void FortRock::_add_icmp_inst
     a1 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(1)));
 
+  // 比較条件
+  auto icmp_inst = dynamic_cast<ICmpInst*>
+    (const_cast<Instruction*>(inst));
+
+  auto condition = icmp_inst->getUnsignedPredicate();
+  if (!condition)
+    condition = icmp_inst->getSignedPredicate();
+
+  CDFG_Node::eCond cond_type;
+  switch (condition) {
+  case CmpInst::Predicate::ICMP_EQ:
+    cond_type = CDFG_Node::eCond::EQ; break;
+  case CmpInst::Predicate::ICMP_NE:
+    cond_type = CDFG_Node::eCond::NE; break;
+  case CmpInst::Predicate::ICMP_UGT:
+    cond_type = CDFG_Node::eCond::UGT; break;
+  case CmpInst::Predicate::ICMP_UGE:
+    cond_type = CDFG_Node::eCond::UGE; break;
+  case CmpInst::Predicate::ICMP_ULT:
+    cond_type = CDFG_Node::eCond::ULT; break;
+  case CmpInst::Predicate::ICMP_ULE:
+    cond_type = CDFG_Node::eCond::ULE; break;
+  case CmpInst::Predicate::ICMP_SGT:
+    cond_type = CDFG_Node::eCond::SGT; break;
+  case CmpInst::Predicate::ICMP_SGE:
+    cond_type = CDFG_Node::eCond::SGE; break;
+  case CmpInst::Predicate::ICMP_SLT:
+    cond_type = CDFG_Node::eCond::SLT; break;
+  case CmpInst::Predicate::ICMP_SLE:
+    cond_type = CDFG_Node::eCond::SLE; break;
+  default:;
+  }
+
+  auto cond = std::make_shared<CDFG_Node>
+    ("cond", 0, false, // 適当
+     CDFG_Node::eNode::OTHER);
+  cond->set_condition(cond_type);
+
   // 出力
   auto b = this->_module_gen->get_node(inst->getName());
 
   elem->set_input(a0, 0);
   elem->set_input(a1, 1);
+  elem->set_input(cond, 2);
   elem->set_output(b, 0);
 
   this->_module_gen->add_element(elem);
@@ -822,18 +861,27 @@ void FortRock::_grub_variables
       // 命令に対応するオペランド数の指定
       int getop = 1;
       switch(it->getOpcode()) {
-      case Instruction::Load:   getop = 1; break;
-      case Instruction::ICmp:   getop = 2; break;
-      case Instruction::Select: getop = 3; break;
-      case Instruction::SRem:   getop = 2; break;
-      case Instruction::Mul:    getop = 2; break;
-      case Instruction::SDiv:   getop = 2; break;
-      case Instruction::Add:    getop = 2; break;
-      case Instruction::Sub:    getop = 2; break;
-      case Instruction::Shl:    getop = 2; break;
-      case Instruction::LShr:    getop = 2; break;
-      case Instruction::AShr:    getop = 2; break;
-      case Instruction::PHI:       getop = 2; break;
+      case Instruction::Load: getop = 1;
+        break;
+
+      case Instruction::ICmp:
+      case Instruction::SRem:
+      case Instruction::Mul:
+      case Instruction::SDiv:
+      case Instruction::Add:
+      case Instruction::Sub:
+      case Instruction::Shl:
+      case Instruction::LShr:
+      case Instruction::AShr:
+      case Instruction::PHI:
+      case Instruction::And:
+      case Instruction::Or:
+      case Instruction::XOr: getop = 2;
+        break;
+
+      case Instruction::Select: getop = 3;
+        break;
+
       default:
         errs() << "ERROR ("
                << __func__

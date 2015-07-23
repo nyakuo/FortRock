@@ -717,13 +717,41 @@ void CModuleGenerator::_generate_always(void) {
       {
         auto in_0 = elem->get_input_at(0);
         auto in_1 = elem->get_input_at(1);
+        auto condition = elem->get_input_at(2);
         auto out = elem->get_output_at(0);
+
+        // 比較演算子
+        std::string cond_str;
+        switch (condition->get_condition()) {
+        case CDFG_Node::eCond::EQ:
+          cond_str = " == "; break;
+
+        case CDFG_Node::eCond::NE:
+          cond_str = " != "; break;
+
+        case CDFG_Node::eCond::UGT:
+        case CDFG_Node::eCond::SGT:
+          cond_str = " > "; break;
+
+        case CDFG_Node::eCond::UGE:
+        case CDFG_Node::eCond::SGE:
+          cond_str = " >= "; break;
+
+        case CDFG_Node::eCond::ULE:
+        case CDFG_Node::eCond::SLE:
+          cond_str = " <= "; break;
+
+        case CDFG_Node::eCond::ULT:
+        case CDFG_Node::eCond::SLT:
+          cond_str = " < "; break;
+        default:;
+        }
 
         process_str.append(this->_cout.output_indent()
                            + out->get_verilog_name()
                            + " <= ("
                            + in_0->get_verilog_name()
-                           + " < " //! @todo 他の比較条件へ対応
+                           + cond_str
                            + in_1->get_verilog_name()
                            + ");\n");
 

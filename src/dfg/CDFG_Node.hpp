@@ -10,6 +10,7 @@
  */
 class CDFG_Node {
 public:
+  /** ノードの種類 */
   enum class eNode : unsigned {
       REG          = 1 << 0,
       WIRE         = 1 << 1,
@@ -30,7 +31,22 @@ public:
       TRUE         = 1 << 16,
       FALSE        = 1 << 17,
       ZERO         = 1 << 18,
+      OTHER = 1 << 19,
       };
+
+  /** ICMP命令の比較条件 */
+  enum class eCond : unsigned {
+    EQ  = 1 << 0, //! ==
+    NE  = 1 << 1, //! !=
+    UGT = 1 << 2, //! (unsigned) > (unsigned)
+    UGE = 1 << 3, //! (unsigned) >= (unsigned)
+    ULT = 1 << 4, //! (unsigned) < (unsigned)
+    ULE = 1 << 5, //! (unsigned) <= (unsigned)
+    SGT = 1 << 6, //! (signed) > (signed)
+    SGE = 1 << 7, //! (signed) >= (signed)
+    SLT = 1 << 8, //! (signed) < (signed)
+    SLE = 1 << 9, //! (signed) <= (signed)
+    };
 
   CDFG_Node(const std::string & asm_name,
             const unsigned & bit_width,
@@ -54,9 +70,11 @@ public:
   std::string get_param_str(void);
   long & get_address(void);
   long & get_access_port(void);
+  eCond & get_condition(void);
 
   // setter
-  void set_type(CDFG_Node::eNode type);
+  void set_type(const CDFG_Node::eNode & type);
+  void set_condition(const CDFG_Node::eCond & cond);
 
 private:
   std::string _asm_name;     //! ノードの名前
@@ -68,6 +86,7 @@ private:
   double _parameter;         //! parameter用定数
   long _address;             //! アドレス (only array)
   long _access_port;         //! アクセスポート (only array)
+  eCond _condition;          //! icmp命令の比較条件
 };
 
 #endif

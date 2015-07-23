@@ -210,10 +210,29 @@ CDFG_Node::get_access_port(void) {
 }
 
 /**
+   icmp命令の比較条件の取得
+   @return icmp命令の比較条件
+ */
+CDFG_Node::eCond &
+CDFG_Node::get_condition(void) {
+  return this->_condition;
+}
+
+/**
    Nodeの種類の再設定
    @param[in] type 再設定する種類
    @note fortrock.cpp(FortRockの本体)で利用するためだけに実装
  */
-void CDFG_Node::set_type(CDFG_Node::eNode type) {
+void CDFG_Node::set_type
+(const CDFG_Node::eNode & type) {
   this->_type = type;
+}
+
+/**
+   icmp命令の比較条件の設定
+   @param[in] cond 比較条件
+ */
+void CDFG_Node::set_condition
+(const CDFG_Node::eCond & cond) {
+  this->_condition = cond;
 }
