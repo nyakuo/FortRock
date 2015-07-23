@@ -195,6 +195,9 @@ void FortRock::_parse_instructions
     case Instruction::Add:    this->_add_add_inst(inst);    break;
     case Instruction::Sub:    this->_add_sub_inst(inst);    break;
     case Instruction::Switch: this->_add_switch_inst(inst); break;
+    case Instruction::Shl:    this->_add_shift_inst(inst, true, true);   break;
+    case Instruction::LShr:   this->_add_shift_inst(inst, false, true);  break;
+    case Instruction::AShr:   this->_add_shift_inst(inst, false, false); break;
     default:
       throw std::string(std::string("ERROR (") + __func__ + " :"
                         + std::string(inst->getOpcodeName())
@@ -574,6 +577,11 @@ void FortRock::_add_phi_inst
     auto value_name = phinode->getIncomingValue(i)->getName();
     auto in = this->_module_gen->get_node(value_name);
 
+    // 入力の定数対応
+    if (!phinode->getIncomingValue(i)->hasName())
+      in = this->_module_gen->get_node
+        (this->_get_value_name(phinode->getIncomingValue(i)));
+
     elem->set_input(prev_label, i << 1);
     elem->set_input(in, (i << 1) + 1);
   }
@@ -749,9 +757,55 @@ void FortRock::_add_switch_inst
 }
 
 /**
- * プログラムで使用するすべてのレジスタを取得し
- * variablesに格納する
- * Labelについても列挙し，格納する
+   シフト演算(shl, lshr, ashr命令)をモジュールのDFGに追加する
+   @brief b = shl a0, a1
+          b <= a0 << a1
+   @param[in] inst 命令の参照
+   @param[in] is_left 左シフトか否か
+   @param[in] is_logical 論理シフトか否か
+ */
+void FortRock::_add_shift_inst
+(const Instruction * inst,
+ const bool is_left,
+ const bool is_logical) {
+  CDFG_Operator::eType type;
+
+  // シフト演算の種類を確定
+  if (is_left)
+    type = CDFG_Operator::eType::LSHIFTL;
+  else {
+    if (is_logical)
+      type = CDFG_Operator::eType::LSHIFTR;
+    else
+      type = CDFG_Operator::eType::ASHIFTR;
+  }
+
+  auto elem = std::make_shared<CDFG_Element>
+    (type, 2, this->_state, this->_step);
+
+  // 入力
+  auto a0 = this->_module_gen->get_node
+    (this->_get_value_name(inst->getOperand(0)));
+  auto a1 = this->_module_gen->get_node
+    (this->_get_value_name(inst->getOperand(1)));
+
+  // 出力
+  auto b = this->_module_gen->get_node
+    (inst->getName().str());
+
+  elem->set_input(a0, 0);
+  elem->set_input(a1, 1);
+  elem->set_output(b, 0);
+
+  this->_module_gen->add_element(elem);
+
+  ++this->_step;
+}
+
+/**
+   プログラムで使用するすべてのレジスタを取得し
+   variablesに格納する
+   Labelについても列挙し，格納する
  */
 void FortRock::_grub_variables
 (const Module::FunctionListType::iterator &funct) {
@@ -770,13 +824,16 @@ void FortRock::_grub_variables
       switch(it->getOpcode()) {
       case Instruction::Load:   getop = 1; break;
       case Instruction::ICmp:   getop = 2; break;
-      case Instruction::PHI:    getop = 2; break;
       case Instruction::Select: getop = 3; break;
       case Instruction::SRem:   getop = 2; break;
       case Instruction::Mul:    getop = 2; break;
       case Instruction::SDiv:   getop = 2; break;
       case Instruction::Add:    getop = 2; break;
       case Instruction::Sub:    getop = 2; break;
+      case Instruction::Shl:    getop = 2; break;
+      case Instruction::LShr:    getop = 2; break;
+      case Instruction::AShr:    getop = 2; break;
+      case Instruction::PHI:       getop = 2; break;
       default:
         errs() << "ERROR ("
                << __func__
@@ -787,7 +844,7 @@ void FortRock::_grub_variables
         break;
       } // if
 
-      // 未定義のregの追加
+        // 未定義のregの追加
       for(auto i=0; i<getop; ++i) {
         value = it->getOperand(i);
         type = value->getType();
@@ -814,8 +871,8 @@ void FortRock::_grub_variables
         }
         if (!this->_module_gen->find_node(node))
           this->_module_gen->add_node(node);
-      } // for
-    } // if
+      } // for : getop
+    } // if : use_empty()
     else {
       try {
         switch(it->getOpcode()) {

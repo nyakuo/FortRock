@@ -912,6 +912,40 @@ void CModuleGenerator::_generate_always(void) {
         break;
       }
 
+    case CDFG_Operator::eType::LSHIFTL:
+    case CDFG_Operator::eType::LSHIFTR:
+    case CDFG_Operator::eType::ASHIFTR:
+      {
+        std::string ope_str;
+
+        switch (ope->get_type()) {
+        case CDFG_Operator::eType::LSHIFTL:
+          ope_str = " << "; break;
+        case CDFG_Operator::eType::LSHIFTR:
+          ope_str = " >> "; break;
+        case CDFG_Operator::eType::ASHIFTR:
+          ope_str = " >>> "; break;
+        default:;
+        }
+
+        auto a0 = elem->get_input_at(0);
+        auto a1 = elem->get_input_at(1);
+        auto b = elem->get_output_at(0);
+
+        process_str.append(this->_cout.output_indent()
+                           + b->get_verilog_name()
+                           + " <= "
+                           + a0->get_verilog_name()
+                           + ope_str
+                           + a1->get_verilog_name()
+                           + ";\n");
+
+        sm_gen.add_state_process(state,
+                                 step,
+                                 process_str);
+        break;
+      }
+
       //! @todo 未対応の命令に対応
 
     default:
