@@ -33,8 +33,7 @@ count:
 	cd xml; make count
 	wc -lc dfg/*.cpp dfg/*.hpp dfg/Makefile \
 		core/*.cpp core/*.hpp core/Makefile \
-		xml/*.cpp xml/*.hpp xml/Makefile \
-		config/*.xml
+		xml/*.cpp xml/*.hpp xml/Makefile 
 
 clean:
 	cd dfg; make clean
