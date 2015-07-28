@@ -40,6 +40,7 @@ public:
       OR,
       XOR,
       COPY, //! 引数のコピー (非LLVMの命令)
+      TRUNC,
       };
 
   //! @todo 入出力Nodeを自動的に作成する機能

@@ -1020,7 +1020,26 @@ void CModuleGenerator::_generate_always(void) {
         sm_gen.add_state_process(state,
                                  step,
                                  process_str);
+        break;
+      }
 
+    case CDFG_Operator::eType::TRUNC:
+      {
+        auto a = elem->get_input_at(0);
+        auto type2 = elem->get_input_at(1);
+        auto b = elem->get_output_at(0);
+
+        process_str.append(this->_cout.output_indent()
+                           + b->get_verilog_name()
+                           + " <= "
+                           + a->get_verilog_name()
+                           + "["
+                           + std::to_string(type2->get_bit_width())
+                           + "-1:0];\n");
+
+        sm_gen.add_state_process(state,
+                                 step,
+                                 process_str);
         break;
       }
 

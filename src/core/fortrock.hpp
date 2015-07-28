@@ -87,6 +87,7 @@ private:
   void _add_and_inst(const Instruction * inst);
   void _add_or_inst(const Instruction * inst);
   void _add_xor_inst(const Instruction * inst);
+  void _add_trunc_inst(const Instruction *inst);
 }; // FortRock
 
 #endif

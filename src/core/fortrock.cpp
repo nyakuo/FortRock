@@ -223,6 +223,7 @@ void FortRock::_parse_instructions
     case Instruction::And:    this->_add_and_inst(inst); break;
     case Instruction::Or:     this->_add_or_inst(inst); break;
     case Instruction::Xor:    this->_add_xor_inst(inst); break;
+    case Instruction::Trunc:  this->_add_trunc_inst(inst); break;
 
     default:
       throw std::string(std::string("ERROR (") + __func__ + " :"
@@ -626,7 +627,8 @@ void FortRock::_add_br_inst
  */
 void FortRock::_add_phi_inst
 (const Instruction * inst) {
-  auto phinode = dynamic_cast<PHINode*>(const_cast<Instruction*>(inst));
+  auto phinode = dynamic_cast<PHINode*>
+    (const_cast<Instruction*>(inst));
   auto elem = std::make_shared<CDFG_Element>
     (CDFG_Operator::eType::PHI,
      phinode->getNumIncomingValues() << 1, /* Number of operator input */
@@ -991,6 +993,54 @@ void FortRock::_add_xor_inst
 }
 
 /**
+   trunc命令をDFGに追加
+   @param[in] inst 命令の参照
+   @brief b = trunc type a to type2
+          b <= a[type2-1:0];
+   @note ビット幅を指定して切り詰めた代入
+ */
+void FortRock::_add_trunc_inst
+(const Instruction * inst) {
+  auto trunc_inst = dynamic_cast<TruncInst*>
+    (const_cast<Instruction*>(inst));
+  auto elem = std::make_shared<CDFG_Element>
+    (CDFG_Operator::eType::TRUNC,
+     2, // 入力の数
+     this->_state,
+     this->_step);
+
+  // 入力
+  auto a = this->_module_gen->get_node
+    (inst->getOperand(0)->getName());
+
+  // 入力が定数の場合
+  if (!inst->getOperand(0)->hasName())
+    a = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(0)));
+
+  // 変更後のビット幅
+  auto desttype = trunc_inst->getDestTy();
+
+  auto type2 = std::make_shared<CDFG_Node>
+    ("desttype",
+     desttype->getPrimitiveSizeInBits(),
+     true,
+     CDFG_Node::eNode::OTHER);
+
+  // 出力
+  auto b = this->_module_gen->get_node
+    (inst->getName());
+
+  elem->set_input(a, 0);
+  elem->set_input(type2, 1);
+  elem->set_output(b, 0);
+
+  this->_module_gen->add_element(elem);
+
+  ++this->_step;
+}
+
+/**
    プログラムで使用するすべてのレジスタを取得し
    variablesに格納する
    Labelについても列挙し，格納する
@@ -1010,6 +1060,7 @@ void FortRock::_grub_variables
       // 命令に対応するオペランド数の指定
       int getop = 1;
       switch(it->getOpcode()) {
+      case Instruction::Trunc:
       case Instruction::Load: getop = 1;
         break;
 
@@ -1128,6 +1179,9 @@ void FortRock::_grub_variables
             if (!this->_module_gen->find_node(node))
               this->_module_gen->add_node(node);
           }
+          break;
+
+        case Instruction::Switch:
           break;
 
         default:
