@@ -301,7 +301,7 @@ void CModuleGenerator::_generate_header(void) {
     std::string io_str;
 
     switch (io->get_type()) {
-    case CDFG_Node::eNode::IN:
+    case CDFG_Node::eNode::IN_ORIG:
     case CDFG_Node::eNode::CLK:
     case CDFG_Node::eNode::RES:
     case CDFG_Node::eNode::REQ:
@@ -362,6 +362,7 @@ void CModuleGenerator::_generate_define(void) {
     case CDFG_Node::eNode::STATE:
     case CDFG_Node::eNode::PREV_STATE:
     case CDFG_Node::eNode::STEP:
+    case CDFG_Node::eNode::IN:
       type = reg;
       break;
 
@@ -635,6 +636,20 @@ void CModuleGenerator::_generate_always(void) {
   this->_cout.indent_right();
   this->_cout << state_node->get_verilog_name() << " <= "
               << state_node->get_bit_width() << "'h1;\n";
+
+  // 入力のコピー
+  for (auto & elem : this->_module->get_element_list()) {
+    auto ope = elem->get_operator();
+    if (ope->get_type() == CDFG_Operator::eType::COPY) {
+      auto orig_node = elem->get_input_at(0);
+      auto copy_node = elem->get_output_at(0);
+      this->_cout << copy_node->get_verilog_name()
+                  << " <= "
+                  << orig_node->get_verilog_name()
+                  << ";\n";
+    }
+  }
+
   this->_cout.indent_left();
   this->_cout << "end\n";
   this->_cout.indent_left(2);
@@ -971,6 +986,41 @@ void CModuleGenerator::_generate_always(void) {
         sm_gen.add_state_process(state,
                                  step,
                                  process_str);
+        break;
+      }
+
+    case CDFG_Operator::eType::AND:
+    case CDFG_Operator::eType::OR:
+    case CDFG_Operator::eType::XOR:
+      {
+        std::string ope_str;
+
+        switch (ope->get_type()) {
+        case CDFG_Operator::eType::AND:
+          ope_str = " & "; break;
+        case CDFG_Operator::eType::OR:
+          ope_str = " | "; break;
+        case CDFG_Operator::eType::XOR:
+          ope_str = " ^ "; break;
+        default:;
+        }
+
+        auto a0 = elem->get_input_at(0);
+        auto a1 = elem->get_input_at(1);
+        auto b = elem->get_output_at(0);
+
+        process_str.append(this->_cout.output_indent()
+                           + b->get_verilog_name()
+                           + " <= "
+                           + a0->get_verilog_name()
+                           + ope_str
+                           + a1->get_verilog_name()
+                           + ";\n");
+
+        sm_gen.add_state_process(state,
+                                 step,
+                                 process_str);
+
         break;
       }
 

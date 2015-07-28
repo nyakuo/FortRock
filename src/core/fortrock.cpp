@@ -84,19 +84,19 @@ void FortRock::_set_IO
   auto arg_it  = funct->arg_begin();
   auto arg_end = funct->arg_end();
 
-  for(auto num = 1; // 最後の引数(返り値)を知るため
-      arg_it != arg_end;
-      ++num, ++arg_it) {
+  for (auto num = 1; // 最後の引数(返り値)を知るため
+       arg_it != arg_end;
+       ++num, ++arg_it) {
     auto type = arg_it->getType();
 
-    if(type->isPointerTy()) // ポインタならポインタの型を取得
+    if (type->isPointerTy()) // ポインタならポインタの型を取得
       type = type->getPointerElementType();
 
     //! @todo 浮動小数点対応
-    if(type->isIntegerTy()) {
+    if (type->isIntegerTy()) {
       CDFG_Node::eNode in_out;
       if (num !=  funct->arg_size()) // 最後以外は引数
-        in_out = CDFG_Node::eNode::IN;
+        in_out = CDFG_Node::eNode::IN_ORIG;
 
       else  // 最後の引数は返り値
         in_out = CDFG_Node::eNode::OUT;
@@ -108,6 +108,28 @@ void FortRock::_set_IO
          in_out);
 
       this->_module_gen->add_node(node);
+
+      // 入力をコピーするレジスタの確保
+      if (in_out == CDFG_Node::eNode::IN_ORIG) {
+        auto copy_node = std::make_shared<CDFG_Node>
+          (arg_it->getName(),
+           type->getPrimitiveSizeInBits(),
+           true,
+           CDFG_Node::eNode::IN);
+
+        this->_module_gen->add_node(copy_node);
+
+        auto elem = std::make_shared<CDFG_Element>
+          (CDFG_Operator::eType::COPY,
+           1,
+           0, // state
+           0); // step
+
+        elem->set_input(node, 0);
+        elem->set_output(copy_node, 0);
+
+        this->_module_gen->add_element(elem);
+      }
     } // if
   } // for
 } // _set_IO
@@ -198,6 +220,10 @@ void FortRock::_parse_instructions
     case Instruction::Shl:    this->_add_shift_inst(inst, true, true);   break;
     case Instruction::LShr:   this->_add_shift_inst(inst, false, true);  break;
     case Instruction::AShr:   this->_add_shift_inst(inst, false, false); break;
+    case Instruction::And:    this->_add_and_inst(inst); break;
+    case Instruction::Or:     this->_add_or_inst(inst); break;
+    case Instruction::Xor:    this->_add_xor_inst(inst); break;
+
     default:
       throw std::string(std::string("ERROR (") + __func__ + " :"
                         + std::string(inst->getOpcodeName())
@@ -842,12 +868,135 @@ void FortRock::_add_shift_inst
 }
 
 /**
+   and命令をDFGに追加
+   @param[in] inst 命令の参照
+   @brief b = a0 and a1
+          b <= a0 && a1
+ */
+void FortRock::_add_and_inst
+(const Instruction * inst) {
+  auto elem = std::make_shared<CDFG_Element>
+    (CDFG_Operator::eType::AND,
+     2, // 入力の数
+     this->_state,
+     this->_step);
+
+  // 入力
+  auto a0 = this->_module_gen->get_node
+    (inst->getOperand(0)->getName());
+  auto a1 = this->_module_gen->get_node
+    (inst->getOperand(1)->getName());
+
+  // 入力の定数対応
+  if (!inst->getOperand(0)->hasName())
+    a0 = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(0)));
+  if (!inst->getOperand(1)->hasName())
+    a1 = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(1)));
+
+  // 出力
+  auto b = this->_module_gen->get_node
+    (inst->getName());
+
+  elem->set_input(a0, 0);
+  elem->set_input(a1, 1);
+  elem->set_output(b, 0);
+
+  this->_module_gen->add_element(elem);
+
+  ++this->_step;
+}
+
+/**
+   or命令をDFGに追加
+   @param[in] inst 命令の参照
+   @brief b = a0 or a1
+          b <= a0 || a1
+ */
+void FortRock::_add_or_inst
+(const Instruction * inst) {
+  auto elem = std::make_shared<CDFG_Element>
+    (CDFG_Operator::eType::OR,
+     2, // 入力の数
+     this->_state,
+     this->_step);
+
+  // 入力
+  auto a0 = this->_module_gen->get_node
+    (inst->getOperand(0)->getName());
+  auto a1 = this->_module_gen->get_node
+    (inst->getOperand(1)->getName());
+
+  // 入力の定数対応
+  if (!inst->getOperand(0)->hasName())
+    a0 = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(0)));
+  if (!inst->getOperand(1)->hasName())
+    a1 = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(1)));
+
+  // 出力
+  auto b = this->_module_gen->get_node
+    (inst->getName());
+
+  elem->set_input(a0, 0);
+  elem->set_input(a1, 1);
+  elem->set_output(b, 0);
+
+  this->_module_gen->add_element(elem);
+
+  ++this->_step;
+}
+
+/**
+   xor命令をDFGに追加
+   @param[in] inst 命令の参照
+   @brief b = a0 xor a1
+          b <= a0 ^ a1
+ */
+void FortRock::_add_xor_inst
+(const Instruction * inst) {
+  auto elem = std::make_shared<CDFG_Element>
+    (CDFG_Operator::eType::XOR,
+     2, // 入力の数
+     this->_state,
+     this->_step);
+
+  // 入力
+  auto a0 = this->_module_gen->get_node
+    (inst->getOperand(0)->getName());
+  auto a1 = this->_module_gen->get_node
+    (inst->getOperand(1)->getName());
+
+  // 入力の定数対応
+  if (!inst->getOperand(0)->hasName())
+    a0 = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(0)));
+  if (!inst->getOperand(1)->hasName())
+    a1 = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(1)));
+
+  // 出力
+  auto b = this->_module_gen->get_node
+    (inst->getName());
+
+  elem->set_input(a0, 0);
+  elem->set_input(a1, 1);
+  elem->set_output(b, 0);
+
+  this->_module_gen->add_element(elem);
+
+  ++this->_step;
+}
+
+/**
    プログラムで使用するすべてのレジスタを取得し
    variablesに格納する
    Labelについても列挙し，格納する
  */
 void FortRock::_grub_variables
-(const Module::FunctionListType::iterator &funct) {
+(const Module::FunctionListType::iterator & funct) {
   BranchInst * binst;
   Value      * value;
   Type       * type;
@@ -876,7 +1025,7 @@ void FortRock::_grub_variables
       case Instruction::PHI:
       case Instruction::And:
       case Instruction::Or:
-      case Instruction::XOr: getop = 2;
+      case Instruction::Xor: getop = 2;
         break;
 
       case Instruction::Select: getop = 3;

@@ -31,7 +31,8 @@ public:
       TRUE         = 1 << 16,
       FALSE        = 1 << 17,
       ZERO         = 1 << 18,
-      OTHER = 1 << 19,
+      IN_ORIG      = 1 << 19,
+      OTHER        = 1 << 30,
       };
 
   /** ICMP命令の比較条件 */

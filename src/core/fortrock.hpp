@@ -84,6 +84,9 @@ private:
   void _add_shift_inst(const Instruction * inst,
                        const bool is_left,
                        const bool is_logical);
+  void _add_and_inst(const Instruction * inst);
+  void _add_or_inst(const Instruction * inst);
+  void _add_xor_inst(const Instruction * inst);
 }; // FortRock
 
 #endif
