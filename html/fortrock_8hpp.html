@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>FortRock: core/fortrock.hpp File Reference</title>
+<title>FortRock: src/core/fortrock.hpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -30,8 +30,9 @@
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
    <div id="projectname">FortRock
-   &#160;<span id="projectnumber">0.1</span>
+   &#160;<span id="projectnumber">0.2</span>
    </div>
+   <div id="projectbrief">Fortranベースの高位合成ツールFortRock</div>
   </td>
  </tr>
  </tbody>
@@ -103,53 +104,38 @@ $(document).ready(function(){initNavTree('fortrock_8hpp.html','');});
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#enum-members">Enumerations</a>  </div>
+<a href="#nested-classes">Classes</a>  </div>
   <div class="headertitle">
 <div class="title">fortrock.hpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;llvm/ADT/SmallPtrSet.h&quot;</code><br/>
-<code>#include &quot;llvm/ADT/StringExtras.h&quot;</code><br/>
-<code>#include &quot;llvm/Config/config.h&quot;</code><br/>
-<code>#include &quot;llvm/IR/CallingConv.h&quot;</code><br/>
-<code>#include &quot;llvm/IR/Constants.h&quot;</code><br/>
-<code>#include &quot;llvm/IR/DerivedTypes.h&quot;</code><br/>
-<code>#include &quot;llvm/IR/InlineAsm.h&quot;</code><br/>
-<code>#include &quot;llvm/IR/Instruction.h&quot;</code><br/>
-<code>#include &quot;llvm/IR/Instructions.h&quot;</code><br/>
+<div class="textblock"><code>#include &quot;llvm/IR/Instructions.h&quot;</code><br/>
 <code>#include &quot;llvm/IR/Module.h&quot;</code><br/>
-<code>#include &quot;llvm/MC/MCAsmInfo.h&quot;</code><br/>
-<code>#include &quot;llvm/MC/MCInstrInfo.h&quot;</code><br/>
-<code>#include &quot;llvm/MC/MCSubtargetInfo.h&quot;</code><br/>
 <code>#include &quot;llvm/Pass.h&quot;</code><br/>
-<code>#include &quot;llvm/PassManager.h&quot;</code><br/>
-<code>#include &quot;llvm/Support/CommandLine.h&quot;</code><br/>
-<code>#include &quot;llvm/Support/ErrorHandling.h&quot;</code><br/>
-<code>#include &quot;llvm/Support/FormattedStream.h&quot;</code><br/>
-<code>#include &quot;llvm/Support/TargetRegistry.h&quot;</code><br/>
 <code>#include &quot;llvm/Support/InstIterator.h&quot;</code><br/>
+<code>#include &quot;llvm/Support/raw_ostream.h&quot;</code><br/>
+<code>#include &quot;llvm/IR/Constants.h&quot;</code><br/>
 <code>#include &lt;iostream&gt;</code><br/>
 <code>#include &lt;list&gt;</code><br/>
 <code>#include &lt;map&gt;</code><br/>
 <code>#include &lt;regex&gt;</code><br/>
-<code>#include &quot;<a class="el" href="variable_8hpp_source.html">variable.hpp</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="_c_module_8hpp_source.html">../dfg/CModule.hpp</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="_c_output_8hpp_source.html">../dfg/COutput.hpp</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="_c_module_generator_8hpp_source.html">../dfg/CModuleGenerator.hpp</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="_c_instancing_operator_8hpp_source.html">../xml/CInstancingOperator.hpp</a>&quot;</code><br/>
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for fortrock.hpp:</div>
 <div class="dyncontent">
-<div class="center"><img src="fortrock_8hpp__incl.png" border="0" usemap="#core_2fortrock_8hpp" alt=""/></div>
-<map name="core_2fortrock_8hpp" id="core_2fortrock_8hpp">
-<area shape="rect" id="node26" href="variable_8hpp.html" title="variable.hpp" alt="" coords="3697,80,3788,107"/><area shape="rect" id="node28" href="_c_module_8hpp.html" title="../dfg/CModule.hpp" alt="" coords="4325,155,4459,181"/><area shape="rect" id="node36" href="_c_output_8hpp.html" title="../dfg/COutput.hpp" alt="" coords="3783,155,3912,181"/><area shape="rect" id="node38" href="_c_module_generator_8hpp.html" title="../dfg/CModuleGenerator.hpp" alt="" coords="4370,80,4560,107"/><area shape="rect" id="node27" href="_f_r_obj_8hpp.html" title="FRObj.hpp" alt="" coords="3673,155,3759,181"/><area shape="rect" id="node32" href="_c_d_f_g___element_8hpp.html" title="CDFG_Element.hpp" alt="" coords="4627,229,4767,256"/><area shape="rect" id="node34" href="_c_d_f_g___node_8hpp.html" title="CDFG_Node.hpp" alt="" coords="4620,379,4743,405"/><area shape="rect" id="node35" href="_c_d_f_g___operator_8hpp.html" title="CDFG_Operator.hpp" alt="" coords="4450,304,4592,331"/><area shape="rect" id="node42" href="_c_state_machine_gen_8hpp.html" title="CStateMachineGen.hpp" alt="" coords="3937,155,4097,181"/></map>
+<div class="center"><img src="fortrock_8hpp__incl.png" border="0" usemap="#src_2core_2fortrock_8hpp" alt=""/></div>
+<map name="src_2core_2fortrock_8hpp" id="src_2core_2fortrock_8hpp">
+<area shape="rect" id="node12" href="_c_module_8hpp.html" title="../dfg/CModule.hpp" alt="" coords="1765,304,1899,331"/><area shape="rect" id="node21" href="_c_output_8hpp.html" title="../dfg/COutput.hpp" alt="" coords="1056,304,1185,331"/><area shape="rect" id="node23" href="_c_module_generator_8hpp.html" title="../dfg/CModuleGenerator.hpp" alt="" coords="1737,229,1927,256"/><area shape="rect" id="node28" href="_c_instancing_operator_8hpp.html" title="../xml/CInstancingOperator.hpp" alt="" coords="2257,80,2460,107"/><area shape="rect" id="node16" href="_c_d_f_g___element_8hpp.html" title="CDFG_Element.hpp" alt="" coords="1710,379,1849,405"/><area shape="rect" id="node18" href="_c_d_f_g___node_8hpp.html" title="CDFG_Node.hpp" alt="" coords="1827,528,1949,555"/><area shape="rect" id="node20" href="_c_d_f_g___operator_8hpp.html" title="CDFG_Operator.hpp" alt="" coords="1657,453,1799,480"/><area shape="rect" id="node27" href="_c_state_machine_gen_8hpp.html" title="CStateMachineGen.hpp" alt="" coords="1363,304,1524,331"/><area shape="rect" id="node31" href="_c_operator_generator_8hpp.html" title="COperatorGenerator.hpp" alt="" coords="1750,155,1913,181"/></map>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><img src="fortrock_8hpp__dep__incl.png" border="0" usemap="#core_2fortrock_8hppdep" alt=""/></div>
-<map name="core_2fortrock_8hppdep" id="core_2fortrock_8hppdep">
-<area shape="rect" id="node2" href="fortrock_8cpp.html" title="core/fortrock.cpp" alt="" coords="5,80,125,107"/></map>
+<div class="center"><img src="fortrock_8hpp__dep__incl.png" border="0" usemap="#src_2core_2fortrock_8hppdep" alt=""/></div>
+<map name="src_2core_2fortrock_8hppdep" id="src_2core_2fortrock_8hppdep">
+<area shape="rect" id="node2" href="fortrock_8cpp.html" title="src/core/fortrock.cpp" alt="" coords="5,80,147,107"/></map>
 </div>
 </div>
 <p><a href="fortrock_8hpp_source.html">Go to the source code of this file.</a></p>
@@ -159,70 +145,14 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_fort_rock.html">FortRock</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">FortRockのメインのパスの実装  <a href="class_fort_rock.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
-Enumerations</h2></td></tr>
-<tr class="memitem:a82eb65463cbdf9bd3b3e0ddd9fc5380a"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380a">inst_opcode</a> { <br/>
-&#160;&#160;<a class="el" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aab2510768eaba5e52ba71678e19a65464">RET</a> = 1, 
-<a class="el" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa60a57eed407e7df8eb3bf49f61a042c1">BR</a> = 2, 
-<a class="el" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa972dbcdf74cff71e20bdcfb53be9c391">LOAD</a> = 27, 
-<a class="el" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aafeb01cb4572ba190cd7932e49446c480">STORE</a> = 28, 
-<br/>
-&#160;&#160;<a class="el" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa90f471bb91043604b88253b494eb971c">ICMP</a> = 46, 
-<a class="el" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa7ec4d7b6931c968f067da4c98634dfda">PHI</a> = 48, 
-<a class="el" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa1697a91b22c2369eb2ba427c2d193329">SELECT</a> = 50, 
-<a class="el" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aabff1c6523a9c7684b08b55dded64a773">SREM</a> = 18, 
-<br/>
-&#160;&#160;<a class="el" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa086ab1f2f4dac104b6826ebe0eaba8fd">MUL</a> = 12, 
-<a class="el" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa63bca0e180fa33787b7fe0bbcc6d910e">SDIV</a> = 15
-<br/>
- }</td></tr>
-<tr class="separator:a82eb65463cbdf9bd3b3e0ddd9fc5380a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Enumeration Type Documentation</h2>
-<a class="anchor" id="a82eb65463cbdf9bd3b3e0ddd9fc5380a"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380a">inst_opcode</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>LLVMのInstructionのOpcode </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000008">Todo:</a></b></dt><dd>LLVMのものに置き換える </dd></dl>
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="a82eb65463cbdf9bd3b3e0ddd9fc5380aab2510768eaba5e52ba71678e19a65464"></a>RET</em>&#160;</td><td class="fielddoc">
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="a82eb65463cbdf9bd3b3e0ddd9fc5380aa60a57eed407e7df8eb3bf49f61a042c1"></a>BR</em>&#160;</td><td class="fielddoc">
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="a82eb65463cbdf9bd3b3e0ddd9fc5380aa972dbcdf74cff71e20bdcfb53be9c391"></a>LOAD</em>&#160;</td><td class="fielddoc">
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="a82eb65463cbdf9bd3b3e0ddd9fc5380aafeb01cb4572ba190cd7932e49446c480"></a>STORE</em>&#160;</td><td class="fielddoc">
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="a82eb65463cbdf9bd3b3e0ddd9fc5380aa90f471bb91043604b88253b494eb971c"></a>ICMP</em>&#160;</td><td class="fielddoc">
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="a82eb65463cbdf9bd3b3e0ddd9fc5380aa7ec4d7b6931c968f067da4c98634dfda"></a>PHI</em>&#160;</td><td class="fielddoc">
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="a82eb65463cbdf9bd3b3e0ddd9fc5380aa1697a91b22c2369eb2ba427c2d193329"></a>SELECT</em>&#160;</td><td class="fielddoc">
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="a82eb65463cbdf9bd3b3e0ddd9fc5380aabff1c6523a9c7684b08b55dded64a773"></a>SREM</em>&#160;</td><td class="fielddoc">
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="a82eb65463cbdf9bd3b3e0ddd9fc5380aa086ab1f2f4dac104b6826ebe0eaba8fd"></a>MUL</em>&#160;</td><td class="fielddoc">
-</td></tr>
-<tr><td class="fieldname"><em><a class="anchor" id="a82eb65463cbdf9bd3b3e0ddd9fc5380aa63bca0e180fa33787b7fe0bbcc6d910e"></a>SDIV</em>&#160;</td><td class="fielddoc">
-</td></tr>
-</table>
-
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_4270bfced15e0e73154b13468c7c9ad9.html">core</a></li><li class="navelem"><a class="el" href="fortrock_8hpp.html">fortrock.hpp</a></li>
-    <li class="footer">Generated on Thu Jun 18 2015 18:42:34 for FortRock by
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_aebb8dcc11953d78e620bbef0b9e2183.html">core</a></li><li class="navelem"><a class="el" href="fortrock_8hpp.html">fortrock.hpp</a></li>
+    <li class="footer">Generated on Tue Jul 28 2015 15:41:29 for FortRock by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

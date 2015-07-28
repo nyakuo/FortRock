@@ -30,8 +30,9 @@
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
    <div id="projectname">FortRock
-   &#160;<span id="projectnumber">0.1</span>
+   &#160;<span id="projectnumber">0.2</span>
    </div>
+   <div id="projectbrief">Fortranベースの高位合成ツールFortRock</div>
   </td>
  </tr>
  </tbody>
@@ -119,20 +120,21 @@ $(document).ready(function(){initNavTree('class_c_module.html','');});
   <tr><td class="entry"><a class="el" href="class_c_module.html#a5efc826f753ec2c4b2e11219b4488235">add_node</a>(std::shared_ptr&lt; CDFG_Node &gt; &amp;node)</td><td class="entry"><a class="el" href="class_c_module.html">CModule</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="class_c_module.html#ae8e902bd7b3b1e53c5c95d9b7d43489e">add_operator</a>(std::shared_ptr&lt; CDFG_Operator &gt; &amp;ope)</td><td class="entry"><a class="el" href="class_c_module.html">CModule</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="class_c_module.html#aebdc2bece3d78a3fe4433680bcf2fddd">CModule</a>(const std::string &amp;module_name)</td><td class="entry"><a class="el" href="class_c_module.html">CModule</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_c_module.html#a3d8ca1d755093d727e6c5cc318f7c550">find_node</a>(std::string &amp;asm_name)</td><td class="entry"><a class="el" href="class_c_module.html">CModule</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_module.html#a522994954046badfaee3ad6938019170">find_node</a>(const std::string &amp;asm_name)</td><td class="entry"><a class="el" href="class_c_module.html">CModule</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="class_c_module.html#abbcd5457cadf61ce9fa27afd02ec89dd">get_element_list</a>(void)</td><td class="entry"><a class="el" href="class_c_module.html">CModule</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_module.html#a8169591b33c509032fbae04728abcb13">get_label_node</a>(const unsigned &amp;state)</td><td class="entry"><a class="el" href="class_c_module.html">CModule</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_module.html#a88c5e52551cf59c66a7d2908147659e0">get_max_step</a>(void)</td><td class="entry"><a class="el" href="class_c_module.html">CModule</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="class_c_module.html#a0982d70c15877da59ec9142eadd4b870">get_name</a>(void)</td><td class="entry"><a class="el" href="class_c_module.html">CModule</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="class_c_module.html#acf76e872b5eb2e12016a70f8775ccf1f">get_node</a>(CDFG_Node::eNode type)</td><td class="entry"><a class="el" href="class_c_module.html">CModule</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_c_module.html#a05c7bec1dc6c5f74560680e40a6a5705">get_node_list</a>(void)</td><td class="entry"><a class="el" href="class_c_module.html">CModule</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="class_c_module.html#adcf67373c084c54a01df18a16e07c0a7">get_operator_list</a>(void)</td><td class="entry"><a class="el" href="class_c_module.html">CModule</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_c_module.html#a1ddd1c8a809c5a31507d0185dae3f6e8">get_state_node</a>(void)</td><td class="entry"><a class="el" href="class_c_module.html">CModule</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="class_c_module.html#aae175e0cb340dd90d72e337748005553">get_step_node</a>(void)</td><td class="entry"><a class="el" href="class_c_module.html">CModule</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_module.html#a17f6899e88a402f27f3249dc8f3fc6b6">get_node</a>(const std::string &amp;node_name)</td><td class="entry"><a class="el" href="class_c_module.html">CModule</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_module.html#a05c7bec1dc6c5f74560680e40a6a5705">get_node_list</a>(void)</td><td class="entry"><a class="el" href="class_c_module.html">CModule</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_module.html#adcf67373c084c54a01df18a16e07c0a7">get_operator_list</a>(void)</td><td class="entry"><a class="el" href="class_c_module.html">CModule</a></td><td class="entry"></td></tr>
 </table></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Jun 18 2015 18:42:34 for FortRock by
+    <li class="footer">Generated on Tue Jul 28 2015 15:41:30 for FortRock by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

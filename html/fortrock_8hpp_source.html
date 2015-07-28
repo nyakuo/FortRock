@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>FortRock: core/fortrock.hpp Source File</title>
+<title>FortRock: src/core/fortrock.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -30,8 +30,9 @@
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
    <div id="projectname">FortRock
-   &#160;<span id="projectnumber">0.1</span>
+   &#160;<span id="projectnumber">0.2</span>
    </div>
+   <div id="projectbrief">Fortranベースの高位合成ツールFortRock</div>
   </td>
  </tr>
  </tbody>
@@ -108,109 +109,102 @@ $(document).ready(function(){initNavTree('fortrock_8hpp_source.html','');});
 <div class="contents">
 <a href="fortrock_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef _FORTROCK_H</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _FORTROCK_H</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;llvm/ADT/SmallPtrSet.h&quot;</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &quot;llvm/ADT/StringExtras.h&quot;</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &quot;llvm/Config/config.h&quot;</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;llvm/IR/CallingConv.h&quot;</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;llvm/IR/Constants.h&quot;</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;llvm/IR/DerivedTypes.h&quot;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;llvm/IR/InlineAsm.h&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;llvm/IR/Instruction.h&quot;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;llvm/IR/Instructions.h&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;llvm/IR/Module.h&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;llvm/MC/MCAsmInfo.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;llvm/MC/MCInstrInfo.h&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;llvm/MC/MCSubtargetInfo.h&quot;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;llvm/Pass.h&quot;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;llvm/PassManager.h&quot;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;llvm/Support/CommandLine.h&quot;</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;llvm/Support/ErrorHandling.h&quot;</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;llvm/Support/FormattedStream.h&quot;</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;llvm/Support/TargetRegistry.h&quot;</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &quot;llvm/Support/InstIterator.h&quot;</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &lt;iostream&gt;</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &lt;list&gt;</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &lt;map&gt;</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &lt;regex&gt;</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="variable_8hpp.html">variable.hpp</a>&quot;</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &quot;../dfg/CModule.hpp&quot;</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &quot;../dfg/COutput.hpp&quot;</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &quot;../dfg/CModuleGenerator.hpp&quot;</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">using namespace </span>llvm;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380a">   39</a></span>&#160;<span class="keyword">enum</span> <a class="code" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380a">inst_opcode</a> {</div>
-<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aab2510768eaba5e52ba71678e19a65464">   40</a></span>&#160;  <a class="code" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aab2510768eaba5e52ba71678e19a65464">RET</a>    = 1,</div>
-<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa60a57eed407e7df8eb3bf49f61a042c1">   41</a></span>&#160;  <a class="code" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa60a57eed407e7df8eb3bf49f61a042c1">BR</a>     = 2,</div>
-<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa972dbcdf74cff71e20bdcfb53be9c391">   42</a></span>&#160;  <a class="code" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa972dbcdf74cff71e20bdcfb53be9c391">LOAD</a>   = 27,</div>
-<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aafeb01cb4572ba190cd7932e49446c480">   43</a></span>&#160;  <a class="code" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aafeb01cb4572ba190cd7932e49446c480">STORE</a>  = 28,</div>
-<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa90f471bb91043604b88253b494eb971c">   44</a></span>&#160;  <a class="code" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa90f471bb91043604b88253b494eb971c">ICMP</a>   = 46,</div>
-<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa7ec4d7b6931c968f067da4c98634dfda">   45</a></span>&#160;  <a class="code" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa7ec4d7b6931c968f067da4c98634dfda">PHI</a>    = 48,</div>
-<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa1697a91b22c2369eb2ba427c2d193329">   46</a></span>&#160;  <a class="code" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa1697a91b22c2369eb2ba427c2d193329">SELECT</a> = 50,</div>
-<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aabff1c6523a9c7684b08b55dded64a773">   47</a></span>&#160;  <a class="code" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aabff1c6523a9c7684b08b55dded64a773">SREM</a>   = 18,</div>
-<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa086ab1f2f4dac104b6826ebe0eaba8fd">   48</a></span>&#160;  <a class="code" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa086ab1f2f4dac104b6826ebe0eaba8fd">MUL</a>    = 12,</div>
-<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa63bca0e180fa33787b7fe0bbcc6d910e">   49</a></span>&#160;  <a class="code" href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa63bca0e180fa33787b7fe0bbcc6d910e">SDIV</a>   = 15,</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;};</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="class_fort_rock.html">   56</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_fort_rock.html">FortRock</a> : <span class="keyword">public</span> ModulePass  {</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00058"></a><span class="lineno"><a class="line" href="class_fort_rock.html#a6badf921178f1b468112b8e96c8bae56">   58</a></span>&#160;  <span class="keyword">static</span> <span class="keywordtype">char</span> <a class="code" href="class_fort_rock.html#a6badf921178f1b468112b8e96c8bae56">ID</a>;</div>
-<div class="line"><a name="l00059"></a><span class="lineno"><a class="line" href="class_fort_rock.html#ab48a845b97821b5710679b48f1861b68">   59</a></span>&#160;  <a class="code" href="class_fort_rock.html#ab48a845b97821b5710679b48f1861b68">FortRock</a>(<span class="keywordtype">void</span>)</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    : ModulePass(ID)</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  {}</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="keywordtype">bool</span> runOnModule(Module &amp;M);</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="class_fort_rock.html#afdbb143100784520795461d4fa6451c8">   65</a></span>&#160;  <span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code" href="class_fort_rock.html#afdbb143100784520795461d4fa6451c8">getPassName</a>(<span class="keywordtype">void</span>)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="keyword">  </span>{ <span class="keywordflow">return</span> <span class="stringliteral">&quot;FortRock: Fortran to Verilog backend&quot;</span>; }</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="class_fort_rock.html#a92990c976a5bca81118d1d71b35e0f9b">   69</a></span>&#160;  std::shared_ptr&lt;CModuleGenerator&gt; <a class="code" href="class_fort_rock.html#a92990c976a5bca81118d1d71b35e0f9b">_module_gen</a>;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00072"></a><span class="lineno"><a class="line" href="class_fort_rock.html#a847d6b8387f8961cca8ab6cddabead22">   72</a></span>&#160;  <span class="keyword">const</span> std::string PREV_STATE_NAME = <span class="stringliteral">&quot;prev_state&quot;</span>;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno"><a class="line" href="class_fort_rock.html#ac846cc7350f2baeebb157f9d55342e64">   75</a></span>&#160;  <span class="keyword">const</span> std::string CUR_STATE_NAME = <span class="stringliteral">&quot;current_state&quot;</span>;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="comment">// 補助関数</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  std::string _get_module_name(<span class="keyword">const</span> Module &amp; M);</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keywordtype">unsigned</span> _get_required_bit_width(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> &amp; num);</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="comment">// モジュール定義</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keywordtype">void</span> _set_IO(<span class="keyword">const</span> Module::FunctionListType::iterator &amp; funct);</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordtype">void</span> _grub_variables(<span class="keyword">const</span> Module::FunctionListType::iterator &amp;funct);</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keywordtype">void</span> _grub_labels(<span class="keyword">const</span> Module::FunctionListType::iterator &amp;funct);</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keywordtype">void</span> _grub_calculator(<span class="keyword">const</span> Module::FunctionListType::iterator &amp; funct);</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="comment">// 命令パース</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keywordtype">void</span> _parse_instructions(<span class="keyword">const</span> Instruction * inst);</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordtype">void</span> _add_load_node(<span class="keyword">const</span> Instruction * inst);</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;}; <span class="comment">// FortRock</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="ttc" id="fortrock_8hpp_html_a82eb65463cbdf9bd3b3e0ddd9fc5380aab2510768eaba5e52ba71678e19a65464"><div class="ttname"><a href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aab2510768eaba5e52ba71678e19a65464">RET</a></div><div class="ttdef"><b>Definition:</b> fortrock.hpp:40</div></div>
-<div class="ttc" id="fortrock_8hpp_html_a82eb65463cbdf9bd3b3e0ddd9fc5380aa1697a91b22c2369eb2ba427c2d193329"><div class="ttname"><a href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa1697a91b22c2369eb2ba427c2d193329">SELECT</a></div><div class="ttdef"><b>Definition:</b> fortrock.hpp:46</div></div>
-<div class="ttc" id="class_fort_rock_html_afdbb143100784520795461d4fa6451c8"><div class="ttname"><a href="class_fort_rock.html#afdbb143100784520795461d4fa6451c8">FortRock::getPassName</a></div><div class="ttdeci">virtual const char * getPassName(void) const </div><div class="ttdef"><b>Definition:</b> fortrock.hpp:65</div></div>
-<div class="ttc" id="fortrock_8hpp_html_a82eb65463cbdf9bd3b3e0ddd9fc5380aafeb01cb4572ba190cd7932e49446c480"><div class="ttname"><a href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aafeb01cb4572ba190cd7932e49446c480">STORE</a></div><div class="ttdef"><b>Definition:</b> fortrock.hpp:43</div></div>
-<div class="ttc" id="fortrock_8hpp_html_a82eb65463cbdf9bd3b3e0ddd9fc5380aa63bca0e180fa33787b7fe0bbcc6d910e"><div class="ttname"><a href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa63bca0e180fa33787b7fe0bbcc6d910e">SDIV</a></div><div class="ttdef"><b>Definition:</b> fortrock.hpp:49</div></div>
-<div class="ttc" id="class_fort_rock_html_a6badf921178f1b468112b8e96c8bae56"><div class="ttname"><a href="class_fort_rock.html#a6badf921178f1b468112b8e96c8bae56">FortRock::ID</a></div><div class="ttdeci">static char ID</div><div class="ttdef"><b>Definition:</b> fortrock.hpp:58</div></div>
-<div class="ttc" id="fortrock_8hpp_html_a82eb65463cbdf9bd3b3e0ddd9fc5380aabff1c6523a9c7684b08b55dded64a773"><div class="ttname"><a href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aabff1c6523a9c7684b08b55dded64a773">SREM</a></div><div class="ttdef"><b>Definition:</b> fortrock.hpp:47</div></div>
-<div class="ttc" id="fortrock_8hpp_html_a82eb65463cbdf9bd3b3e0ddd9fc5380aa972dbcdf74cff71e20bdcfb53be9c391"><div class="ttname"><a href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa972dbcdf74cff71e20bdcfb53be9c391">LOAD</a></div><div class="ttdef"><b>Definition:</b> fortrock.hpp:42</div></div>
-<div class="ttc" id="fortrock_8hpp_html_a82eb65463cbdf9bd3b3e0ddd9fc5380aa90f471bb91043604b88253b494eb971c"><div class="ttname"><a href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa90f471bb91043604b88253b494eb971c">ICMP</a></div><div class="ttdef"><b>Definition:</b> fortrock.hpp:44</div></div>
-<div class="ttc" id="fortrock_8hpp_html_a82eb65463cbdf9bd3b3e0ddd9fc5380a"><div class="ttname"><a href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380a">inst_opcode</a></div><div class="ttdeci">inst_opcode</div><div class="ttdef"><b>Definition:</b> fortrock.hpp:39</div></div>
-<div class="ttc" id="fortrock_8hpp_html_a82eb65463cbdf9bd3b3e0ddd9fc5380aa60a57eed407e7df8eb3bf49f61a042c1"><div class="ttname"><a href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa60a57eed407e7df8eb3bf49f61a042c1">BR</a></div><div class="ttdef"><b>Definition:</b> fortrock.hpp:41</div></div>
-<div class="ttc" id="class_fort_rock_html_a92990c976a5bca81118d1d71b35e0f9b"><div class="ttname"><a href="class_fort_rock.html#a92990c976a5bca81118d1d71b35e0f9b">FortRock::_module_gen</a></div><div class="ttdeci">std::shared_ptr&lt; CModuleGenerator &gt; _module_gen</div><div class="ttdef"><b>Definition:</b> fortrock.hpp:69</div></div>
-<div class="ttc" id="class_fort_rock_html_ab48a845b97821b5710679b48f1861b68"><div class="ttname"><a href="class_fort_rock.html#ab48a845b97821b5710679b48f1861b68">FortRock::FortRock</a></div><div class="ttdeci">FortRock(void)</div><div class="ttdef"><b>Definition:</b> fortrock.hpp:59</div></div>
-<div class="ttc" id="fortrock_8hpp_html_a82eb65463cbdf9bd3b3e0ddd9fc5380aa086ab1f2f4dac104b6826ebe0eaba8fd"><div class="ttname"><a href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa086ab1f2f4dac104b6826ebe0eaba8fd">MUL</a></div><div class="ttdef"><b>Definition:</b> fortrock.hpp:48</div></div>
-<div class="ttc" id="fortrock_8hpp_html_a82eb65463cbdf9bd3b3e0ddd9fc5380aa7ec4d7b6931c968f067da4c98634dfda"><div class="ttname"><a href="fortrock_8hpp.html#a82eb65463cbdf9bd3b3e0ddd9fc5380aa7ec4d7b6931c968f067da4c98634dfda">PHI</a></div><div class="ttdef"><b>Definition:</b> fortrock.hpp:45</div></div>
-<div class="ttc" id="variable_8hpp_html"><div class="ttname"><a href="variable_8hpp.html">variable.hpp</a></div></div>
-<div class="ttc" id="class_fort_rock_html"><div class="ttname"><a href="class_fort_rock.html">FortRock</a></div><div class="ttdoc">FortRockのメインのパスの実装 </div><div class="ttdef"><b>Definition:</b> fortrock.hpp:56</div></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;llvm/IR/Instructions.h&quot;</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &quot;llvm/IR/Module.h&quot;</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &quot;llvm/Pass.h&quot;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;llvm/Support/InstIterator.h&quot;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;llvm/Support/raw_ostream.h&quot;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;llvm/IR/Constants.h&quot;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;list&gt;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;regex&gt;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;../dfg/CModule.hpp&quot;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;../dfg/COutput.hpp&quot;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;../dfg/CModuleGenerator.hpp&quot;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;../xml/CInstancingOperator.hpp&quot;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">using namespace </span>llvm;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
+<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="class_fort_rock.html">   25</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_fort_rock.html">FortRock</a> : <span class="keyword">public</span> ModulePass  {</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="class_fort_rock.html#a6badf921178f1b468112b8e96c8bae56">   27</a></span>&#160;  <span class="keyword">static</span> <span class="keywordtype">char</span> <a class="code" href="class_fort_rock.html#a6badf921178f1b468112b8e96c8bae56">ID</a>;</div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="class_fort_rock.html#ab48a845b97821b5710679b48f1861b68">   28</a></span>&#160;  <a class="code" href="class_fort_rock.html#ab48a845b97821b5710679b48f1861b68">FortRock</a>(<span class="keywordtype">void</span>)</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    : ModulePass(ID),</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;      _step(0),</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;      _state(1)</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  {}</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="keywordtype">bool</span> runOnModule(Module &amp; M);</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="class_fort_rock.html#afdbb143100784520795461d4fa6451c8">   36</a></span>&#160;  <span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code" href="class_fort_rock.html#afdbb143100784520795461d4fa6451c8">getPassName</a>(<span class="keywordtype">void</span>)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">  </span>{ <span class="keywordflow">return</span> <span class="stringliteral">&quot;FortRock: Fortran to Verilog backend&quot;</span>; }</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="class_fort_rock.html#a92990c976a5bca81118d1d71b35e0f9b">   40</a></span>&#160;  std::shared_ptr&lt;CModuleGenerator&gt; <a class="code" href="class_fort_rock.html#a92990c976a5bca81118d1d71b35e0f9b">_module_gen</a>;</div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="class_fort_rock.html#a925b0423c1d5841a31e1a3bc62da46f3">   41</a></span>&#160;  <span class="keywordtype">unsigned</span> <a class="code" href="class_fort_rock.html#a925b0423c1d5841a31e1a3bc62da46f3">_step</a>;  </div>
+<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="class_fort_rock.html#a443223762d150ea8f4e6faad75350b0c">   42</a></span>&#160;  <span class="keywordtype">unsigned</span> <a class="code" href="class_fort_rock.html#a443223762d150ea8f4e6faad75350b0c">_state</a>; </div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
+<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="class_fort_rock.html#af9aa83faa8acbe49e939980e6b7d185d">   45</a></span>&#160;  <span class="keyword">const</span> std::string _PREV_STATE_NAME = <span class="stringliteral">&quot;prev_state&quot;</span>;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="class_fort_rock.html#ab4b1eaf86343d2ca5f153ba35fc94d65">   48</a></span>&#160;  <span class="keyword">const</span> std::string _CUR_STATE_NAME = <span class="stringliteral">&quot;current_state&quot;</span>;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
+<div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="class_fort_rock.html#a23abe2f183228422e3dec987960a1fec">   51</a></span>&#160;  <span class="keyword">const</span> std::string _FINISH_STATE_NAME = <span class="stringliteral">&quot;finish_state&quot;</span>;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="class_fort_rock.html#ac536628c787d808588517e26da1e34e6">   54</a></span>&#160;  <span class="keyword">const</span> std::string _STEP_NAME = <span class="stringliteral">&quot;step&quot;</span>;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00057"></a><span class="lineno"><a class="line" href="class_fort_rock.html#a33ba679c2e5d383f8d08359b7fbd9bcc">   57</a></span>&#160;  <span class="keyword">const</span> std::string _OPERATOR_CONFIG_FILENAME = <span class="stringliteral">&quot;./config/operator_config.xml&quot;</span>;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="comment">// 補助関数</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  std::string _get_module_name(<span class="keyword">const</span> Module &amp; M);</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  std::string _get_value_name(<span class="keyword">const</span> Value * v);</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordtype">unsigned</span> _get_required_bit_width(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> &amp; num);</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="comment">// モジュール定義</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keywordtype">void</span> _set_IO(<span class="keyword">const</span> Module::FunctionListType::iterator &amp; funct);</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keywordtype">void</span> _grub_variables(<span class="keyword">const</span> Module::FunctionListType::iterator &amp;funct);</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keywordtype">void</span> _grub_labels(<span class="keyword">const</span> Module::FunctionListType::iterator &amp;funct);</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="comment">// 命令パース</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordtype">void</span> _parse_instructions(<span class="keyword">const</span> Instruction * inst);</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="keywordtype">void</span> _add_ret_inst(<span class="keyword">const</span> Instruction * inst);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keywordtype">void</span> _add_br_inst(<span class="keyword">const</span> Instruction * inst);</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keywordtype">void</span> _add_load_inst(<span class="keyword">const</span> Instruction * inst);</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="keywordtype">void</span> _add_store_inst(<span class="keyword">const</span> Instruction * inst);</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keywordtype">void</span> _add_icmp_inst(<span class="keyword">const</span> Instruction * inst);</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="keywordtype">void</span> _add_phi_inst(<span class="keyword">const</span> Instruction * inst);</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keywordtype">void</span> _add_select_inst(<span class="keyword">const</span> Instruction * inst);</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="keywordtype">void</span> _add_srem_inst(<span class="keyword">const</span> Instruction * inst);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keywordtype">void</span> _add_mul_inst(<span class="keyword">const</span> Instruction * inst);</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keywordtype">void</span> _add_sdiv_inst(<span class="keyword">const</span> Instruction * inst);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keywordtype">void</span> _add_add_inst(<span class="keyword">const</span> Instruction * inst);</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keywordtype">void</span> _add_sub_inst(<span class="keyword">const</span> Instruction * inst);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordtype">void</span> _add_switch_inst(<span class="keyword">const</span> Instruction * inst);</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keywordtype">void</span> _add_shift_inst(<span class="keyword">const</span> Instruction * inst,</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;                       <span class="keyword">const</span> <span class="keywordtype">bool</span> is_left,</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;                       <span class="keyword">const</span> <span class="keywordtype">bool</span> is_logical);</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keywordtype">void</span> _add_and_inst(<span class="keyword">const</span> Instruction * inst);</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keywordtype">void</span> _add_or_inst(<span class="keyword">const</span> Instruction * inst);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordtype">void</span> _add_xor_inst(<span class="keyword">const</span> Instruction * inst);</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keywordtype">void</span> _add_trunc_inst(<span class="keyword">const</span> Instruction *inst);</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;}; <span class="comment">// FortRock</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="ttc" id="class_fort_rock_html_a443223762d150ea8f4e6faad75350b0c"><div class="ttname"><a href="class_fort_rock.html#a443223762d150ea8f4e6faad75350b0c">FortRock::_state</a></div><div class="ttdeci">unsigned _state</div><div class="ttdoc">現在処理中の命令の実行ステップ番号 </div><div class="ttdef"><b>Definition:</b> fortrock.hpp:42</div></div>
+<div class="ttc" id="class_fort_rock_html_afdbb143100784520795461d4fa6451c8"><div class="ttname"><a href="class_fort_rock.html#afdbb143100784520795461d4fa6451c8">FortRock::getPassName</a></div><div class="ttdeci">virtual const char * getPassName(void) const </div><div class="ttdef"><b>Definition:</b> fortrock.hpp:36</div></div>
+<div class="ttc" id="class_fort_rock_html_a6badf921178f1b468112b8e96c8bae56"><div class="ttname"><a href="class_fort_rock.html#a6badf921178f1b468112b8e96c8bae56">FortRock::ID</a></div><div class="ttdeci">static char ID</div><div class="ttdef"><b>Definition:</b> fortrock.hpp:27</div></div>
+<div class="ttc" id="class_fort_rock_html_a925b0423c1d5841a31e1a3bc62da46f3"><div class="ttname"><a href="class_fort_rock.html#a925b0423c1d5841a31e1a3bc62da46f3">FortRock::_step</a></div><div class="ttdeci">unsigned _step</div><div class="ttdef"><b>Definition:</b> fortrock.hpp:41</div></div>
+<div class="ttc" id="class_fort_rock_html_a92990c976a5bca81118d1d71b35e0f9b"><div class="ttname"><a href="class_fort_rock.html#a92990c976a5bca81118d1d71b35e0f9b">FortRock::_module_gen</a></div><div class="ttdeci">std::shared_ptr&lt; CModuleGenerator &gt; _module_gen</div><div class="ttdef"><b>Definition:</b> fortrock.hpp:40</div></div>
+<div class="ttc" id="class_fort_rock_html_ab48a845b97821b5710679b48f1861b68"><div class="ttname"><a href="class_fort_rock.html#ab48a845b97821b5710679b48f1861b68">FortRock::FortRock</a></div><div class="ttdeci">FortRock(void)</div><div class="ttdef"><b>Definition:</b> fortrock.hpp:28</div></div>
+<div class="ttc" id="class_fort_rock_html"><div class="ttname"><a href="class_fort_rock.html">FortRock</a></div><div class="ttdoc">FortRockのメインのパスの実装 </div><div class="ttdef"><b>Definition:</b> fortrock.hpp:25</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_4270bfced15e0e73154b13468c7c9ad9.html">core</a></li><li class="navelem"><a class="el" href="fortrock_8hpp.html">fortrock.hpp</a></li>
-    <li class="footer">Generated on Thu Jun 18 2015 18:42:34 for FortRock by
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_aebb8dcc11953d78e620bbef0b9e2183.html">core</a></li><li class="navelem"><a class="el" href="fortrock_8hpp.html">fortrock.hpp</a></li>
+    <li class="footer">Generated on Tue Jul 28 2015 15:41:29 for FortRock by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

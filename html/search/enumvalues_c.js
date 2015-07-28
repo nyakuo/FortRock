@@ -1,4 +1,7 @@
 var searchData=
 [
-  ['wire',['WIRE',['../class_variable.html#a16cec912575dc277f2ac2e2c1a9ee616a48654bac70e0894af8867fa7997ce0d2',1,'Variable::WIRE()'],['../class_c_d_f_g___node.html#a092116c8844e7398a928d10246e2af18a42ee4959b75f8347e0c2c511d0c45f57',1,'CDFG_Node::WIRE()']]]
+  ['reg',['REG',['../class_c_d_f_g___node.html#a092116c8844e7398a928d10246e2af18af4cf3fe4b67244332eecec055742d449',1,'CDFG_Node']]],
+  ['req',['REQ',['../class_c_d_f_g___node.html#a092116c8844e7398a928d10246e2af18ace4e1a7286ff585e08bf30898cf6b3eb',1,'CDFG_Node']]],
+  ['res',['RES',['../class_c_d_f_g___node.html#a092116c8844e7398a928d10246e2af18af8af55aaebfbde59fb3954b42cedcf60',1,'CDFG_Node']]],
+  ['ret',['RET',['../class_c_d_f_g___operator.html#ae9708875af4f8931b7adcbe78107b62bafb902bc4807c307b9309f2b528b96f2b',1,'CDFG_Operator']]]
 ];

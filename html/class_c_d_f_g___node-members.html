@@ -30,8 +30,9 @@
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
    <div id="projectname">FortRock
-   &#160;<span id="projectnumber">0.1</span>
+   &#160;<span id="projectnumber">0.2</span>
    </div>
+   <div id="projectbrief">Fortranベースの高位合成ツールFortRock</div>
   </td>
  </tr>
  </tbody>
@@ -115,28 +116,37 @@ $(document).ready(function(){initNavTree('class_c_d_f_g___node.html','');});
   <tr><td class="entry"><a class="el" href="class_c_d_f_g___node.html#a85ed844f4441cdd445c973937125286e">_address</a></td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="class_c_d_f_g___node.html#ab3901093e849a13a5c4dbfc7d21f587d">_asm_name</a></td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
   <tr><td class="entry"><a class="el" href="class_c_d_f_g___node.html#a5004df30523249b5fc3b59dbd83edbd6">_bit_width</a></td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_d_f_g___node.html#a10da91a69c9a80e5fc4e96e9c284477e">_condition</a></td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_d_f_g___node.html#ae6dd703e813e82ca7ed37026a63c3a9b">_is_float</a></td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="class_c_d_f_g___node.html#ae552fd9c9c6b5dcbea1a0c8f79c3873f">_is_signed</a></td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
   <tr><td class="entry"><a class="el" href="class_c_d_f_g___node.html#a58772a85b5bd6d5cfe535c5995a8b8f1">_parameter</a></td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="class_c_d_f_g___node.html#a716b978098eafc455d9253d9276c277e">_type</a></td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
   <tr><td class="entry"><a class="el" href="class_c_d_f_g___node.html#aedd66617a55b2b8f3cf5854a11618269">_verilog_name</a></td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="class_c_d_f_g___node.html#ade3f63ac266bc9c4e8268fba9f9ae3f6">CDFG_Node</a>(const std::string &amp;asm_name, const unsigned &amp;bit_width, const bool &amp;is_signed, const CDFG_Node::eNode &amp;type, const double &amp;parameter=0, const long &amp;address=0, const long &amp;access_port=0)</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="class_c_d_f_g___node.html#a092116c8844e7398a928d10246e2af18">eNode</a> enum name</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_c_d_f_g___node.html#ac1cb33f04ad191f78096eae6e3c949ea">get_access_port</a>(void)</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="class_c_d_f_g___node.html#a7adde079e15fb7d87dcbc8c55124b0ba">get_address</a>(void)</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_c_d_f_g___node.html#a66a8f653437b8509e9b4fb35cb1623d6">get_asm_name</a>(void)</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="class_c_d_f_g___node.html#ab18a6ccfd0b2d653149fb2ee12e6532f">get_bit_width</a>(void)</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_d_f_g___node.html#ab1bcc5428299032c91c3f65e7a9302ab">eCond</a> enum name</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_d_f_g___node.html#a092116c8844e7398a928d10246e2af18">eNode</a> enum name</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_d_f_g___node.html#ac1cb33f04ad191f78096eae6e3c949ea">get_access_port</a>(void)</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_d_f_g___node.html#a7adde079e15fb7d87dcbc8c55124b0ba">get_address</a>(void)</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_d_f_g___node.html#a66a8f653437b8509e9b4fb35cb1623d6">get_asm_name</a>(void)</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_d_f_g___node.html#ab18a6ccfd0b2d653149fb2ee12e6532f">get_bit_width</a>(void)</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_d_f_g___node.html#a7b4214632f69cf07ef9ba48547baac0b">get_condition</a>(void)</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_d_f_g___node.html#a916d54828b2632f70c7a157681d08f6b">get_fparameter</a>(void)</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_d_f_g___node.html#a20ba0d3f1bdbdc625a0c4dd93f7bf037">get_is_float</a>(void)</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="class_c_d_f_g___node.html#a035145593d22289806258906fa7102cb">get_is_signed</a>(void)</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="class_c_d_f_g___node.html#a0f61ebc2a67c93edcd94c89b63600d12">get_parameter</a>(void)</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_d_f_g___node.html#a44de6d4431709f040a6d6ae1d3492fa1">get_param_str</a>(void)</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_d_f_g___node.html#a8df2a2a9eca044fc014da86c70bf0901">get_parameter</a>(void)</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_d_f_g___node.html#af98061067703021986640a0c9a37cb17">get_safe_name</a>(void)</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="class_c_d_f_g___node.html#aac5e78e69a225ca57b619108bf342aa7">get_type</a>(void)</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="class_c_d_f_g___node.html#a9bbadc541fdd74c5525d3be452e5ab1d">get_verilog_name</a>(void)</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="class_c_d_f_g___node.html#a29102c40cd47133fe886e3722ae8550a">set_type</a>(CDFG_Node::eNode type)</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="class_c_d_f_g___node.html#a6175247f01b0776a66e86d458c91aaf7">~CDFG_Node</a>()</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_d_f_g___node.html#a558d9a7dc66f9c119fe6ec7d2f1bca7d">set_condition</a>(const CDFG_Node::eCond &amp;cond)</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="class_c_d_f_g___node.html#ae7eb089cb3396143cff19f2c23474cb1">set_type</a>(const CDFG_Node::eNode &amp;type)</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="class_c_d_f_g___node.html#a6175247f01b0776a66e86d458c91aaf7">~CDFG_Node</a>()</td><td class="entry"><a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
 </table></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Jun 18 2015 18:42:34 for FortRock by
+    <li class="footer">Generated on Tue Jul 28 2015 15:41:30 for FortRock by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

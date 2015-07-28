@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['cdfg_5felement',['CDFG_Element',['../class_c_d_f_g___element.html',1,'CDFG_Element'],['../class_c_d_f_g___element.html#a704e330bfca7448d1c7b3ca45fa10938',1,'CDFG_Element::CDFG_Element()']]],
+  ['cdfg_5felement',['CDFG_Element',['../class_c_d_f_g___element.html',1,'CDFG_Element'],['../class_c_d_f_g___element.html#a4dd6cc5a3b48d67be8e44c607820f037',1,'CDFG_Element::CDFG_Element(const CDFG_Operator::eType &amp;type, const unsigned &amp;num_input, const unsigned &amp;state, const unsigned &amp;step)'],['../class_c_d_f_g___element.html#a704e330bfca7448d1c7b3ca45fa10938',1,'CDFG_Element::CDFG_Element(std::shared_ptr&lt; CDFG_Operator &gt; &amp;ope)']]],
   ['cdfg_5felement_2ecpp',['CDFG_Element.cpp',['../_c_d_f_g___element_8cpp.html',1,'']]],
   ['cdfg_5felement_2ehpp',['CDFG_Element.hpp',['../_c_d_f_g___element_8hpp.html',1,'']]],
   ['cdfg_5fnode',['CDFG_Node',['../class_c_d_f_g___node.html',1,'CDFG_Node'],['../class_c_d_f_g___node.html#ade3f63ac266bc9c4e8268fba9f9ae3f6',1,'CDFG_Node::CDFG_Node()']]],
@@ -10,6 +10,9 @@ var searchData=
   ['cdfg_5foperator_2ecpp',['CDFG_Operator.cpp',['../_c_d_f_g___operator_8cpp.html',1,'']]],
   ['cdfg_5foperator_2ehpp',['CDFG_Operator.hpp',['../_c_d_f_g___operator_8hpp.html',1,'']]],
   ['ce',['CE',['../class_c_d_f_g___node.html#a092116c8844e7398a928d10246e2af18a7a86131338bf955e0a56311f264aa6aa',1,'CDFG_Node']]],
+  ['cinstancingoperator',['CInstancingOperator',['../class_c_instancing_operator.html',1,'CInstancingOperator'],['../class_c_instancing_operator.html#a14851e3ed274313153d0556a2e4c5b11',1,'CInstancingOperator::CInstancingOperator()']]],
+  ['cinstancingoperator_2ecpp',['CInstancingOperator.cpp',['../_c_instancing_operator_8cpp.html',1,'']]],
+  ['cinstancingoperator_2ehpp',['CInstancingOperator.hpp',['../_c_instancing_operator_8hpp.html',1,'']]],
   ['clk',['CLK',['../class_c_d_f_g___node.html#a092116c8844e7398a928d10246e2af18afcea8677932f698f06799f81e024d7ab',1,'CDFG_Node']]],
   ['close_5fofstream',['close_ofstream',['../class_c_output.html#a78de630bfd8a112e5117075e64677619',1,'COutput']]],
   ['cmodule',['CModule',['../class_c_module.html',1,'CModule'],['../class_c_module.html#aebdc2bece3d78a3fe4433680bcf2fddd',1,'CModule::CModule()']]],
@@ -18,11 +21,20 @@ var searchData=
   ['cmodulegenerator',['CModuleGenerator',['../class_c_module_generator.html',1,'CModuleGenerator'],['../class_c_module_generator.html#a423295bc238b668fc02ba7517230d5e6',1,'CModuleGenerator::CModuleGenerator()']]],
   ['cmodulegenerator_2ecpp',['CModuleGenerator.cpp',['../_c_module_generator_8cpp.html',1,'']]],
   ['cmodulegenerator_2ehpp',['CModuleGenerator.hpp',['../_c_module_generator_8hpp.html',1,'']]],
+  ['cnode_5fdata',['CNode_data',['../class_c_operator_generator_1_1_c_node__data.html#af1a58b188c41901ac09128238eadfba8',1,'COperatorGenerator::CNode_data']]],
+  ['cnode_5fdata',['CNode_data',['../class_c_operator_generator_1_1_c_node__data.html',1,'COperatorGenerator']]],
+  ['coperatorgenerator',['COperatorGenerator',['../class_c_operator_generator.html',1,'COperatorGenerator'],['../class_c_operator_generator.html#a5b2c0833a30982cb04edae42a3efe772',1,'COperatorGenerator::COperatorGenerator()']]],
+  ['coperatorgenerator_2ecpp',['COperatorGenerator.cpp',['../_c_operator_generator_8cpp.html',1,'']]],
+  ['coperatorgenerator_2ehpp',['COperatorGenerator.hpp',['../_c_operator_generator_8hpp.html',1,'']]],
+  ['coperatormanager',['COperatorManager',['../class_c_operator_manager.html',1,'COperatorManager'],['../class_c_operator_manager.html#ac4c960c41639597444015ee8e0013913',1,'COperatorManager::COperatorManager()']]],
+  ['coperatormanager_2ecpp',['COperatorManager.cpp',['../_c_operator_manager_8cpp.html',1,'']]],
+  ['coperatormanager_2ehpp',['COperatorManager.hpp',['../_c_operator_manager_8hpp.html',1,'']]],
+  ['coperatormanger',['COperatorManger',['../class_c_operator_manger.html',1,'']]],
+  ['copy',['COPY',['../class_c_d_f_g___operator.html#ae9708875af4f8931b7adcbe78107b62bae8606d021da140a92c7eba8d9b8af84f',1,'CDFG_Operator']]],
   ['coutput',['COutput',['../class_c_output.html',1,'COutput'],['../class_c_output.html#af632fa8a95819beedf10a2100bf8735a',1,'COutput::COutput()']]],
   ['coutput_2ecpp',['COutput.cpp',['../_c_output_8cpp.html',1,'']]],
   ['coutput_2ehpp',['COutput.hpp',['../_c_output_8hpp.html',1,'']]],
   ['cstatemachinegen',['CStateMachineGen',['../class_c_state_machine_gen.html',1,'CStateMachineGen'],['../class_c_state_machine_gen.html#aa0a62adb12a3525fdd6d23a6b52ef2eb',1,'CStateMachineGen::CStateMachineGen()']]],
   ['cstatemachinegen_2ecpp',['CStateMachineGen.cpp',['../_c_state_machine_gen_8cpp.html',1,'']]],
-  ['cstatemachinegen_2ehpp',['CStateMachineGen.hpp',['../_c_state_machine_gen_8hpp.html',1,'']]],
-  ['cur_5fstate_5fname',['CUR_STATE_NAME',['../class_fort_rock.html#ac846cc7350f2baeebb157f9d55342e64',1,'FortRock']]]
+  ['cstatemachinegen_2ehpp',['CStateMachineGen.hpp',['../_c_state_machine_gen_8hpp.html',1,'']]]
 ];

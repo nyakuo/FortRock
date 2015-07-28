@@ -1,8 +1,11 @@
 var class_c_d_f_g___element =
 [
+    [ "CDFG_Element", "class_c_d_f_g___element.html#a4dd6cc5a3b48d67be8e44c607820f037", null ],
     [ "CDFG_Element", "class_c_d_f_g___element.html#a704e330bfca7448d1c7b3ca45fa10938", null ],
     [ "~CDFG_Element", "class_c_d_f_g___element.html#a6b50697753e5487107ed84efe02986ab", null ],
     [ "get_input_at", "class_c_d_f_g___element.html#a0779c7bd4dc02b657aad1e7e65fb57b4", null ],
+    [ "get_num_input", "class_c_d_f_g___element.html#a74541962be77c82cae4e7f77a918700e", null ],
+    [ "get_num_output", "class_c_d_f_g___element.html#a232df72972e7e48fe5d1d6a9e27486d2", null ],
     [ "get_operator", "class_c_d_f_g___element.html#a603b0fb78fe06096585ccd82634ec888", null ],
     [ "get_output_at", "class_c_d_f_g___element.html#a67dc8e1950acf87e9982f012c8febd6d", null ],
     [ "get_state", "class_c_d_f_g___element.html#a62f8ea52de0a77ee987617ec358497fe", null ],

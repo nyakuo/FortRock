@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['to_5fstring',['to_string',['../class_f_r_obj.html#aceccaf574d68e8cfbaabdf5d16db0323',1,'FRObj::to_string()'],['../class_variable.html#af94b23999c581e2f46b0ae524223362b',1,'Variable::to_string()']]],
   ['todo_20list',['Todo List',['../todo.html',1,'']]],
-  ['type',['type',['../class_variable.html#ac239adc6c5bc2edb8afe4bcdb292ae74',1,'Variable']]],
-  ['type_5fto_5fstring',['type_to_string',['../class_variable.html#a243dd181df972f5b63f139e55788d688',1,'Variable']]]
+  ['true',['TRUE',['../class_c_d_f_g___node.html#a092116c8844e7398a928d10246e2af18ac0d83f0b82a6b30de8811e69e6d95c61',1,'CDFG_Node']]],
+  ['trunc',['TRUNC',['../class_c_d_f_g___operator.html#ae9708875af4f8931b7adcbe78107b62ba69c337ff6ad130861f8877b054f171ea',1,'CDFG_Operator']]]
 ];

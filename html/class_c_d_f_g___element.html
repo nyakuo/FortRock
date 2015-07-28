@@ -30,8 +30,9 @@
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
    <div id="projectname">FortRock
-   &#160;<span id="projectnumber">0.1</span>
+   &#160;<span id="projectnumber">0.2</span>
    </div>
+   <div id="projectbrief">Fortranベースの高位合成ツールFortRock</div>
   </td>
  </tr>
  </tbody>
@@ -120,6 +121,8 @@ $(document).ready(function(){initNavTree('class_c_d_f_g___element.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a4dd6cc5a3b48d67be8e44c607820f037"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_d_f_g___element.html#a4dd6cc5a3b48d67be8e44c607820f037">CDFG_Element</a> (const <a class="el" href="class_c_d_f_g___operator.html#ae9708875af4f8931b7adcbe78107b62b">CDFG_Operator::eType</a> &amp;type, const unsigned &amp;num_input, const unsigned &amp;state, const unsigned &amp;step)</td></tr>
+<tr class="separator:a4dd6cc5a3b48d67be8e44c607820f037"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a704e330bfca7448d1c7b3ca45fa10938"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_d_f_g___element.html#a704e330bfca7448d1c7b3ca45fa10938">CDFG_Element</a> (std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___operator.html">CDFG_Operator</a> &gt; &amp;ope)</td></tr>
 <tr class="separator:a704e330bfca7448d1c7b3ca45fa10938"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b50697753e5487107ed84efe02986ab"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_d_f_g___element.html#a6b50697753e5487107ed84efe02986ab">~CDFG_Element</a> (void)</td></tr>
@@ -138,6 +141,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a0779c7bd4dc02b657aad1e7e65fb57b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67dc8e1950acf87e9982f012c8febd6d"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_d_f_g___element.html#a67dc8e1950acf87e9982f012c8febd6d">get_output_at</a> (const unsigned &amp;at)</td></tr>
 <tr class="separator:a67dc8e1950acf87e9982f012c8febd6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74541962be77c82cae4e7f77a918700e"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_d_f_g___element.html#a74541962be77c82cae4e7f77a918700e">get_num_input</a> (void)</td></tr>
+<tr class="separator:a74541962be77c82cae4e7f77a918700e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a232df72972e7e48fe5d1d6a9e27486d2"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_d_f_g___element.html#a232df72972e7e48fe5d1d6a9e27486d2">get_num_output</a> (void)</td></tr>
+<tr class="separator:a232df72972e7e48fe5d1d6a9e27486d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a603b0fb78fe06096585ccd82634ec888"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___operator.html">CDFG_Operator</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_d_f_g___element.html#a603b0fb78fe06096585ccd82634ec888">get_operator</a> (void)</td></tr>
 <tr class="separator:a603b0fb78fe06096585ccd82634ec888"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a62f8ea52de0a77ee987617ec358497fe"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_d_f_g___element.html#a62f8ea52de0a77ee987617ec358497fe">get_state</a> (void)</td></tr>
@@ -164,6 +171,55 @@ Private Attributes</h2></td></tr>
 <div class="textblock"><p>入出力の接続を表すクラス </p>
 <p>モジュールや演算器に対して入出力がどのタイミングで 与えられるかを表す </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a4dd6cc5a3b48d67be8e44c607820f037"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CDFG_Element::CDFG_Element </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_d_f_g___operator.html#ae9708875af4f8931b7adcbe78107b62b">CDFG_Operator::eType</a> &amp;&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const unsigned &amp;&#160;</td>
+          <td class="paramname"><em>num_input</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const unsigned &amp;&#160;</td>
+          <td class="paramname"><em>state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const unsigned &amp;&#160;</td>
+          <td class="paramname"><em>step</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>デフォルトコンストラクタ </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">type</td><td>演算の種類 </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">state</td><td>演算の実行ステート </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">step</td><td>演算の実行ステップ </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>load命令やphi命令など演算器を必要としない 命令のDFG化にに使用 </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000013">Todo:</a></b></dt><dd>演算器の出力を1つに限定 </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a704e330bfca7448d1c7b3ca45fa10938"></a>
 <div class="memitem">
 <div class="memproto">
@@ -177,6 +233,13 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>コンストラクタ </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">ope</td><td>演算に使用する演算器の参照 </td></tr>
+  </table>
+  </dd>
+</dl>
 
 <p><div class="dynheader">
 Here is the call graph for this function:</div>
@@ -235,6 +298,42 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>入力ノード </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a74541962be77c82cae4e7f77a918700e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned CDFG_Element::get_num_input </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>接続されている演算器の入力の数を取得 </p>
+<dl class="section return"><dt>Returns</dt><dd>接続されている演算器の入力の数 </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a232df72972e7e48fe5d1d6a9e27486d2"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned CDFG_Element::get_num_output </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>接続されている演算器の出力の数を取得 </p>
+<dl class="section return"><dt>Returns</dt><dd>接続されている演算器の出力の数 </dd></dl>
 
 </div>
 </div>
@@ -571,8 +670,8 @@ Here is the caller graph for this function:</div>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>dfg/<a class="el" href="_c_d_f_g___element_8hpp_source.html">CDFG_Element.hpp</a></li>
-<li>dfg/<a class="el" href="_c_d_f_g___element_8cpp.html">CDFG_Element.cpp</a></li>
+<li>src/dfg/<a class="el" href="_c_d_f_g___element_8hpp_source.html">CDFG_Element.hpp</a></li>
+<li>src/dfg/<a class="el" href="_c_d_f_g___element_8cpp.html">CDFG_Element.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -580,7 +679,7 @@ Here is the caller graph for this function:</div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="class_c_d_f_g___element.html">CDFG_Element</a></li>
-    <li class="footer">Generated on Thu Jun 18 2015 18:42:34 for FortRock by
+    <li class="footer">Generated on Tue Jul 28 2015 15:41:30 for FortRock by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

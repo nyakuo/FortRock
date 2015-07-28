@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['fin',['FIN',['../class_c_d_f_g___node.html#a092116c8844e7398a928d10246e2af18af408850c47cccdcedad816d79e100906',1,'CDFG_Node']]],
-  ['func',['FUNC',['../class_c_d_f_g___operator.html#ae9708875af4f8931b7adcbe78107b62ba1e49c8ad07b69571bfcafaf18ac9fa5b',1,'CDFG_Operator']]]
+  ['eq',['EQ',['../class_c_d_f_g___node.html#ab1bcc5428299032c91c3f65e7a9302aba2dcbad7477fd40561e8b8198f173bd47',1,'CDFG_Node']]]
 ];
