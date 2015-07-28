@@ -6,25 +6,19 @@
    @param[in] bit_width Nodeのビット幅
    @param[in] is_signed Nodeが is_signed かどうか
    @param[in] type Nodeの種類
-   @param[in] parameter Nodeに設定する定数 (PARAMの場合)
-   @param[in] address メモリのアドレス (未使用)
-   @param[in] access_port メモリのアクセスポート (未使用)
+   @param[in] parameter Nodeに設定する定数 (定数やアドレス)
    @note verilog_name の作成も行っている
  */
 CDFG_Node::CDFG_Node(const std::string & asm_name,
                      const unsigned & bit_width,
                      const bool & is_signed,
                      const CDFG_Node::eNode & type,
-                     const double & parameter,
-                     const long & address,
-                     const long & access_port)
+                     const double & parameter)
   : _asm_name(asm_name),
     _bit_width(bit_width),
     _is_signed(is_signed),
     _type(type),
-    _parameter(parameter),
-    _address(address),
-  _access_port(access_port)
+    _parameter(parameter)
 {
   // 変数に使用できない文字の置換
   std::string safe_name = this->get_safe_name();
@@ -198,22 +192,6 @@ CDFG_Node::get_param_str(void) {
     ret += buf;
   }
   return ret;
-}
-
-/**
-   Nodeのメモリアドレスの取得 (未使用)
- */
-long &
-CDFG_Node::get_address(void) {
-  return this->_address;
-}
-
-/**
-   Nodeのメモリのアクセスポートの取得 (未使用)
- */
-long &
-CDFG_Node::get_access_port(void) {
-  return this->_access_port;
 }
 
 /**

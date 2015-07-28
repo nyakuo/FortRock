@@ -32,6 +32,7 @@ public:
       FALSE        = 1 << 17,
       ZERO         = 1 << 18,
       IN_ORIG      = 1 << 19,
+      ADDR         = 1 << 20,
       OTHER        = 1 << 30,
       };
 
@@ -53,9 +54,8 @@ public:
             const unsigned & bit_width,
             const bool & is_signed,
             const CDFG_Node::eNode & type,
-            const double & parameter = 0,
-            const long & address = 0,
-            const long & access_port = 0);
+            const double & parameter = 0);
+
   ~CDFG_Node(){}
 
   /* ゲッター */
@@ -69,8 +69,6 @@ public:
   double & get_fparameter(void);
   long get_parameter(void);
   std::string get_param_str(void);
-  long & get_address(void);
-  long & get_access_port(void);
   eCond & get_condition(void);
 
   // setter
@@ -84,9 +82,7 @@ private:
   bool _is_signed;           //! signedかどうか
   bool _is_float;            //! 浮動小数点かどうか
   CDFG_Node::eNode _type;    //! ノードの種類
-  double _parameter;         //! parameter用定数
-  long _address;             //! アドレス (only array)
-  long _access_port;         //! アクセスポート (only array)
+  double _parameter;         //! 定数
   eCond _condition;          //! icmp命令の比較条件
 };
 
