@@ -1,9 +1,9 @@
 # Makefile.in
 
 CXX       := clang++-3.6
-CXXFLAGS  := -std=c++11 -fPIC `llvm-config --cflags` `xml2-config --cflags`
+CXXFLAGS  := -std=c++11 -fPIC `llvm-config-3.4 --cflags` `xml2-config --cflags`
 LIBS      := `xml2-config --libs` `llvm-config --libs`
-LDFLAGS   := `llvm-config --ldflags`
+LDFLAGS   := `llvm-config-3.4 --ldflags`
 
 .PHONY: all
 all: $(TARGETS)
