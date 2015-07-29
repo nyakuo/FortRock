@@ -142,6 +142,8 @@ bool FortRock::runOnModule
   this->_module_gen = std::make_shared<CModuleGenerator>
     ("output.v", this->_get_module_name(M));
 
+  this->_grub_global_variables(M);
+
   // -------------------- Functions --------------------
   auto it = M.begin();
   auto end = M.end();
@@ -1040,6 +1042,17 @@ void FortRock::_add_trunc_inst
   ++this->_step;
 }
 
+void FortRock::_add_getelementptr_inst
+(const Instruction * inst) {
+  auto getelemptr_inst = dynamic_cast<GetElementPtrInst*>
+    (const_cast<Instruction*>(inst));
+
+  auto ptr = getelemptr_inst->getType();
+  auto array = ptr->getElementType();
+
+  std::cout << cast<ArrayType>(array)->getNumElements() << std::endl;
+}
+
 /**
    プログラムで使用するすべてのレジスタを取得し
    variablesに格納する
@@ -1093,13 +1106,14 @@ void FortRock::_grub_variables
       } // if
 
         // 未定義のregの追加
-      for(auto i=0; i<getop; ++i) {
+      for (auto i=0; i<getop; ++i) {
         value = it->getOperand(i);
         type = value->getType();
 
-        if(type->isPointerTy())
+        if (type->isPointerTy())
           type = type->getPointerElementType();
 
+        std::cout << type->getTypeID() << std::endl;
         auto name = this->_get_value_name(value);
 
         if(!value->hasName()) { // 定数
@@ -1199,6 +1213,39 @@ void FortRock::_grub_variables
     } // else
   } // for
 } // _grub_variables
+
+void FortRock::_grub_global_variables
+(const Module & M) {
+  for (auto ite = M.global_begin();
+       ite != M.global_end();
+       ++ite) {
+    std::string name = this->_get_value_name(ite);
+    Type * type = ite->getType();
+    std::cout << "has initializer: " << ite->hasInitializer() << std::endl;
+    auto init = ite->getInitializer();
+
+    std::cout << "name: " << name << std::endl;
+
+    if (type->isPointerTy())
+      type = type->getPointerElementType();
+
+    if (type->isArrayTy()) { // 配列の場合
+      auto init_array = dyn_cast<ConstantArray>(init);
+      auto array = dyn_cast<ArrayType>(type);
+      std::cout << "num elements: " << array->getNumElements() << std::endl;
+      std::cout << "type at index 0: " << array->getTypeAtIndex((unsigned)0)->getTypeID() << std::endl;
+      std::cout << "num operands: " << init->getNumOperands() << std::endl;
+      std::cout << "num uses: " << init->getNumUses() << std::endl;
+      std::cout << "gettype: " << init->getType()->getTypeID() << std::endl;
+      std::cout << "has name: " << init->hasName() << std::endl;
+      for (auto i=0; i<array->getNumElements(); ++i) {
+        //        std::cout << array->getTypeAtIndex(i)->getTypeID() << std::endl;
+      }
+
+
+    } // type : isArrayTy
+  } // for
+}
 
 /**
    ステートマシンのラベル(ステート)の列挙

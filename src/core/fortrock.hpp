@@ -64,6 +64,7 @@ private:
   // モジュール定義
   void _set_IO(const Module::FunctionListType::iterator & funct);
   void _grub_variables(const Module::FunctionListType::iterator &funct);
+  void _grub_global_variables(const Module & M);
   void _grub_labels(const Module::FunctionListType::iterator &funct);
 
   // 命令パース
@@ -87,7 +88,8 @@ private:
   void _add_and_inst(const Instruction * inst);
   void _add_or_inst(const Instruction * inst);
   void _add_xor_inst(const Instruction * inst);
-  void _add_trunc_inst(const Instruction *inst);
+  void _add_trunc_inst(const Instruction * inst);
+  void _add_getelementptr_inst(const Instruction * inst);
 }; // FortRock
 
 #endif
