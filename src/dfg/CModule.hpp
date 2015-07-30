@@ -21,7 +21,7 @@ public:
   CModule(const std::string & module_name);
 
   // 資源の登録
-  void add_element(std::shared_ptr<CDFG_Element> & element);
+  void add_element(const std::shared_ptr<CDFG_Element> element);
   void add_node(const std::shared_ptr<CDFG_Node> & node);
   void add_operator(std::shared_ptr<CDFG_Operator> & ope);
 

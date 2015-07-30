@@ -36,19 +36,19 @@ public:
       OTHER        = 1 << 30,
       };
 
-  /** ICMP命令の比較条件 */
-  enum class eCond : unsigned {
-    EQ  = 1 << 0, //! ==
-    NE  = 1 << 1, //! !=
-    UGT = 1 << 2, //! (unsigned) > (unsigned)
-    UGE = 1 << 3, //! (unsigned) >= (unsigned)
-    ULT = 1 << 4, //! (unsigned) < (unsigned)
-    ULE = 1 << 5, //! (unsigned) <= (unsigned)
-    SGT = 1 << 6, //! (signed) > (signed)
-    SGE = 1 << 7, //! (signed) >= (signed)
-    SLT = 1 << 8, //! (signed) < (signed)
-    SLE = 1 << 9, //! (signed) <= (signed)
-    };
+  // /** ICMP命令の比較条件 */
+  // enum class eCond : unsigned {
+  //   EQ  = 1 << 0, //! ==
+  //   NE  = 1 << 1, //! !=
+  //   UGT = 1 << 2, //! (unsigned) > (unsigned)
+  //   UGE = 1 << 3, //! (unsigned) >= (unsigned)
+  //   ULT = 1 << 4, //! (unsigned) < (unsigned)
+  //   ULE = 1 << 5, //! (unsigned) <= (unsigned)
+  //   SGT = 1 << 6, //! (signed) > (signed)
+  //   SGE = 1 << 7, //! (signed) >= (signed)
+  //   SLT = 1 << 8, //! (signed) < (signed)
+  //   SLE = 1 << 9, //! (signed) <= (signed)
+  //   };
 
   CDFG_Node(const std::string & asm_name,
             const unsigned & bit_width,
@@ -72,11 +72,11 @@ public:
   // double & get_fparameter(void);
   // long get_parameter(void);
   // std::string get_param_str(void);
-  eCond & get_condition(void);
+  //  eCond & get_condition(void);
 
   // setter
   void set_type(const CDFG_Node::eNode & type);
-  void set_condition(const CDFG_Node::eCond & cond);
+  //  void set_condition(const CDFG_Node::eCond & cond);
 
   virtual std::string to_string(void) { return "to_string"; }
 
@@ -88,7 +88,7 @@ protected:
   bool _is_float;            //! 浮動小数点かどうか
   CDFG_Node::eNode _type;    //! ノードの種類
   // double _parameter;         //! 定数
-  eCond _condition;          //! icmp命令の比較条件
+  //  eCond _condition;          //! icmp命令の比較条件
 };
 
 #endif

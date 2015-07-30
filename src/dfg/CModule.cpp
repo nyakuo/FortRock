@@ -15,7 +15,7 @@ CModule::CModule
    @param[in] element DFGに追加するElementの参照
  */
 void CModule::add_element
-(std::shared_ptr<CDFG_Element> & element) {
+(const std::shared_ptr<CDFG_Element> element) {
   this->_dfg.emplace_back(element);
 }
 

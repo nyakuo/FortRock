@@ -61,7 +61,7 @@ void CModuleGenerator::add_operator
    モジュールにElement(処理)を追加する
  */
 void CModuleGenerator::add_element
-(std::shared_ptr<CDFG_Element> & elem) {
+(const std::shared_ptr<CDFG_Element> elem) {
   this->_module->add_element(elem);
 }
 
@@ -753,34 +753,34 @@ void CModuleGenerator::_generate_always(void) {
 
     case CDFG_Operator::eType::ICMP:
       {
+        auto icmp = std::dynamic_pointer_cast<CDFG_IcmpElem>(elem);
         auto in_0 = elem->get_input_at(0);
         auto in_1 = elem->get_input_at(1);
-        auto condition = elem->get_input_at(2);
         auto out = elem->get_output_at(0);
 
         // 比較演算子
         std::string cond_str;
-        switch (condition->get_condition()) {
-        case CDFG_Node::eCond::EQ:
+        switch (icmp->get_condition()) {
+        case CDFG_IcmpElem::eCond::EQ:
           cond_str = " == "; break;
 
-        case CDFG_Node::eCond::NE:
+        case CDFG_IcmpElem::eCond::NE:
           cond_str = " != "; break;
 
-        case CDFG_Node::eCond::UGT:
-        case CDFG_Node::eCond::SGT:
+        case CDFG_IcmpElem::eCond::UGT:
+        case CDFG_IcmpElem::eCond::SGT:
           cond_str = " > "; break;
 
-        case CDFG_Node::eCond::UGE:
-        case CDFG_Node::eCond::SGE:
+        case CDFG_IcmpElem::eCond::UGE:
+        case CDFG_IcmpElem::eCond::SGE:
           cond_str = " >= "; break;
 
-        case CDFG_Node::eCond::ULE:
-        case CDFG_Node::eCond::SLE:
+        case CDFG_IcmpElem::eCond::ULE:
+        case CDFG_IcmpElem::eCond::SLE:
           cond_str = " <= "; break;
 
-        case CDFG_Node::eCond::ULT:
-        case CDFG_Node::eCond::SLT:
+        case CDFG_IcmpElem::eCond::ULT:
+        case CDFG_IcmpElem::eCond::SLT:
           cond_str = " < "; break;
         default:;
         }
@@ -887,7 +887,7 @@ void CModuleGenerator::_generate_always(void) {
                              + zero_node->get_verilog_name()
                              + ";\n");
 
-          sm_gen.add_state_process(finish_state_label->get_label_num(),
+          sm_gen.add_state_process(finish_state_label->get_state(),
                                    0 /* step */,
                                    process_str);
 

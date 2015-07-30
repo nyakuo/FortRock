@@ -21,7 +21,7 @@ public:
                const unsigned & state,
                const unsigned & step);
   CDFG_Element(std::shared_ptr<CDFG_Operator> & ope);
-  ~CDFG_Element(void) {}
+  virtual ~CDFG_Element(void) {}
 
   /* セッター */
   int set_operator(std::shared_ptr<CDFG_Operator> & ope);

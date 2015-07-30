@@ -316,9 +316,41 @@ void FortRock::_add_store_inst
  */
 void FortRock::_add_icmp_inst
 (const Instruction * inst) {
-  auto elem = std::make_shared<CDFG_Element>
-    (CDFG_Operator::eType::ICMP,
-     3, /* 入力の数 (a0, a1, condition) */
+  // 比較条件
+  auto icmp_inst = dynamic_cast<ICmpInst*>
+    (const_cast<Instruction*>(inst));
+  auto condition = icmp_inst->getUnsignedPredicate();
+
+  if (!condition)
+    condition = icmp_inst->getSignedPredicate();
+
+  CDFG_IcmpElem::eCond cond;
+  switch (condition) {
+  case CmpInst::Predicate::ICMP_EQ:
+    cond = CDFG_IcmpElem::eCond::EQ; break;
+  case CmpInst::Predicate::ICMP_NE:
+    cond = CDFG_IcmpElem::eCond::NE; break;
+  case CmpInst::Predicate::ICMP_UGT:
+    cond = CDFG_IcmpElem::eCond::UGT; break;
+  case CmpInst::Predicate::ICMP_UGE:
+    cond = CDFG_IcmpElem::eCond::UGE; break;
+  case CmpInst::Predicate::ICMP_ULT:
+    cond = CDFG_IcmpElem::eCond::ULT; break;
+  case CmpInst::Predicate::ICMP_ULE:
+    cond = CDFG_IcmpElem::eCond::ULE; break;
+  case CmpInst::Predicate::ICMP_SGT:
+    cond = CDFG_IcmpElem::eCond::SGT; break;
+  case CmpInst::Predicate::ICMP_SGE:
+    cond = CDFG_IcmpElem::eCond::SGE; break;
+  case CmpInst::Predicate::ICMP_SLT:
+    cond = CDFG_IcmpElem::eCond::SLT; break;
+  case CmpInst::Predicate::ICMP_SLE:
+    cond = CDFG_IcmpElem::eCond::SLE; break;
+  default:;
+  }
+
+  auto elem = std::make_shared<CDFG_IcmpElem>
+    (cond,
      this->_state,
      this->_step);
 
@@ -336,50 +368,11 @@ void FortRock::_add_icmp_inst
     a1 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(1)));
 
-  // 比較条件
-  auto icmp_inst = dynamic_cast<ICmpInst*>
-    (const_cast<Instruction*>(inst));
-
-  auto condition = icmp_inst->getUnsignedPredicate();
-  if (!condition)
-    condition = icmp_inst->getSignedPredicate();
-
-  CDFG_Node::eCond cond_type;
-  switch (condition) {
-  case CmpInst::Predicate::ICMP_EQ:
-    cond_type = CDFG_Node::eCond::EQ; break;
-  case CmpInst::Predicate::ICMP_NE:
-    cond_type = CDFG_Node::eCond::NE; break;
-  case CmpInst::Predicate::ICMP_UGT:
-    cond_type = CDFG_Node::eCond::UGT; break;
-  case CmpInst::Predicate::ICMP_UGE:
-    cond_type = CDFG_Node::eCond::UGE; break;
-  case CmpInst::Predicate::ICMP_ULT:
-    cond_type = CDFG_Node::eCond::ULT; break;
-  case CmpInst::Predicate::ICMP_ULE:
-    cond_type = CDFG_Node::eCond::ULE; break;
-  case CmpInst::Predicate::ICMP_SGT:
-    cond_type = CDFG_Node::eCond::SGT; break;
-  case CmpInst::Predicate::ICMP_SGE:
-    cond_type = CDFG_Node::eCond::SGE; break;
-  case CmpInst::Predicate::ICMP_SLT:
-    cond_type = CDFG_Node::eCond::SLT; break;
-  case CmpInst::Predicate::ICMP_SLE:
-    cond_type = CDFG_Node::eCond::SLE; break;
-  default:;
-  }
-
-  auto cond = std::make_shared<CDFG_Node>
-    ("cond", 0, false, // 適当
-     CDFG_Node::eNode::OTHER);
-  cond->set_condition(cond_type);
-
   // 出力
   auto b = this->_module_gen->get_node(inst->getName());
 
   elem->set_input(a0, 0);
   elem->set_input(a1, 1);
-  elem->set_input(cond, 2);
   elem->set_output(b, 0);
 
   this->_module_gen->add_element(elem);

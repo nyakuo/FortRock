@@ -13,6 +13,7 @@
 #include "CDFG_Node.hpp"
 #include "CDFG_Parameter.hpp"
 #include "CDFG_Label.hpp"
+#include "CDFG_IcmpElem.hpp"
 #include "CDFG_Operator.hpp"
 #include "CStateMachineGen.hpp"
 #include "COutput.hpp"
@@ -33,7 +34,7 @@ public:
   // setter
   void add_node(const std::shared_ptr<CDFG_Node> & node);
   void add_operator(std::shared_ptr<CDFG_Operator> & ope);
-  void add_element(std::shared_ptr<CDFG_Element> & elem);
+  void add_element(const std::shared_ptr<CDFG_Element> elem);
 
   // getter
   bool find_node(const std::string & node_name);
