@@ -15,6 +15,8 @@
 #include "../dfg/CModule.hpp"
 #include "../dfg/COutput.hpp"
 #include "../dfg/CModuleGenerator.hpp"
+#include "../dfg/CDFG_Node.hpp"
+#include "../dfg/CDFG_Label.hpp"
 #include "../xml/CInstancingOperator.hpp"
 using namespace llvm;
 

@@ -24,7 +24,7 @@ void CModule::add_element
    @param[in] node モジュールに追加するNodeの参照
  */
 void CModule::add_node
-(std::shared_ptr<CDFG_Node> & node) {
+(const std::shared_ptr<CDFG_Node> & node) {
   this->_node_list.emplace_back(node);
 }
 
@@ -79,12 +79,51 @@ CModule::get_operator_list(void) {
    @return 検索結果のノード
  */
 std::shared_ptr<CDFG_Node> &
-CModule::get_node(CDFG_Node::eNode type) {
+CModule::get_node
+(const CDFG_Node::eNode & type) {
   auto ite =
     std::find_if(this->_node_list.begin(),
                  this->_node_list.end(),
                  [type](std::shared_ptr<CDFG_Node> obj) -> bool {
                    return obj->get_type() == type;
+                 });
+  return *ite;
+}
+
+/**
+   指定された種類のラベルを取得
+   @param[in] type ラベルの種類
+   @return ラベルノード
+ */
+std::shared_ptr<CDFG_Node> &
+CModule::get_node
+(const CDFG_Label::eLabelType & type) {
+  auto ite =
+    std::find_if(this->_node_list.begin(),
+                 this->_node_list.end(),
+                 [type](std::shared_ptr<CDFG_Node> obj) -> bool {
+                   return obj->get_type() == CDFG_Node::eNode::LABEL
+                     && std::dynamic_pointer_cast<CDFG_Label>
+                          (obj)->get_type() == type;
+                 });
+  return *ite;
+}
+
+/**
+   指定された種類の定数ノードを取得
+   @param[in] type 定数ノードの種類
+   @return 定数ノード
+ */
+std::shared_ptr<CDFG_Node> &
+CModule::get_node
+(const CDFG_Parameter::eParamType & type) {
+  auto ite =
+    std::find_if(this->_node_list.begin(),
+                 this->_node_list.end(),
+                 [type](std::shared_ptr<CDFG_Node> obj) -> bool {
+                   return obj->get_type() == CDFG_Node::eNode::PARAM
+                     && std::dynamic_pointer_cast<CDFG_Parameter>
+                           (obj)->get_type() == type;
                  });
   return *ite;
 }
@@ -116,9 +155,8 @@ CModule::get_label_node(const unsigned & state) {
     std::find_if(this->_node_list.begin(),
                  this->_node_list.end(),
                  [state](std::shared_ptr<CDFG_Node> obj) -> bool {
-                   return (obj->get_type() == CDFG_Node::eNode::LABEL
-                           || obj->get_type() == CDFG_Node::eNode::FINISH_LABEL)
-                     && obj->get_parameter() == state;
+                   return (obj->get_type() == CDFG_Node::eNode::LABEL)
+                     && (std::dynamic_pointer_cast<CDFG_Label>(obj)->get_state() == state);
                  });
   return *ite;
 }

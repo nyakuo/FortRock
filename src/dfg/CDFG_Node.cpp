@@ -12,13 +12,13 @@
 CDFG_Node::CDFG_Node(const std::string & asm_name,
                      const unsigned & bit_width,
                      const bool & is_signed,
-                     const CDFG_Node::eNode & type,
-                     const double & parameter)
+                     const CDFG_Node::eNode & type)
+                     //                     const double & parameter)
   : _asm_name(asm_name),
     _bit_width(bit_width),
     _is_signed(is_signed),
-    _type(type),
-    _parameter(parameter)
+    _type(type)
+    //    _parameter(parameter)
 {
   // 変数に使用できない文字の置換
   std::string safe_name = this->get_safe_name();
@@ -44,9 +44,9 @@ CDFG_Node::CDFG_Node(const std::string & asm_name,
   case eNode::OUT: prefix = "o_";
     break;
 
-  case eNode::TRUE:
-  case eNode::FALSE:
-  case eNode::ZERO:
+  // case eNode::TRUE:
+  // case eNode::FALSE:
+  // case eNode::ZERO:
   case eNode::PARAM: prefix = "p_";
     break;
 
@@ -55,7 +55,7 @@ CDFG_Node::CDFG_Node(const std::string & asm_name,
   case eNode::STEP: prefix = "r_sys_";
     break;
 
-  case eNode::FINISH_LABEL:
+    //  case eNode::FINISH_LABEL:
   case eNode::LABEL: prefix = "l_";
     break;
 
@@ -129,11 +129,11 @@ CDFG_Node::get_is_signed(void) {
    Node が浮動小数点かどうかを取得
    @return Node が浮動小数点かどうか
  */
-bool
-CDFG_Node::get_is_float(void) {
-  return ceil(this->_parameter)
-    != floor(this->_parameter);
-}
+// bool
+// CDFG_Node::get_is_float(void) {
+//   return ceil(this->_parameter)
+//     != floor(this->_parameter);
+// }
 
 /**
    Nodeの種類を取得
@@ -144,55 +144,55 @@ CDFG_Node::get_type(void) {
   return this->_type;
 }
 
-/**
-   Nodeのパラメータ(定数)の取得
-   @return Nodeのパラメータ(定数)
- */
-double &
-CDFG_Node::get_fparameter(void) {
-  return this->_parameter;
-}
+// /**
+//    Nodeのパラメータ(定数)の取得
+//    @return Nodeのパラメータ(定数)
+//  */
+// double &
+// CDFG_Node::get_fparameter(void) {
+//   return this->_parameter;
+// }
 
-/**
-   パラメータの整数部を取得
-   @return パラメータの整数部
-   @note パラメータが整数である場合に使用
- */
-long
-CDFG_Node::get_parameter(void) {
-  double a, b;
-  b = modf(this->_parameter, &a);
-  return (long)a;
-}
+// /**
+//    パラメータの整数部を取得
+//    @return パラメータの整数部
+//    @note パラメータが整数である場合に使用
+//  */
+// long
+// CDFG_Node::get_parameter(void) {
+//   double a, b;
+//   b = modf(this->_parameter, &a);
+//   return (long)a;
+// }
 
-/**
-   パラメータの文字列をビット幅指定を含めて取得
-   @return パラメータの文字列
-   @note パラメータの形式(double, long)に応じて
-         出力が変化
- */
-std::string
-CDFG_Node::get_param_str(void) {
-  std::string ret ("");
-  char buf[64];
+// /**
+//    パラメータの文字列をビット幅指定を含めて取得
+//    @return パラメータの文字列
+//    @note パラメータの形式(double, long)に応じて
+//          出力が変化
+//  */
+// std::string
+// CDFG_Node::get_param_str(void) {
+//   std::string ret ("");
+//   char buf[64];
 
-  if (this->_parameter < 0) // 負の数
-    ret = "-";
+//   if (this->_parameter < 0) // 負の数
+//     ret = "-";
 
-  // ビット幅
-  ret += std::to_string(this->get_bit_width())
-    + "'h";
+//   // ビット幅
+//   ret += std::to_string(this->get_bit_width())
+//     + "'h";
 
-  if (this->get_is_float()) { // 浮動小数点
-    ret += std::to_string(fabs(this->get_fparameter()));
-  }
-  else { // 整数
-    snprintf(buf, sizeof(buf), "%lx",
-             std::abs(this->get_parameter()));
-    ret += buf;
-  }
-  return ret;
-}
+//   if (this->get_is_float()) { // 浮動小数点
+//     ret += std::to_string(fabs(this->get_fparameter()));
+//   }
+//   else { // 整数
+//     snprintf(buf, sizeof(buf), "%lx",
+//              std::abs(this->get_parameter()));
+//     ret += buf;
+//   }
+//   return ret;
+// }
 
 /**
    icmp命令の比較条件の取得

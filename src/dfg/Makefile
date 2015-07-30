@@ -2,6 +2,8 @@
 
 OBJS := \
 	CDFG_Node.o \
+	CDFG_Parameter.o \
+	CDFG_Label.o \
 	CDFG_Element.o \
 	CDFG_Operator.o \
 	CStateMachineGen.o \
@@ -21,6 +23,10 @@ $(TARGET): $(OBJS)
 verilog_generator.o: verilog_generator.cpp
 
 CDFG_Node.o: CDFG_Node.cpp CDFG_Node.hpp
+
+CDFG_Parameter.o: CDFG_Parameter.hpp CDFG_Parameter.cpp
+
+CDFG_Label.o: CDFG_Label.hpp CDFG_Label.cpp
 
 CDFG_Element.o: CDFG_Element.cpp CDFG_Element.hpp
 

@@ -671,7 +671,7 @@ void FortRock::_add_ret_inst
 (const Instruction * inst) {
   auto finish_state_label
     = this->_module_gen->get_node
-    (CDFG_Node::eNode::FINISH_LABEL);
+    (CDFG_Label::eLabelType::FINISH);
 
   auto elem = std::make_shared<CDFG_Element>
     (CDFG_Operator::eType::RET,
@@ -807,11 +807,11 @@ void FortRock::_add_switch_inst
     int val = ite.getCaseValue()->getSExtValue();
     auto label = ite.getCaseSuccessor();
 
-    auto val_node = std::make_shared<CDFG_Node>
+    auto val_node = std::make_shared<CDFG_Parameter>
       (std::to_string(val),
        this->_get_required_bit_width(val),
        true, /* is signed */ //! @todo 常にtrue
-       CDFG_Node::eNode::PARAM,
+       CDFG_Parameter::eParamType::INTEGER, //! @todo 常にINTEGER
        val);
 
     auto label_node = this->_module_gen->get_node
@@ -1117,11 +1117,11 @@ void FortRock::_grub_variables
         auto name = this->_get_value_name(value);
 
         if(!value->hasName()) { // 定数
-          node = std::make_shared<CDFG_Node>
+          node = std::make_shared<CDFG_Parameter>
             (name,
              type->getPrimitiveSizeInBits(),
              true, //! @todo is signedが常にtrue
-             CDFG_Node::eNode::PARAM,
+             CDFG_Parameter::eParamType::INTEGER, //! @todo 常にinteger
              std::stol(this->_get_value_name(value)));
         }
         else { // 変数
@@ -1176,11 +1176,11 @@ void FortRock::_grub_variables
             auto name = this->_get_value_name(value);
 
             if(!value->hasName()) { // 定数
-              node = std::make_shared<CDFG_Node>
+              node = std::make_shared<CDFG_Parameter>
                 (name,
                  type->getPrimitiveSizeInBits(),
                  true, //! @todo is signedが常にtrue
-                 CDFG_Node::eNode::PARAM,
+                 CDFG_Parameter::eParamType::INTEGER, //! @todo 常にINTGER
                  std::stol(this->_get_value_name(value)));
             }
             else { // 変数
@@ -1265,11 +1265,10 @@ void FortRock::_grub_labels
   auto i = 0;
   for(;ite != funct->end();
       ++ite, ++i) {
-    auto label_node = std::make_shared<CDFG_Node>
+    auto label_node = std::make_shared<CDFG_Label>
       (ite->getName(),
        label_bit_width,
-       false,
-       CDFG_Node::eNode::LABEL,
+       CDFG_Label::eLabelType::LABEL,
        i + 1 /* label parameter ( + reset) */);
 
     if (!this->_module_gen->find_node(label_node))
@@ -1292,11 +1291,10 @@ void FortRock::_grub_labels
   this->_module_gen->add_node(prev_state_node);
 
   // 終了状態ステート(label)の追加
-  auto finish_label = std::make_shared<CDFG_Node>
+  auto finish_label = std::make_shared<CDFG_Label>
     (this->_FINISH_STATE_NAME,
      label_bit_width,
-     false,
-     CDFG_Node::eNode::FINISH_LABEL,
+     CDFG_Label::eLabelType::FINISH,
      i + 1/* label parameter */);
 
   this->_module_gen->add_node(finish_label);

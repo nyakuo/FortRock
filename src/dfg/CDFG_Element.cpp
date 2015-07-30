@@ -62,7 +62,7 @@ int CDFG_Element::set_operator(std::shared_ptr<CDFG_Operator> & ope) {
    @param[in] number セットする位置
    @return 0 セットする位置が有効, -1 セットする位置が無効
  */
-int CDFG_Element::set_input(std::shared_ptr<CDFG_Node> & input,
+int CDFG_Element::set_input(std::shared_ptr<CDFG_Node> input,
                             const unsigned & number) {
   if (number > this->_input_list.size())
     return -1;
@@ -77,7 +77,7 @@ int CDFG_Element::set_input(std::shared_ptr<CDFG_Node> & input,
    @param[in] number セットする位置
    @return 0 セットする位置が有効, -1 セットする位置が無効
 */
-int CDFG_Element::set_output(std::shared_ptr<CDFG_Node> & output,
+int CDFG_Element::set_output(std::shared_ptr<CDFG_Node> output,
                              const unsigned & number) {
   if (number > this->_output_list.size())
     return -1;

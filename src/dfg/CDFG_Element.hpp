@@ -25,9 +25,9 @@ public:
 
   /* セッター */
   int set_operator(std::shared_ptr<CDFG_Operator> & ope);
-  int set_input(std::shared_ptr<CDFG_Node> & input,
+  int set_input(std::shared_ptr<CDFG_Node> input,
                 const unsigned & number);
-  int set_output(std::shared_ptr<CDFG_Node> & input,
+  int set_output(std::shared_ptr<CDFG_Node> input,
                  const unsigned & number);
   void set_state(const unsigned & state);
   void set_step(const unsigned & step);

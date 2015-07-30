@@ -23,12 +23,12 @@ CModuleGenerator::CModuleGenerator(const std::string & filename,
   auto o_fin = std::make_shared<CDFG_Node>
     ("fin_p", 1, false, CDFG_Node::eNode::FIN);
   // 定数
-  auto p_true = std::make_shared<CDFG_Node>
-    ("TRUE", 1, false, CDFG_Node::eNode::TRUE, 1);
-  auto p_false = std::make_shared<CDFG_Node>
-    ("FALSE", 1, false, CDFG_Node::eNode::FALSE, 0);
-  auto p_zero = std::make_shared<CDFG_Node>
-    ("ZERO", 1, false, CDFG_Node::eNode::ZERO, 0);
+  auto p_true = std::make_shared<CDFG_Parameter>
+    ("TRUE", 1, false, CDFG_Parameter::eParamType::TRUE, 1);
+  auto p_false = std::make_shared<CDFG_Parameter>
+    ("FALSE", 1, false, CDFG_Parameter::eParamType::FALSE, 0);
+  auto p_zero = std::make_shared<CDFG_Parameter>
+    ("ZERO", 1, false, CDFG_Parameter::eParamType::ZERO, 0);
 
   this->_module->add_node(i_clk);
   this->_module->add_node(i_res);
@@ -45,7 +45,7 @@ CModuleGenerator::CModuleGenerator(const std::string & filename,
    @note FortRock 本体から呼び出すために使用
  */
 void CModuleGenerator::add_node
-(std::shared_ptr<CDFG_Node> & node) {
+(const std::shared_ptr<CDFG_Node> & node) {
   this->_module->add_node(node);
 }
 
@@ -80,7 +80,7 @@ bool CModuleGenerator::find_node
    @note FortRock 本体から呼び出すために使用
 */
 bool CModuleGenerator::find_node
-(std::shared_ptr<CDFG_Node> & node) {
+(std::shared_ptr<CDFG_Node> node) {
   return this->_module->find_node(node->get_asm_name());
 }
 
@@ -95,13 +95,36 @@ CModuleGenerator::get_node
 }
 
 /**
-   モジュール内のノードを取得する
+   モジュール内のノードを取得
+   @param[in] type ノードの種類
    @note FortRock 本体から呼び出すために使用
          (stateなどの取得に使用)
 */
 std::shared_ptr<CDFG_Node>
 CModuleGenerator::get_node
 (const CDFG_Node::eNode & type) {
+  return this->_module->get_node(type);
+}
+
+/**
+   モジュール内のノードを取得
+   @brief Labelを取得するために使用
+   @param[in] type ラベルの種類
+*/
+std::shared_ptr<CDFG_Node>
+CModuleGenerator::get_node
+(const CDFG_Label::eLabelType & type) {
+  return this->_module->get_node(type);
+}
+
+/**
+   モジュール内のノードを取得
+   @brief Parameterを取得するために使用
+   @param[in] type ラベルの種類
+ */
+std::shared_ptr<CDFG_Node>
+CModuleGenerator::get_node
+(const CDFG_Parameter::eParamType & type) {
   return this->_module->get_node(type);
 }
 
@@ -164,14 +187,14 @@ void CModuleGenerator::_generate_test_data(void) {
     ("o_out", 8, true, CDFG_Node::eNode::OUT);
 
   // 定数
-  auto p_3 = std::make_shared<CDFG_Node>
-    ("p_3", 8, true, CDFG_Node::eNode::PARAM, 3);
-  auto p_true = std::make_shared<CDFG_Node>
-    ("TRUE", 1, false, CDFG_Node::eNode::PARAM, 1);
-  auto p_false = std::make_shared<CDFG_Node>
-    ("FALSE", 1, false, CDFG_Node::eNode::PARAM, 0);
-  auto p_zero = std::make_shared<CDFG_Node>
-    ("ZERO", 1, false, CDFG_Node::eNode::PARAM, 0);
+  std::shared_ptr<CDFG_Node> p_3 = std::make_shared<CDFG_Parameter>
+    ("p_3", 8, true, CDFG_Parameter::eParamType::INTEGER, 3);
+  std::shared_ptr<CDFG_Node> p_true = std::make_shared<CDFG_Parameter>
+    ("TRUE", 1, false, CDFG_Parameter::eParamType::TRUE, 1);
+  std::shared_ptr<CDFG_Node> p_false = std::make_shared<CDFG_Parameter>
+    ("FALSE", 1, false, CDFG_Parameter::eParamType::FALSE, 0);
+  std::shared_ptr<CDFG_Node> p_zero = std::make_shared<CDFG_Parameter>
+    ("ZERO", 1, false, CDFG_Parameter::eParamType::ZERO, 0);
 
   // テンプレートレジスタ
   auto t1 = std::make_shared<CDFG_Node>
@@ -370,10 +393,10 @@ void CModuleGenerator::_generate_define(void) {
       type = wire;
       break;
 
-    case CDFG_Node::eNode::TRUE:
-    case CDFG_Node::eNode::FALSE:
-    case CDFG_Node::eNode::ZERO:
-    case CDFG_Node::eNode::FINISH_LABEL:
+    // case CDFG_Node::eNode::TRUE:
+    // case CDFG_Node::eNode::FALSE:
+    // case CDFG_Node::eNode::ZERO:
+    // case CDFG_Node::eNode::FINISH_LABEL:
     case CDFG_Node::eNode::LABEL:
     case CDFG_Node::eNode::PARAM:
       type = param;
@@ -397,7 +420,7 @@ void CModuleGenerator::_generate_define(void) {
 
     if (type == param)
       streams[param] << " = "
-                     << node->get_param_str();
+                     << node;
 
     streams[type] << ";\n";
   }
@@ -500,7 +523,7 @@ void CModuleGenerator::_generate_function(void) {
                     << ";\n";
       }
 
-      auto zero_node = this->get_node(CDFG_Node::eNode::ZERO);
+      auto zero_node = this->get_node(CDFG_Parameter::eParamType::ZERO);
       this->_cout << "default: phi_"
                   << dest_node->get_verilog_name()
                   << " = "
@@ -569,9 +592,9 @@ void CModuleGenerator::_generate_always(void) {
   auto state_node = this->get_node(CDFG_Node::eNode::STATE);
   auto step_node  = this->get_node(CDFG_Node::eNode::STEP);
   auto fin_name   = this->get_node(CDFG_Node::eNode::FIN)->get_verilog_name();
-  auto true_node  = this->get_node(CDFG_Node::eNode::TRUE);
-  auto false_node = this->get_node(CDFG_Node::eNode::FALSE);
-  auto zero_node  = this->get_node(CDFG_Node::eNode::ZERO);
+  auto true_node  = this->get_node(CDFG_Parameter::eParamType::TRUE);
+  auto false_node = this->get_node(CDFG_Parameter::eParamType::FALSE);
+  auto zero_node  = this->get_node(CDFG_Parameter::eParamType::ZERO);
   auto prev_state = this->get_node(CDFG_Node::eNode::PREV_STATE);
 
   this->_cout << "always @(posedge "
@@ -833,7 +856,8 @@ void CModuleGenerator::_generate_always(void) {
       }
       case CDFG_Operator::eType::RET:
         {
-          auto finish_state_label = elem->get_input_at(0);
+          auto finish_state_label
+            = std::dynamic_pointer_cast<CDFG_Label>(elem->get_input_at(0));
 
           //! @todo 返り値への対応
 
@@ -863,7 +887,7 @@ void CModuleGenerator::_generate_always(void) {
                              + zero_node->get_verilog_name()
                              + ";\n");
 
-          sm_gen.add_state_process(finish_state_label->get_parameter(),
+          sm_gen.add_state_process(finish_state_label->get_label_num(),
                                    0 /* step */,
                                    process_str);
 
@@ -901,7 +925,10 @@ void CModuleGenerator::_generate_always(void) {
 
         // case文の内部を出力
         for (auto i=2; i<elem->get_num_input(); i+=2) {
-          auto val_node = elem->get_input_at(i);
+          auto val_node =
+            std::dynamic_pointer_cast<CDFG_Parameter>
+            (elem->get_input_at(i));
+
           auto label_node = elem->get_input_at(i+1);
 
           process_str.append(this->_cout.output_indent());
@@ -916,7 +943,7 @@ void CModuleGenerator::_generate_always(void) {
                          '-'),
              asm_name.end());
 
-          process_str.append(val_node->get_param_str()
+          process_str.append(val_node->to_string()
                              + ": "
                              + state_node->get_verilog_name()
                              + " <= "
@@ -1060,7 +1087,7 @@ void CModuleGenerator::_generate_always(void) {
     auto label_node = this->_module->get_label_node
       (ite_state_step->first);
 
-    this->_cout << label_node->get_param_str()
+    this->_cout << label_node->to_string()
                 << ": //"
                 << label_node->get_verilog_name()
                 << "\n";

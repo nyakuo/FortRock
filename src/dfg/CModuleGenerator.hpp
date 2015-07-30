@@ -11,6 +11,8 @@
 
 #include "CDFG_Element.hpp"
 #include "CDFG_Node.hpp"
+#include "CDFG_Parameter.hpp"
+#include "CDFG_Label.hpp"
 #include "CDFG_Operator.hpp"
 #include "CStateMachineGen.hpp"
 #include "COutput.hpp"
@@ -29,15 +31,17 @@ public:
 
   // FortRock本体のためのアクセサ
   // setter
-  void add_node(std::shared_ptr<CDFG_Node> & node);
+  void add_node(const std::shared_ptr<CDFG_Node> & node);
   void add_operator(std::shared_ptr<CDFG_Operator> & ope);
   void add_element(std::shared_ptr<CDFG_Element> & elem);
 
   // getter
   bool find_node(const std::string & node_name);
-  bool find_node(std::shared_ptr<CDFG_Node> & node);
+  bool find_node(std::shared_ptr<CDFG_Node> node);
   std::shared_ptr<CDFG_Node> get_node(const std::string & node_name);
   std::shared_ptr<CDFG_Node> get_node(const CDFG_Node::eNode & type);
+  std::shared_ptr<CDFG_Node> get_node(const CDFG_Label::eLabelType & type);
+  std::shared_ptr<CDFG_Node> get_node(const CDFG_Parameter::eParamType & type);
   std::shared_ptr<CDFG_Operator> get_operator(const CDFG_Operator::eType & type);
   unsigned get_max_step(void);
 
