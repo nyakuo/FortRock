@@ -42,11 +42,11 @@ public:
   unsigned get_step(void);
 
 private:
-  std::vector<std::shared_ptr<CDFG_Node> > _input_list;  /** 入力リスト */
-  std::vector<std::shared_ptr<CDFG_Node> > _output_list; /** 出力リスト */
-  std::shared_ptr<CDFG_Operator> _ope;                   /** 実行する演算器の参照 */
-  unsigned _state;                                       /** 実行ステート (CFG) */
-  unsigned _step;                                        /** 実行ステップ (clock) */
+  std::vector<std::shared_ptr<CDFG_Node> > _input_list;  //! 入力リスト
+  std::vector<std::shared_ptr<CDFG_Node> > _output_list; //! 出力リスト
+  std::shared_ptr<CDFG_Operator> _ope;                   //! 実行する演算器の参照
+  unsigned _state;                                       //! 実行ステート (CFG)
+  unsigned _step;                                        //! 実行ステップ (clock)
 };
 
 #endif

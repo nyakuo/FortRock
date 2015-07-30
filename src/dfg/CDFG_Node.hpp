@@ -25,58 +25,32 @@ public:
       FIN          = 1 << 10,
       STATE        = 1 << 11,
       PREV_STATE   = 1 << 12,
-      // FINISH_LABEL = 1 << 13,
       STEP         = 1 << 14,
       LABEL        = 1 << 15,
-      // TRUE         = 1 << 16,
-      // FALSE        = 1 << 17,
-      // ZERO         = 1 << 18,
       IN_ORIG      = 1 << 19,
       ADDR         = 1 << 20,
       OTHER        = 1 << 30,
       };
 
-  // /** ICMP命令の比較条件 */
-  // enum class eCond : unsigned {
-  //   EQ  = 1 << 0, //! ==
-  //   NE  = 1 << 1, //! !=
-  //   UGT = 1 << 2, //! (unsigned) > (unsigned)
-  //   UGE = 1 << 3, //! (unsigned) >= (unsigned)
-  //   ULT = 1 << 4, //! (unsigned) < (unsigned)
-  //   ULE = 1 << 5, //! (unsigned) <= (unsigned)
-  //   SGT = 1 << 6, //! (signed) > (signed)
-  //   SGE = 1 << 7, //! (signed) >= (signed)
-  //   SLT = 1 << 8, //! (signed) < (signed)
-  //   SLE = 1 << 9, //! (signed) <= (signed)
-  //   };
-
   CDFG_Node(const std::string & asm_name,
             const unsigned & bit_width,
             const bool & is_signed,
             const CDFG_Node::eNode & type);
-            //            const double & parameter = 0);
 
   virtual ~CDFG_Node(void) {}
 
-  /* ゲッター */
+  // getter
   std::string get_safe_name(void);
   std::string & get_asm_name(void);
   std::string & get_verilog_name(void);
   unsigned & get_bit_width(void);
 
   bool & get_is_signed(void);
-  //  bool get_is_float(void);
 
   CDFG_Node::eNode & get_type(void);
 
-  // double & get_fparameter(void);
-  // long get_parameter(void);
-  // std::string get_param_str(void);
-  //  eCond & get_condition(void);
-
   // setter
   void set_type(const CDFG_Node::eNode & type);
-  //  void set_condition(const CDFG_Node::eCond & cond);
 
   virtual std::string to_string(void) { return "to_string"; }
 
@@ -85,10 +59,7 @@ protected:
   std::string _verilog_name; //! Verilog HDL上での名前
   unsigned _bit_width;       //! ビット幅
   bool _is_signed;           //! signedかどうか
-  bool _is_float;            //! 浮動小数点かどうか
   CDFG_Node::eNode _type;    //! ノードの種類
-  // double _parameter;         //! 定数
-  //  eCond _condition;          //! icmp命令の比較条件
 };
 
 #endif

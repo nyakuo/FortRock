@@ -393,10 +393,6 @@ void CModuleGenerator::_generate_define(void) {
       type = wire;
       break;
 
-    // case CDFG_Node::eNode::TRUE:
-    // case CDFG_Node::eNode::FALSE:
-    // case CDFG_Node::eNode::ZERO:
-    // case CDFG_Node::eNode::FINISH_LABEL:
     case CDFG_Node::eNode::LABEL:
     case CDFG_Node::eNode::PARAM:
       type = param;
