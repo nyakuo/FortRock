@@ -67,9 +67,9 @@ public:
 
   /* セッター */
   void add_input_port(const std::string & port_name,
-                      std::shared_ptr<CDFG_Node> & node);
+                      const std::shared_ptr<CDFG_Node> & node);
   void add_output_port(const std::string & port_name,
-                       std::shared_ptr<CDFG_Node> & node);
+                       const std::shared_ptr<CDFG_Node> & node);
   void set_latency(const unsigned & latency);
   void set_type(const eType & type);
   void set_num_input(const unsigned & num);

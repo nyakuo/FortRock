@@ -123,7 +123,7 @@ CDFG_Operator::get_output_node_at
 */
 void CDFG_Operator::add_input_port
 (const std::string & port_name,
- std::shared_ptr<CDFG_Node> & node) {
+ const std::shared_ptr<CDFG_Node> & node) {
   this->_input_list.push_back
     (std::pair<std::string, std::shared_ptr<CDFG_Node> >
      (port_name, node));
@@ -136,7 +136,7 @@ void CDFG_Operator::add_input_port
 */
 void CDFG_Operator::add_output_port
 (const std::string & port_name,
- std::shared_ptr<CDFG_Node> & node) {
+ const std::shared_ptr<CDFG_Node> & node) {
   this->_output_list.push_back
     (std::pair<std::string, std::shared_ptr<CDFG_Node> >
      (port_name, node));
