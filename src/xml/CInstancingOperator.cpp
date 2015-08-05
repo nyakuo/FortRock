@@ -118,12 +118,12 @@ void CInstancingOperator::_parse_operator_info
 
         // 入出力定義
         else if (xmlStrcmp(mod_info->name, (const xmlChar*)"io") == 0) {
-          CDFG_Node::eNode type;
+          CNode_data::ePortType type;
 
           if (xmlStrcmp(mod_info->name, (const xmlChar*)"input") == 0)
-            type = CDFG_Node::eNode::REG;
+            type = CNode_data::ePortType::IN;
           else if (xmlStrcmp(mod_info->name, (const xmlChar*)"output") == 0)
-            type = CDFG_Node::eNode::WIRE;
+            type = CNode_data::ePortType::OUT;
 
           for (auto & info = mod_info->xmlChildrenNode;
                info != NULL;
@@ -160,13 +160,13 @@ void CInstancingOperator::_parse_operator_info
 
                 else if (xmlStrcmp(text->name, (const xmlChar*)"type") == 0) {
                   if (str.compare("input") == 0)
-                    type = CDFG_Node::eNode::REG;
+                    type = CNode_data::ePortType::IN;
                   else if (str.compare("output") == 0)
-                    type = CDFG_Node::eNode::WIRE;
+                    type = CNode_data::ePortType::OUT;
                   else if (str.compare("clock") == 0)
-                    type = CDFG_Node::eNode::CLK;
+                    type = CNode_data::ePortType::CLK;
                   else if (str.compare("clock_enable") == 0)
-                    type = CDFG_Node::eNode::CE;
+                    type = CNode_data::ePortType::CE;
                 }
               } // for : text
               ope_gen->add_port_info(port_name,
