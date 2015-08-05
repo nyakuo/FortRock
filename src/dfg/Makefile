@@ -4,6 +4,8 @@ OBJS := \
 	CDFG_Node.o \
 	CDFG_Parameter.o \
 	CDFG_Label.o \
+	CDFG_Wire.o \
+	CDFG_Reg.o \
 	CDFG_Element.o \
 	CDFG_Operator.o \
 	CStateMachineGen.o \
@@ -27,6 +29,10 @@ CDFG_Node.o: CDFG_Node.cpp CDFG_Node.hpp
 CDFG_Parameter.o: CDFG_Parameter.hpp CDFG_Parameter.cpp
 
 CDFG_Label.o: CDFG_Label.hpp CDFG_Label.cpp
+
+CDFG_Wire.o: CDFG_Wire.hpp CDFG_Wire.cpp
+
+CDFG_Reg.o: CDFG_Reg.hpp CDFG_Reg.cpp
 
 CDFG_Element.o: CDFG_Element.cpp CDFG_Element.hpp
 
