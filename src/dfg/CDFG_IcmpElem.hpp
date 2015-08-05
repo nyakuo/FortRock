@@ -5,10 +5,11 @@
 
 /**
    @class CDFG_IcmpElem
-   @brief icmp命令を表す Element クラス
+   @brief icmp命令を表す Elementクラス
  */
 class CDFG_IcmpElem : public CDFG_Element {
 public:
+  /** 比較条件を表す定数 */
   enum class eCond : unsigned {
     EQ  = 1 << 0, //! ==
     NE  = 1 << 1, //! !=
@@ -22,6 +23,12 @@ public:
     SLE = 1 << 9, //! (signed) <= (signed)
     };
 
+  /**
+     コンストラクタ
+     @param[in] cond 比較条件
+     @param[in] step 比較を実行するステップ
+     @param[in] state 比較を実行するステート
+   */
   CDFG_IcmpElem(const CDFG_IcmpElem::eCond & cond,
                 const unsigned & state,
                 const unsigned & step)
@@ -29,13 +36,14 @@ public:
       CDFG_Element(CDFG_Operator::eType::ICMP,
                    2, // num input
                    state,
-                   step) {}
+                   step)
+  {}
   ~CDFG_IcmpElem(void) {}
 
-  eCond get_condition(void) { return this->_cond; }
+  const eCond & get_condition(void) { return this->_cond; }
 
 private:
-  const eCond _cond;
+  const eCond _cond; //! 比較条件
 };
 
 #endif
