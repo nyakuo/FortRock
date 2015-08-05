@@ -12,21 +12,21 @@
 CDFG_Node::CDFG_Node(const std::string & asm_name,
                      const unsigned & bit_width,
                      const bool & is_signed,
-                     const CDFG_Node::eNode & type)
-                     //                     const double & parameter)
+                     const CDFG_Node::eNode & type,
+                     const std::string & prefix)
   : _asm_name(asm_name),
     _bit_width(bit_width),
     _is_signed(is_signed),
     _type(type)
-    //    _parameter(parameter)
 {
   // 変数に使用できない文字の置換
   std::string safe_name = this->get_safe_name();
 
   // 変数名に接頭語をつける
+#if 0
   std::string prefix("");
   switch (type) {
-  case eNode::IN:
+    //  case eNode::IN:
   case eNode::REG: prefix = "r_";
     break;
 
@@ -44,9 +44,6 @@ CDFG_Node::CDFG_Node(const std::string & asm_name,
   case eNode::OUT: prefix = "o_";
     break;
 
-  // case eNode::TRUE:
-  // case eNode::FALSE:
-  // case eNode::ZERO:
   case eNode::PARAM: prefix = "p_";
     break;
 
@@ -55,7 +52,6 @@ CDFG_Node::CDFG_Node(const std::string & asm_name,
   case eNode::STEP: prefix = "r_sys_";
     break;
 
-    //  case eNode::FINISH_LABEL:
   case eNode::LABEL: prefix = "l_";
     break;
 
@@ -65,7 +61,7 @@ CDFG_Node::CDFG_Node(const std::string & asm_name,
 
   if (type == eNode::IN_ORIG)
     this->_asm_name += "original";
-
+#endif
   this->_verilog_name = prefix + safe_name;
 } // CDFG_Node
 
@@ -124,16 +120,6 @@ bool &
 CDFG_Node::get_is_signed(void) {
   return this->_is_signed;
 }
-
-/**
-   Node が浮動小数点かどうかを取得
-   @return Node が浮動小数点かどうか
- */
-// bool
-// CDFG_Node::get_is_float(void) {
-//   return ceil(this->_parameter)
-//     != floor(this->_parameter);
-// }
 
 /**
    Nodeの種類を取得
