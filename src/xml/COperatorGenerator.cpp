@@ -20,18 +20,22 @@ void COperatorGenerator::generate_operator
     // 入力ポートのインスタンス化
     for (auto & inode : this->_inode_info) {
       std::shared_ptr<CDFG_Node> node;
-      if (inode->get_type() == CDFG_Node::eNode::CLK ||
-          inode->get_type() == CDFG_Node::eNode::CE) {
-        node = module_gen->get_node(inode->get_type());
+      // CKL, CE
+      if (inode->get_type() == CNode_data::ePortType::CLK ||
+          inode->get_type() == CNode_data::ePortType::CE) {
+        node = module_gen->get_node((inode->get_type()
+                                     == CNode_data::ePortType::CLK) ?
+                                    CDFG_Wire::eWireType::CLK
+                                    : CDFG_Wire::eWireType::CE);
         ope->add_input_port(inode->get_name(),
                             node);
       }
-      else {
-        node = std::make_shared<CDFG_Node>
+      else if (inode->get_type() == CNode_data::ePortType::IN) {
+        node = std::make_shared<CDFG_Wire>
           (this->_instance_name + '_' + inode->get_name(),
            inode->get_bit_width(),
            inode->get_is_signed(),
-           inode->get_type());
+           CDFG_Wire::eWireType::WIRE);
 
         ope->add_input_port(inode->get_name(),
                             node);
@@ -41,11 +45,11 @@ void COperatorGenerator::generate_operator
 
     // 出力ポートのインスタンス化
     for (auto & onode : this->_onode_info) {
-      auto node = std::make_shared<CDFG_Node>
+      auto node = std::make_shared<CDFG_Reg>
         (this->_instance_name + '_' + onode->get_name(),
          onode->get_bit_width(),
          onode->get_is_signed(),
-         onode->get_type());
+         CDFG_Reg::eRegType::REG);
       ope->add_output_port(onode->get_name(),
                            node);
       module_gen->add_node(node);
@@ -60,21 +64,23 @@ void COperatorGenerator::generate_operator
    入出力ポートの情報を追加
    @param[in] name ポート名
    @param[in] bit_width ポートのビット幅
-   @param[in] type ポートの種類
+   @param[in] type 信号の種類
+   @param[in] is_signed ポートがsignedか
  */
 void COperatorGenerator::add_port_info
 (const std::string & name,
  const unsigned & bit_width,
- const CDFG_Node::eNode & type,
- const bool & is_signed) {
+ const CNode_data::ePortType & type,
+ const bool & is_signed)
+{
   auto node_data = std::make_shared<CNode_data>
     (name, bit_width, type, is_signed);
 
-  if (type == CDFG_Node::eNode::REG ||
-      type == CDFG_Node::eNode::CLK ||
-      type == CDFG_Node::eNode::CE)
+  if (type == CNode_data::ePortType::IN
+      || type == CNode_data::ePortType::CLK
+      || type == CNode_data::ePortType::CE)
     this->_inode_info.push_back(node_data);
-  else if (type == CDFG_Node::eNode::WIRE)
+  else if (type == CNode_data::ePortType::OUT)
     this->_onode_info.push_back(node_data);
 }
 
