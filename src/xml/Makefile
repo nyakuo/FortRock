@@ -12,6 +12,9 @@ EXTRA_OBJS := \
 	../dfg/COutput.o \
 	../dfg/CDFG_Node.o \
 	../dfg/CDFG_Parameter.o \
+	../dfg/CDFG_Label.o \
+	../dfg/CDFG_Wire.o \
+	../dfg/CDFG_Reg.o \
 	../dfg/CModule.o \
 	../dfg/CDFG_Element.o \
 	../dfg/CStateMachineGen.o \
