@@ -94,28 +94,34 @@ void FortRock::_set_IO
 
     //! @todo 浮動小数点対応
     if (type->isIntegerTy()) {
-      CDFG_Node::eNode in_out;
-      if (num !=  funct->arg_size()) // 最後以外は引数
-        in_out = CDFG_Node::eNode::IN_ORIG;
+      std::shared_ptr<CDFG_Node> node;
+      bool is_input = false;
+      if (num !=  funct->arg_size()) { // 最後以外は引数
+        node = std::make_shared<CDFG_Wire>
+          (arg_it->getName(),
+           type->getPrimitiveSizeInBits(),
+           true, //! @todo is signed 対応
+           CDFG_Wire::eWireType::IN_ORIG);
 
-      else  // 最後の引数は返り値
-        in_out = CDFG_Node::eNode::OUT;
-
-      auto node = std::make_shared<CDFG_Node>
-        (arg_it->getName(),
-         type->getPrimitiveSizeInBits(),
-         true, //! @todo isSigned対応
-         in_out);
+        is_input = true;
+      }
+      else { // 最後の引数は返り値
+        node = std::make_shared<CDFG_Reg>
+          (arg_it->getName(),
+           type->getPrimitiveSizeInBits(),
+           true, //! @todo is signed 対応
+           CDFG_Reg::eRegType::OUT);
+      }
 
       this->_module_gen->add_node(node);
 
       // 入力をコピーするレジスタの確保
-      if (in_out == CDFG_Node::eNode::IN_ORIG) {
-        auto copy_node = std::make_shared<CDFG_Node>
+      if (is_input) {
+        auto copy_node = std::make_shared<CDFG_Reg>
           (arg_it->getName(),
            type->getPrimitiveSizeInBits(),
            true,
-           CDFG_Node::eNode::IN);
+           CDFG_Reg::eRegType::IN_COPY);
 
         this->_module_gen->add_node(copy_node);
 
@@ -184,11 +190,12 @@ bool FortRock::runOnModule
   // step信号の追加
   auto step_bit_width = this->_get_required_bit_width
     (this->_module_gen->get_max_step());
-  auto step_node = std::make_shared<CDFG_Node>
+
+  auto step_node = std::make_shared<CDFG_Reg>
     (this->_STEP_NAME,
      step_bit_width,
      false, /* is signed */
-     CDFG_Node::eNode::STEP);
+     CDFG_Reg::eRegType::STEP);
 
   this->_module_gen->add_node(step_node);
 
@@ -593,7 +600,7 @@ void FortRock::_add_br_inst
   }
 
   auto state = this->_module_gen->get_node
-    (CDFG_Node::eNode::STATE);
+    (CDFG_Reg::eRegType::STATE);
   elem->set_output(state, 0);
 
   this->_module_gen->add_element(elem);
@@ -998,9 +1005,9 @@ void FortRock::_add_trunc_inst
 (const Instruction * inst) {
   auto trunc_inst = dynamic_cast<TruncInst*>
     (const_cast<Instruction*>(inst));
-  auto elem = std::make_shared<CDFG_Element>
-    (CDFG_Operator::eType::TRUNC,
-     2, // 入力の数
+
+  auto elem = std::make_shared<CDFG_TruncElem>
+    (trunc_inst->getDestTy()->getPrimitiveSizeInBits(),
      this->_state,
      this->_step);
 
@@ -1013,21 +1020,11 @@ void FortRock::_add_trunc_inst
     a = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(0)));
 
-  // 変更後のビット幅
-  auto desttype = trunc_inst->getDestTy();
-
-  auto type2 = std::make_shared<CDFG_Node>
-    ("desttype",
-     desttype->getPrimitiveSizeInBits(),
-     true,
-     CDFG_Node::eNode::OTHER);
-
   // 出力
   auto b = this->_module_gen->get_node
     (inst->getName());
 
   elem->set_input(a, 0);
-  elem->set_input(type2, 1);
   elem->set_output(b, 0);
 
   this->_module_gen->add_element(elem);
@@ -1118,11 +1115,11 @@ void FortRock::_grub_variables
              std::stol(this->_get_value_name(value)));
         }
         else { // 変数
-          node = std::make_shared<CDFG_Node>
+          node = std::make_shared<CDFG_Reg>
             (name,
              type->getPrimitiveSizeInBits(),
              true, //! @todo is signedが常にtrue
-             CDFG_Node::eNode::REG);
+             CDFG_Reg::eRegType::REG);
         }
         if (!this->_module_gen->find_node(node))
           this->_module_gen->add_node(node);
@@ -1147,11 +1144,11 @@ void FortRock::_grub_variables
             value = binst->getSuccessor(0);
           }
 
-          node = std::make_shared<CDFG_Node>
+          node = std::make_shared<CDFG_Reg>
             (value->getName(),
              type->getPrimitiveSizeInBits(),
              true,
-             CDFG_Node::eNode::REG);
+             CDFG_Reg::eRegType::REG);
 
           if (!this->_module_gen->find_node(node))
             this->_module_gen->add_node(node);
@@ -1177,11 +1174,11 @@ void FortRock::_grub_variables
                  std::stol(this->_get_value_name(value)));
             }
             else { // 変数
-              node = std::make_shared<CDFG_Node>
+              node = std::make_shared<CDFG_Reg>
                 (name,
                  type->getPrimitiveSizeInBits(),
                  true, //! @todo is signedが常にtrue
-                 CDFG_Node::eNode::REG);
+                 CDFG_Reg::eRegType::REG);
             }
             if (!this->_module_gen->find_node(node))
               this->_module_gen->add_node(node);
@@ -1269,16 +1266,17 @@ void FortRock::_grub_labels
   } // for
 
   // state_nodeの追加
-  auto state_node = std::make_shared<CDFG_Node>
+  auto state_node = std::make_shared<CDFG_Reg>
     (this->_CUR_STATE_NAME,
      label_bit_width,
      false,
-     CDFG_Node::eNode::STATE);
-  auto prev_state_node = std::make_shared<CDFG_Node>
+     CDFG_Reg::eRegType::STATE);
+
+  auto prev_state_node = std::make_shared<CDFG_Reg>
     (this->_PREV_STATE_NAME,
      label_bit_width,
      false,
-     CDFG_Node::eNode::PREV_STATE);
+     CDFG_Reg::eRegType::PREV_STATE);
 
   this->_module_gen->add_node(state_node);
   this->_module_gen->add_node(prev_state_node);
