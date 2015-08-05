@@ -13,6 +13,8 @@
 #include "CDFG_Node.hpp"
 #include "CDFG_Parameter.hpp"
 #include "CDFG_Label.hpp"
+#include "CDFG_Wire.hpp"
+#include "CDFG_Reg.hpp"
 #include "CDFG_IcmpElem.hpp"
 #include "CDFG_Operator.hpp"
 #include "CStateMachineGen.hpp"
@@ -43,6 +45,8 @@ public:
   std::shared_ptr<CDFG_Node> get_node(const CDFG_Node::eNode & type);
   std::shared_ptr<CDFG_Node> get_node(const CDFG_Label::eLabelType & type);
   std::shared_ptr<CDFG_Node> get_node(const CDFG_Parameter::eParamType & type);
+  std::shared_ptr<CDFG_Node> get_node(const CDFG_Reg::eRegType & type);
+  std::shared_ptr<CDFG_Node> get_node(const CDFG_Wire::eWireType & type);
   std::shared_ptr<CDFG_Operator> get_operator(const CDFG_Operator::eType & type);
   unsigned get_max_step(void);
 

@@ -10,6 +10,8 @@
 #include "CDFG_Node.hpp"
 #include "CDFG_Label.hpp"
 #include "CDFG_Parameter.hpp"
+#include "CDFG_Wire.hpp"
+#include "CDFG_Reg.hpp"
 #include "CDFG_Operator.hpp"
 
 /**
@@ -33,6 +35,8 @@ public:
   std::shared_ptr<CDFG_Node> & get_node(const CDFG_Node::eNode & type);
   std::shared_ptr<CDFG_Node> & get_node(const CDFG_Label::eLabelType & type);
   std::shared_ptr<CDFG_Node> & get_node(const CDFG_Parameter::eParamType & type);
+  std::shared_ptr<CDFG_Node> & get_node(const CDFG_Reg::eRegType & type);
+  std::shared_ptr<CDFG_Node> & get_node(const CDFG_Wire::eWireType & type);
   std::shared_ptr<CDFG_Node> & get_node(const std::string & node_name);
   std::shared_ptr<CDFG_Node> & get_label_node(const unsigned & state);
   bool find_node(const std::string & asm_name);

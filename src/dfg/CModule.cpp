@@ -129,6 +129,44 @@ CModule::get_node
 }
 
 /**
+   指定された種類のregノードを取得
+   @param[in] type regノードの種類
+   @return regノード
+ */
+std::shared_ptr<CDFG_Node> &
+CModule::get_node
+(const CDFG_Reg::eRegType & type) {
+  auto ite =
+    std::find_if(this->_node_list.begin(),
+                 this->_node_list.end(),
+                 [type](std::shared_ptr<CDFG_Node> obj) -> bool {
+                   return obj->get_type() == CDFG_Node::eNode::REG
+                     && std::dynamic_pointer_cast<CDFG_Reg>
+                           (obj)->get_type() == type;
+                 });
+  return *ite;
+}
+
+/**
+   指定された種類のwireノードを取得
+   @param[in] type wireノードの種類
+   @return wireノード
+ */
+std::shared_ptr<CDFG_Node> &
+CModule::get_node
+(const CDFG_Wire::eWireType & type) {
+  auto ite =
+    std::find_if(this->_node_list.begin(),
+                 this->_node_list.end(),
+                 [type](std::shared_ptr<CDFG_Node> obj) -> bool {
+                   return obj->get_type() == CDFG_Node::eNode::WIRE
+                     && std::dynamic_pointer_cast<CDFG_Wire>
+                           (obj)->get_type() == type;
+                 });
+  return *ite;
+}
+
+/**
    モジュール内のノードの検索
    @param[in] node_name ノードの名前
    @return 検索結果のノード
