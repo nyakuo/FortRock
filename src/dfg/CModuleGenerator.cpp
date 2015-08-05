@@ -12,16 +12,17 @@ CModuleGenerator::CModuleGenerator(const std::string & filename,
 
   // 基本的なノードの確保
   // 基本入出力
-  auto i_clk = std::make_shared<CDFG_Node>
-    ("clk", 1, false, CDFG_Node::eNode::CLK);
-  auto i_res = std::make_shared<CDFG_Node>
-    ("res_p", 1, false, CDFG_Node::eNode::RES);
-  auto i_req = std::make_shared<CDFG_Node>
-    ("req_p", 1, false, CDFG_Node::eNode::REQ);
-  auto i_ce = std::make_shared<CDFG_Node>
-    ("ce_p", 1, false, CDFG_Node::eNode::CE);
-  auto o_fin = std::make_shared<CDFG_Node>
-    ("fin_p", 1, false, CDFG_Node::eNode::FIN);
+  auto i_clk = std::make_shared<CDFG_Wire>
+    ("clk", 1, false, CDFG_Wire::eWireType::CLK);
+  auto i_res = std::make_shared<CDFG_Wire>
+    ("res_p", 1, false, CDFG_Wire::eWireType::RES);
+  auto i_req = std::make_shared<CDFG_Wire>
+    ("req_p", 1, false, CDFG_Wire::eWireType::REQ);
+  auto i_ce = std::make_shared<CDFG_Wire>
+    ("ce_p", 1, false, CDFG_Wire::eWireType::CE);
+  auto o_fin = std::make_shared<CDFG_Reg>
+    ("fin_p", 1, false, CDFG_Reg::eRegType::FIN);
+
   // 定数
   auto p_true = std::make_shared<CDFG_Parameter>
     ("TRUE", 1, false, CDFG_Parameter::eParamType::TRUE, 1);
@@ -129,6 +130,29 @@ CModuleGenerator::get_node
 }
 
 /**
+   モジュール内のノードを取得
+   @brief regを取得するために使用
+   @param[in] type regの種類
+ */
+std::shared_ptr<CDFG_Node>
+CModuleGenerator::get_node
+(const CDFG_Reg::eRegType & type) {
+  return this->_module->get_node(type);
+}
+
+/**
+   モジュール内のノードを取得
+   @brief wireを取得するために使用
+   @param[in] type wireの種類
+ */
+std::shared_ptr<CDFG_Node>
+CModuleGenerator::get_node
+(const CDFG_Wire::eWireType & type) {
+  return this->_module->get_node(type);
+}
+
+
+/**
    モジュール内の演算器の取得
    @note FortRock本体から取得するために使用
    @todo 取得する演算器の番号による指定など
@@ -165,26 +189,26 @@ CModuleGenerator::get_max_step(void) {
 void CModuleGenerator::_generate_test_data(void) {
   // ノード確保
   // 基本入出力
-  auto i_clk = std::make_shared<CDFG_Node>
-    ("i_clk", 1, false, CDFG_Node::eNode::CLK);
-  auto i_res = std::make_shared<CDFG_Node>
-    ("i_res_p", 1, false, CDFG_Node::eNode::RES);
-  auto i_req = std::make_shared<CDFG_Node>
-    ("i_req_p", 1, false, CDFG_Node::eNode::REQ);
-  auto i_ce = std::make_shared<CDFG_Node>
-    ("i_ce_p", 1, false, CDFG_Node::eNode::CE);
-  auto o_fin = std::make_shared<CDFG_Node>
-    ("o_fin_p", 1, false, CDFG_Node::eNode::FIN);
+  auto i_clk = std::make_shared<CDFG_Wire>
+    ("clk", 1, false, CDFG_Wire::eWireType::CLK);
+  auto i_res = std::make_shared<CDFG_Wire>
+    ("res_p", 1, false, CDFG_Wire::eWireType::RES);
+  auto i_req = std::make_shared<CDFG_Wire>
+    ("req_p", 1, false, CDFG_Wire::eWireType::REQ);
+  auto i_ce = std::make_shared<CDFG_Wire>
+    ("ce_p", 1, false, CDFG_Wire::eWireType::CE);
+  auto o_fin = std::make_shared<CDFG_Reg>
+    ("fin_p", 1, false, CDFG_Reg::eRegType::FIN);
 
   // 入力
-  auto a = std::make_shared<CDFG_Node>
-    ("i_a", 8, true, CDFG_Node::eNode::IN);
-  auto b = std::make_shared<CDFG_Node>
-    ("i_b", 8, true, CDFG_Node::eNode::IN);
+  auto a = std::make_shared<CDFG_Wire>
+    ("i_a", 8, true, CDFG_Wire::eWireType::IN_ORIG);
+  auto b = std::make_shared<CDFG_Wire>
+    ("i_b", 8, true, CDFG_Wire::eWireType::IN_ORIG);
 
   // 出力
-  auto out = std::make_shared<CDFG_Node>
-    ("o_out", 8, true, CDFG_Node::eNode::OUT);
+  auto out = std::make_shared<CDFG_Reg>
+    ("o_out", 8, true, CDFG_Reg::eRegType::OUT);
 
   // 定数
   std::shared_ptr<CDFG_Node> p_3 = std::make_shared<CDFG_Parameter>
@@ -197,29 +221,29 @@ void CModuleGenerator::_generate_test_data(void) {
     ("ZERO", 1, false, CDFG_Parameter::eParamType::ZERO, 0);
 
   // テンプレートレジスタ
-  auto t1 = std::make_shared<CDFG_Node>
-    ("t1", 8, true, CDFG_Node::eNode::REG);
+  auto t1 = std::make_shared<CDFG_Reg>
+    ("t1", 8, true, CDFG_Reg::eRegType::REG);
 
   // 演算器の入出力
-  auto adder1_i_a = std::make_shared<CDFG_Node>
-    ("mr_adder1_i_a", 8, true, CDFG_Node::eNode::REG);
-  auto adder1_i_b = std::make_shared<CDFG_Node>
-    ("mr_adder1_i_b", 8, true, CDFG_Node::eNode::REG);
-  auto adder1_out = std::make_shared<CDFG_Node>
-    ("mw_adder1_output", 8, true, CDFG_Node::eNode::WIRE);
+  auto adder1_i_a = std::make_shared<CDFG_Reg>
+    ("mr_adder1_i_a", 8, true, CDFG_Reg::eRegType::REG);
+  auto adder1_i_b = std::make_shared<CDFG_Reg>
+    ("mr_adder1_i_b", 8, true, CDFG_Reg::eRegType::REG);
+  auto adder1_out = std::make_shared<CDFG_Wire>
+    ("mw_adder1_output", 8, true, CDFG_Wire::eWireType::WIRE);
 
-  auto adder2_i_a = std::make_shared<CDFG_Node>
-    ("mr_adder2_i_a", 8, true, CDFG_Node::eNode::REG);
-  auto adder2_i_b = std::make_shared<CDFG_Node>
-    ("mr_adder2_i_b", 8, true, CDFG_Node::eNode::REG);
-  auto adder2_out = std::make_shared<CDFG_Node>
-    ("mw_adder2_output", 8, true, CDFG_Node::eNode::WIRE);
+  auto adder2_i_a = std::make_shared<CDFG_Reg>
+    ("mr_adder2_i_a", 8, true, CDFG_Reg::eRegType::REG);
+  auto adder2_i_b = std::make_shared<CDFG_Reg>
+    ("mr_adder2_i_b", 8, true, CDFG_Reg::eRegType::REG);
+  auto adder2_out = std::make_shared<CDFG_Wire>
+    ("mw_adder2_output", 8, true, CDFG_Wire::eWireType::WIRE);
 
   // システム変数
-  auto s_state = std::make_shared<CDFG_Node>
-    ("r_sys_state", 8, false, CDFG_Node::eNode::STATE);
-  auto s_step = std::make_shared<CDFG_Node>
-    ("r_sys_step", 8, false, CDFG_Node::eNode::STEP);
+  auto s_state = std::make_shared<CDFG_Reg>
+    ("r_sys_state", 8, false, CDFG_Reg::eRegType::STATE);
+  auto s_step = std::make_shared<CDFG_Reg>
+    ("r_sys_step", 8, false, CDFG_Reg::eRegType::STEP);
 
   // 信号登録
   this->_module->add_node(i_clk);
@@ -324,17 +348,18 @@ void CModuleGenerator::_generate_header(void) {
     std::string io_str;
 
     switch (io->get_type()) {
-    case CDFG_Node::eNode::IN_ORIG:
-    case CDFG_Node::eNode::CLK:
-    case CDFG_Node::eNode::RES:
-    case CDFG_Node::eNode::REQ:
-    case CDFG_Node::eNode::CE:
-      io_str = "input wire ";
+    case CDFG_Node::eNode::WIRE:
+      if (io->is_input())
+        io_str = "input wire ";
+      else
+        continue;
       break;
 
-    case CDFG_Node::eNode::OUT:
-    case CDFG_Node::eNode::FIN:
-      io_str = "output reg ";
+    case CDFG_Node::eNode::REG:
+      if (io->is_output())
+        io_str = "output reg ";
+      else
+        continue;
       break;
 
     default:
@@ -382,10 +407,6 @@ void CModuleGenerator::_generate_define(void) {
   for (auto & node : this->_module->get_node_list()) {
     switch(node->get_type()) {
     case CDFG_Node::eNode::REG:
-    case CDFG_Node::eNode::STATE:
-    case CDFG_Node::eNode::PREV_STATE:
-    case CDFG_Node::eNode::STEP:
-    case CDFG_Node::eNode::IN:
       type = reg;
       break;
 
@@ -402,6 +423,10 @@ void CModuleGenerator::_generate_define(void) {
       continue;
     }
 
+    // 入出力信号は再定義しない
+    if (node->is_input() || node->is_output())
+      continue;
+
     streams[type] << this->_cout.output_indent() << types[type] << ' ';
 
     if (node->get_is_signed()) {
@@ -416,7 +441,7 @@ void CModuleGenerator::_generate_define(void) {
 
     if (type == param)
       streams[param] << " = "
-                     << node;
+                     << node->to_string();
 
     streams[type] << ";\n";
   }
@@ -432,7 +457,7 @@ void CModuleGenerator::_generate_define(void) {
 */
 void CModuleGenerator::_generate_assign(void) {
   auto prev_state_node = this->get_node
-    (CDFG_Node::eNode::PREV_STATE);
+    (CDFG_Reg::eRegType::PREV_STATE);
 
   for (auto & elem : this->_module->get_element_list()) {
     if (elem->get_operator()->get_type()
@@ -470,7 +495,7 @@ void CModuleGenerator::_generate_assign(void) {
  */
 void CModuleGenerator::_generate_function(void) {
   auto prev_state =
-    this->get_node(CDFG_Node::eNode::PREV_STATE);
+    this->get_node(CDFG_Reg::eRegType::PREV_STATE);
 
   for (auto & elem : this->_module->get_element_list()) {
     auto ope = elem->get_operator();
@@ -581,17 +606,18 @@ void CModuleGenerator::_generate_calculator(void) {
 */
 void CModuleGenerator::_generate_always(void) {
   // 出力に必要な情報(信号名など)を取得
-  auto clk_name   = this->get_node(CDFG_Node::eNode::CLK)->get_verilog_name();
-  auto res_name   = this->get_node(CDFG_Node::eNode::RES)->get_verilog_name();
-  auto req_name   = this->get_node(CDFG_Node::eNode::REQ)->get_verilog_name();
-  auto ce_name    = this->get_node(CDFG_Node::eNode::CE)->get_verilog_name();
-  auto state_node = this->get_node(CDFG_Node::eNode::STATE);
-  auto step_node  = this->get_node(CDFG_Node::eNode::STEP);
-  auto fin_name   = this->get_node(CDFG_Node::eNode::FIN)->get_verilog_name();
+  auto clk_name   = this->get_node(CDFG_Wire::eWireType::CLK)->get_verilog_name();
+  auto res_name   = this->get_node(CDFG_Wire::eWireType::RES)->get_verilog_name();
+  auto req_name   = this->get_node(CDFG_Wire::eWireType::REQ)->get_verilog_name();
+  auto ce_name    = this->get_node(CDFG_Wire::eWireType::CE)->get_verilog_name();
+  auto state_node = this->get_node(CDFG_Reg::eRegType::STATE);
+  auto prev_state = this->get_node(CDFG_Reg::eRegType::PREV_STATE);
+  auto step_node  = this->get_node(CDFG_Reg::eRegType::STEP);
+  auto fin_name   = this->get_node(CDFG_Reg::eRegType::FIN)->get_verilog_name();
   auto true_node  = this->get_node(CDFG_Parameter::eParamType::TRUE);
   auto false_node = this->get_node(CDFG_Parameter::eParamType::FALSE);
   auto zero_node  = this->get_node(CDFG_Parameter::eParamType::ZERO);
-  auto prev_state = this->get_node(CDFG_Node::eNode::PREV_STATE);
+
 
   this->_cout << "always @(posedge "
               << clk_name
@@ -698,9 +724,9 @@ void CModuleGenerator::_generate_always(void) {
         // 入力の接続
         for (auto i=0; i<ope->get_num_input(); ++i) {
           auto node = ope->get_input_node_at(i);
-          if ((unsigned)node->get_type() &
-              ((unsigned)CDFG_Node::eNode::REG | // clk など回避
-               (unsigned)CDFG_Node::eNode::OUT)) {
+          if (node->get_type() ==
+              CDFG_Node::eNode::REG // clk など回避
+              ) {
             process_str.append(this->_cout.output_indent()
                                + node->get_verilog_name()
                                + " <= "
