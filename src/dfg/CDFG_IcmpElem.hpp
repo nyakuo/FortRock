@@ -11,16 +11,16 @@ class CDFG_IcmpElem : public CDFG_Element {
 public:
   /** 比較条件を表す定数 */
   enum class eCond : unsigned {
-    EQ  = 1 << 0, //! ==
-    NE  = 1 << 1, //! !=
-    UGT = 1 << 2, //! (unsigned) > (unsigned)
-    UGE = 1 << 3, //! (unsigned) >= (unsigned)
-    ULT = 1 << 4, //! (unsigned) < (unsigned)
-    ULE = 1 << 5, //! (unsigned) <= (unsigned)
-    SGT = 1 << 6, //! (signed) > (signed)
-    SGE = 1 << 7, //! (signed) >= (signed)
-    SLT = 1 << 8, //! (signed) < (signed)
-    SLE = 1 << 9, //! (signed) <= (signed)
+    EQ  = 1 << 0, ///< ==
+    NE  = 1 << 1, ///< !=
+    UGT = 1 << 2, ///< (unsigned) > (unsigned)
+    UGE = 1 << 3, ///< (unsigned) >= (unsigned)
+    ULT = 1 << 4, ///< (unsigned) < (unsigned)
+    ULE = 1 << 5, ///< (unsigned) <= (unsigned)
+    SGT = 1 << 6, ///< (signed) > (signed)
+    SGE = 1 << 7, ///< (signed) >= (signed)
+    SLT = 1 << 8, ///< (signed) < (signed)
+    SLE = 1 << 9, ///< (signed) <= (signed)
     };
 
   /**
@@ -43,7 +43,7 @@ public:
   const eCond & get_condition(void) { return this->_cond; }
 
 private:
-  const eCond _cond; //! 比較条件
+  const eCond _cond; ///< 比較条件
 };
 
 #endif

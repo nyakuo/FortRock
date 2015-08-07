@@ -14,12 +14,12 @@ public:
      Wire信号の種類を表す定数
    */
   enum class eWireType : unsigned {
-    WIRE = 0,  //! 回路内部で使用するwire信号
-      CLK,     //! clock信号
-      RES,     //! reset信号
-      REQ,     //! request信号
-      CE,      //! clock enable信号
-      IN_ORIG, //! 入力信号
+    WIRE = 0,  ///< 回路内部で使用するwire信号
+      CLK,     ///< clock信号
+      RES,     ///< reset信号
+      REQ,     ///< request信号
+      CE,      ///< clock enable信号
+      IN_ORIG, ///< 入力信号
   };
 
   /**
@@ -47,7 +47,7 @@ public:
   virtual bool is_output(void) override final;
 
 private:
-  eWireType _type; //! 信号の種類
+  eWireType _type; ///< 信号の種類
 
   std::string _get_prefix(void);
 };

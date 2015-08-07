@@ -46,7 +46,7 @@ public:
   virtual bool is_output(void) override final;
 
 private:
-  eRegType _type; //! 信号線の種類
+  eRegType _type; ///< 信号線の種類
 
   std::string _get_prefix(void);
 };

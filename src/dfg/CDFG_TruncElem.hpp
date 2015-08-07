@@ -34,7 +34,7 @@ public:
   { return this->_bit_width; }
 
 private:
-  const unsigned _bit_width; //! 変更後のビット幅
+  const unsigned _bit_width; ///< 変更後のビット幅
 };
 
 #endif

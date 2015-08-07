@@ -39,33 +39,33 @@ public:
       AND,
       OR,
       XOR,
-      COPY, //! 引数のコピー (非LLVMの命令)
+      COPY, ///< 引数のコピー (非LLVMの命令)
       TRUNC,
       GETELEMENTPTR,
       };
 
-  //! @todo 入出力Nodeを自動的に作成する機能
-  //! @todo 演算器の入力ポートの名前などを外部の入力ファイルを用いて指定する機能
+  ///< @todo 入出力Nodeを自動的に作成する機能
+  ///< @todo 演算器の入力ポートの名前などを外部の入力ファイルを用いて指定する機能
 
   CDFG_Operator(const std::string & name,
                 const std::string & mod_name,
-                const unsigned & latency,
-                const eType & type);
+                const unsigned    & latency,
+                const eType       & type);
   ~CDFG_Operator(void);
 
-  /** ゲッター */
-  std::string get_name(void) const;
-  std::string get_mod_name(void) const;
-  unsigned get_latency(void) const;
-  eType get_type(void) const;
-  unsigned get_num_input(void) const;
-  unsigned get_num_output(void) const;
+  // getter
+  std::string get_name(void)       const;
+  std::string get_mod_name(void)   const;
+  unsigned    get_latency(void)    const;
+  eType       get_type(void)       const;
+  unsigned    get_num_input(void)  const;
+  unsigned    get_num_output(void) const;
   std::string get_input_signal_at(const unsigned & at) const;
   std::string get_output_signal_at(const unsigned & at) const;
   std::shared_ptr<CDFG_Node> get_input_node_at(const unsigned & at) const;
   std::shared_ptr<CDFG_Node> get_output_node_at(const unsigned & at) const;
 
-  /* セッター */
+  // setter
   void add_input_port(const std::string & port_name,
                       const std::shared_ptr<CDFG_Node> & node);
   void add_output_port(const std::string & port_name,
@@ -75,13 +75,20 @@ public:
   void set_num_input(const unsigned & num);
 
 private:
-  std::string _name;     /** インスタンス名 */
-  std::string _mod_name; /** モジュールの名前 */
-  unsigned _latency;     /** レイテンシ */
-  eType _type;           /** モジュールの種類 */
+  std::string _name;     ///< インスタンス名
+  std::string _mod_name; ///< モジュールの名前
+  unsigned    _latency;  ///< レイテンシ
+  eType       _type;     ///< モジュールの種類
 
-  std::vector<std::pair<std::string, std::shared_ptr<CDFG_Node> > > _input_list;  /** 入力ポート定義リスト */
-  std::vector<std::pair<std::string, std::shared_ptr<CDFG_Node> > > _output_list; /** 出力ポート定義リスト */
+  std::vector<std::pair<std::string,
+                        std::shared_ptr<CDFG_Node>
+                        >
+              > _input_list;  ///< 入力ポート定義リスト
+
+  std::vector<std::pair<std::string,
+                        std::shared_ptr<CDFG_Node>
+                        >
+              > _output_list; ///< 出力ポート定義リスト
 };
 
 #endif

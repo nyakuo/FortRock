@@ -37,8 +37,8 @@ public:
   virtual std::string to_string(void) override final;
 
 private:
-  const eLabelType _label_type; //! ラベルの種類
-  const unsigned _label_state;  //! ラベルのステート番号
+  const eLabelType _label_type;  ///< ラベルの種類
+  const unsigned   _label_state; ///< ラベルのステート番号
 };
 
 #endif

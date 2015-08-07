@@ -47,9 +47,9 @@ public:
   virtual bool is_output(void) override final { return false; }
 
 private:
-  long        _parameter;  //! 整数の定数値
-  double      _fparameter; //! 浮動小数点の定数値
-  eParamType  _param_type; //! 定数の種類
+  long        _parameter;  ///< 整数の定数値
+  double      _fparameter; ///< 浮動小数点の定数値
+  eParamType  _param_type; ///< 定数の種類
 };
 
 #endif
