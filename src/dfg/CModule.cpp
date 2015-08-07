@@ -169,15 +169,20 @@ CModule::get_node
 /**
    モジュール内のノードの検索
    @param[in] node_name ノードの名前
+   @param[in] type ノードの種類
    @return 検索結果のノード
- */
+*/
 std::shared_ptr<CDFG_Node> &
-CModule::get_node(const std::string & node_name) {
+CModule::get_node
+(const std::string & node_name,
+ const CDFG_Node::eNode & type) {
   auto ite =
     std::find_if(this->_node_list.begin(),
                  this->_node_list.end(),
-                 [node_name](std::shared_ptr<CDFG_Node> obj) -> bool {
-                   return obj->get_asm_name() == node_name;
+                 [node_name, type]
+                 (std::shared_ptr<CDFG_Node> obj) -> bool {
+                   return type == obj->get_type()
+                     && obj->get_asm_name() == node_name;
                  });
   return *ite;
 }
