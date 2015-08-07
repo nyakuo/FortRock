@@ -1,6 +1,8 @@
 # core/Makefile
 
-OBJS := fortrock.o
+OBJS := \
+	fortrock.o \
+	CDebug.o \
 
 EXTRA_OBJS := \
 	../dfg/CDFG_Node.o \
@@ -8,6 +10,9 @@ EXTRA_OBJS := \
 	../dfg/CDFG_Label.o \
 	../dfg/CDFG_Wire.o \
 	../dfg/CDFG_Reg.o \
+	../dfg/CDFG_Array.o \
+	../dfg/CDFG_Addr.o \
+	../dfg/CDFG_Mem.o \
 	../dfg/CDFG_Element.o \
 	../dfg/CDFG_Operator.o \
 	../dfg/CStateMachineGen.o \
@@ -25,4 +30,5 @@ include ../Makefile.in
 $(TARGET): $(OBJS) $(EXTRA_OBJS)
 	$(CXX) -g -shared -o $@ $(OBJS) $(EXTRA_OBJS) $(CXXFLAGS) $(LIBS) $(LDFLAGS)
 
+CDebug.o: CDebug.cpp CDebug.hpp
 fortrock.o: fortrock.cpp fortrock.hpp

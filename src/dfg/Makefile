@@ -6,6 +6,9 @@ OBJS := \
 	CDFG_Label.o \
 	CDFG_Wire.o \
 	CDFG_Reg.o \
+	CDFG_Mem.o \
+	CDFG_Array.o \
+	CDFG_Addr.o \
 	CDFG_Element.o \
 	CDFG_Operator.o \
 	CStateMachineGen.o \
@@ -23,25 +26,17 @@ $(TARGET): $(OBJS)
 	$(CXX) -o $@ $(OBJS)
 
 verilog_generator.o: verilog_generator.cpp
-
 CDFG_Node.o: CDFG_Node.cpp CDFG_Node.hpp
-
 CDFG_Parameter.o: CDFG_Parameter.hpp CDFG_Parameter.cpp
-
 CDFG_Label.o: CDFG_Label.hpp CDFG_Label.cpp
-
 CDFG_Wire.o: CDFG_Wire.hpp CDFG_Wire.cpp
-
 CDFG_Reg.o: CDFG_Reg.hpp CDFG_Reg.cpp
-
+CDFG_Addr.o: CDFG_Addr.hpp CDFG_Addr.cpp
+CDFG_Mem.o: CDFG_Mem.hpp CDFG_Mem.cpp
+CDFG_Array.o: CDFG_Array.hpp CDFG_Array.cpp
 CDFG_Element.o: CDFG_Element.cpp CDFG_Element.hpp
-
 CDFG_Operator.o: CDFG_Operator.cpp CDFG_Operator.hpp
-
 CStateMachineGen.o: CStateMachineGen.cpp CStateMachineGen.hpp
-
 COutput.o: COutput.cpp COutput.hpp
-
 CModuleGenerator.o: CModuleGenerator.cpp CModuleGenerator.hpp
-
 CModule.o: CModule.cpp CModule.hpp
