@@ -87,12 +87,16 @@ bool CModuleGenerator::find_node
 
 /**
    モジュール内のノードを取得する
+   @param[in] node_name ノードの名前
+   @param[in] type ノードの種類
    @note FortRock 本体から呼び出すために使用
  */
 std::shared_ptr<CDFG_Node>
 CModuleGenerator::get_node
-(const std::string & node_name){
-  return this->_module->get_node(node_name);
+(const std::string & node_name,
+ const CDFG_Node::eNode & type)
+{
+  return this->_module->get_node(node_name, type);
 }
 
 /**
@@ -269,7 +273,7 @@ void CModuleGenerator::_generate_test_data(void) {
   this->_module->add_node(s_step);
 
   // 演算器
-  //! @todo CLKやCEの接続を行うとElementの入出力と整合性がとれなくなる
+  ///< @todo CLKやCEの接続を行うとElementの入出力と整合性がとれなくなる
   auto add = std::make_shared<CDFG_Operator>
     ("my_add1",
      "my_add",
@@ -324,6 +328,7 @@ void CModuleGenerator::_generate_test_data(void) {
 int CModuleGenerator::generate(void) {
   this->_generate_header();
   this->_generate_define();
+  //  this->_generate_define_array();
   this->_generate_assign();
   this->_generate_function();
   this->_generate_calculator();
@@ -399,10 +404,10 @@ void CModuleGenerator::_generate_define(void) {
   std::string types[3] = {"reg", "wire", "parameter"};
   std::array<std::stringstream, 3> streams;
 
-  const auto reg = 0;
-  const auto wire = 1;
+  const auto reg   = 0;
+  const auto wire  = 1;
   const auto param = 2;
-  const auto none = 3;
+  const auto none  = 3;
 
   for (auto & node : this->_module->get_node_list()) {
     switch(node->get_type()) {
@@ -450,6 +455,24 @@ void CModuleGenerator::_generate_define(void) {
     if (s.rdbuf()->in_avail() != 0)
       this->_cout <<= s.str() + "\n";
 }
+
+/**
+   配列の宣言部の出力
+ */
+void CModuleGenerator::_generate_define_array(void) {
+  for (auto & node : this->_module->get_node_list()) {
+    if (node->get_type() != CDFG_Node::eNode::MEM)
+      continue;
+
+    auto type = std::dynamic_pointer_cast<CDFG_Mem>
+      (node)->get_mem_type();
+
+    if (type == CDFG_Mem::eMemType::ARRAY) { // 配列の場合
+      auto array = std::dynamic_pointer_cast<CDFG_Array>(node);
+      this->_cout << array->define_string() << std::endl;
+    } // if : type == ARRAY
+  } // for : node
+} // _generate_define_array
 
 /**
    moduleのassign文の定義
@@ -754,16 +777,36 @@ void CModuleGenerator::_generate_always(void) {
                                step + latency + 1,
                                process_str);
         break;
-      } // case
+      }
 
     case CDFG_Operator::eType::LOAD:
+      {
+        auto in = std::dynamic_pointer_cast<CDFG_Addr>
+          (elem->get_input_at(0));
+        auto out = elem->get_output_at(0);
+
+        // レジスタ参照
+        if (in->is_reg_ref())
+          process_str.append(this->_cout.output_indent()
+                             + out->get_verilog_name()
+                             + " <= "
+                             + in->get_reference()->get_verilog_name()
+                             + ";\n");
+
+        sm_gen.add_state_process(state,
+                                 step,
+                                 process_str);
+        break;
+      }
+
     case CDFG_Operator::eType::STORE:
       {
         auto in = elem->get_input_at(0);
-        auto out = elem->get_output_at(0);
+        auto out = std::dynamic_pointer_cast<CDFG_Addr>
+          (elem->get_output_at(0));
 
         process_str.append(this->_cout.output_indent()
-                           + out->get_verilog_name()
+                           + out->get_reference()->get_verilog_name()
                            + " <= "
                            + in->get_verilog_name()
                            + ";\n");
@@ -881,7 +924,7 @@ void CModuleGenerator::_generate_always(void) {
           auto finish_state_label
             = std::dynamic_pointer_cast<CDFG_Label>(elem->get_input_at(0));
 
-          //! @todo 返り値への対応
+          ///< @todo 返り値への対応
 
           // 終了状態への遷移
           process_str.append(this->_cout.output_indent()
@@ -1092,7 +1135,7 @@ void CModuleGenerator::_generate_always(void) {
         break;
       }
 
-      //! @todo 未対応の命令に対応
+      ///< @todo 未対応の命令に対応
 
     default:
       break;
