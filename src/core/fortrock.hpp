@@ -20,10 +20,14 @@
 #include "../dfg/CDFG_Parameter.hpp"
 #include "../dfg/CDFG_Wire.hpp"
 #include "../dfg/CDFG_Reg.hpp"
+#include "../dfg/CDFG_Addr.hpp"
+#include "../dfg/CDFG_Mem.hpp"
+#include "../dfg/CDFG_Array.hpp"
 #include "../dfg/CDFG_Element.hpp"
 #include "../dfg/CDFG_IcmpElem.hpp"
 #include "../dfg/CDFG_TruncElem.hpp"
 #include "../xml/CInstancingOperator.hpp"
+#include "CDebug.hpp"
 using namespace llvm;
 
 /**
