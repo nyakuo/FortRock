@@ -15,6 +15,9 @@
 #include "CDFG_Label.hpp"
 #include "CDFG_Wire.hpp"
 #include "CDFG_Reg.hpp"
+#include "CDFG_Mem.hpp"
+#include "CDFG_Addr.hpp"
+#include "CDFG_Array.hpp"
 #include "CDFG_IcmpElem.hpp"
 #include "CDFG_Operator.hpp"
 #include "CStateMachineGen.hpp"
@@ -41,7 +44,10 @@ public:
   // getter
   bool find_node(const std::string & node_name);
   bool find_node(std::shared_ptr<CDFG_Node> node);
-  std::shared_ptr<CDFG_Node> get_node(const std::string & node_name);
+  //  std::shared_ptr<CDFG_Node> get_node(const std::string & node_name);
+  std::shared_ptr<CDFG_Node>
+  get_node(const std::string & node_name,
+           const CDFG_Node::eNode & type);
   std::shared_ptr<CDFG_Node> get_node(const CDFG_Node::eNode & type);
   std::shared_ptr<CDFG_Node> get_node(const CDFG_Label::eLabelType & type);
   std::shared_ptr<CDFG_Node> get_node(const CDFG_Parameter::eParamType & type);
@@ -50,6 +56,10 @@ public:
   std::shared_ptr<CDFG_Operator> get_operator(const CDFG_Operator::eType & type);
   unsigned get_max_step(void);
 
+  // for debug
+  std::list<std::shared_ptr<CDFG_Node> > &
+  get_node_list(void) { return this->_module->get_node_list(); }
+
 private:
   COutput _cout;
   std::shared_ptr<CModule> _module;
@@ -57,6 +67,7 @@ private:
   void _generate_test_data(void);
   void _generate_header(void);
   void _generate_define(void);
+  void _generate_define_array(void);
   void _generate_assign(void);
   void _generate_function(void);
   void _generate_calculator(void);
