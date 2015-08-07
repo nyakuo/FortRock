@@ -950,7 +950,7 @@ void FortRock::_add_shift_inst
   if (!inst->getOperand(1)->hasName())
     a1 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(0)),
-       CDFG_Node::eNode:PARAM);
+       CDFG_Node::eNode::PARAM);
 
   // 出力
   auto b = this->_module_gen->get_node
@@ -1145,13 +1145,19 @@ void FortRock::_add_trunc_inst
   ++this->_step;
 }
 
+/**
+   getelemntptr命令をDFGに追加
+   @param[in] inst 命令の参照
+ */
 void FortRock::_add_getelementptr_inst
 (const Instruction * inst) {
+  std::cout << "called _add_getelementptr_inst()" << std::endl;
   auto getelemptr_inst = dynamic_cast<GetElementPtrInst*>
     (const_cast<Instruction*>(inst));
 
   auto ptr = getelemptr_inst->getType();
   auto array = ptr->getElementType();
+  //  std::cout << array->getName() << std::endl;
 }
 
 /**
