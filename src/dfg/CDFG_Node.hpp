@@ -15,10 +15,9 @@ public:
     REG = 0,
       WIRE,
       PARAM,
-      ARRAY,
       LABEL,
       ADDR,
-      OTHER
+      MEM,
       };
 
   CDFG_Node(const std::string & asm_name,
@@ -44,11 +43,11 @@ public:
   virtual std::string to_string(void) { return "to_string"; }
 
 protected:
-  std::string _asm_name;     //! ノードの名前
-  std::string _verilog_name; //! Verilog HDL上での名前
-  unsigned _bit_width;       //! ビット幅
-  bool _is_signed;           //! signedかどうか
-  CDFG_Node::eNode _type;    //! ノードの種類
+  std::string _asm_name;     ///< ノードの名前
+  std::string _verilog_name; ///< Verilog HDL上での名前
+  unsigned _bit_width;       ///< ビット幅
+  bool _is_signed;           ///< signedかどうか
+  CDFG_Node::eNode _type;    ///< ノードの種類
 };
 
 #endif
