@@ -21,47 +21,6 @@ CDFG_Node::CDFG_Node(const std::string & asm_name,
 {
   // 変数に使用できない文字の置換
   std::string safe_name = this->get_safe_name();
-
-  // 変数名に接頭語をつける
-#if 0
-  std::string prefix("");
-  switch (type) {
-    //  case eNode::IN:
-  case eNode::REG: prefix = "r_";
-    break;
-
-  case eNode::WIRE: prefix = "w_";
-    break;
-
-  case eNode::CLK:
-  case eNode::RES:
-  case eNode::REQ:
-  case eNode::CE:
-  case eNode::IN_ORIG: prefix = "i_";
-    break;
-
-  case eNode::FIN:
-  case eNode::OUT: prefix = "o_";
-    break;
-
-  case eNode::PARAM: prefix = "p_";
-    break;
-
-  case eNode::STATE:
-  case eNode::PREV_STATE:
-  case eNode::STEP: prefix = "r_sys_";
-    break;
-
-  case eNode::LABEL: prefix = "l_";
-    break;
-
-  default:
-    prefix = "undef_";
-  } // switch
-
-  if (type == eNode::IN_ORIG)
-    this->_asm_name += "original";
-#endif
   this->_verilog_name = prefix + safe_name;
 } // CDFG_Node
 
