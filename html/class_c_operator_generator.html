@@ -106,7 +106,6 @@ $(document).ready(function(){initNavTree('class_c_operator_generator.html','');}
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="class_c_operator_generator-members.html">List of all members</a>  </div>
@@ -120,12 +119,6 @@ $(document).ready(function(){initNavTree('class_c_operator_generator.html','');}
 
 <p><code>#include &lt;<a class="el" href="_c_operator_generator_8hpp_source.html">COperatorGenerator.hpp</a>&gt;</code></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_operator_generator_1_1_c_node__data.html">CNode_data</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">入出力ポートのデータを保持する  <a href="class_c_operator_generator_1_1_c_node__data.html#details">More...</a><br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a5b2c0833a30982cb04edae42a3efe772"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_operator_generator.html#a5b2c0833a30982cb04edae42a3efe772">COperatorGenerator</a> (void)</td></tr>
@@ -134,8 +127,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa3a275981729c0d17d1adf6c71a9d120"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b55a0e77969e131c902f0e270f4ff3f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_operator_generator.html#a9b55a0e77969e131c902f0e270f4ff3f">generate_operator</a> (std::shared_ptr&lt; <a class="el" href="class_c_module_generator.html">CModuleGenerator</a> &gt; &amp;module_gen)</td></tr>
 <tr class="separator:a9b55a0e77969e131c902f0e270f4ff3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a32bb696bd81101dd60206808f42e0272"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_operator_generator.html#a32bb696bd81101dd60206808f42e0272">add_port_info</a> (const std::string &amp;name, const unsigned &amp;bit_width, const <a class="el" href="class_c_d_f_g___node.html#a092116c8844e7398a928d10246e2af18">CDFG_Node::eNode</a> &amp;type, const bool &amp;is_signed)</td></tr>
-<tr class="separator:a32bb696bd81101dd60206808f42e0272"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8626b78452163b34520b089be25335d9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_operator_generator.html#a8626b78452163b34520b089be25335d9">add_port_info</a> (const std::string &amp;name, const unsigned &amp;bit_width, const <a class="el" href="class_c_node__data.html#aea7382c121c08216667a195d6d2256c0">CNode_data::ePortType</a> &amp;type, const bool &amp;is_signed)</td></tr>
+<tr class="separator:a8626b78452163b34520b089be25335d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae65ef32a41615d06fc2ca57bfcacf397"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_operator_generator.html#ae65ef32a41615d06fc2ca57bfcacf397">set_type</a> (const <a class="el" href="class_c_d_f_g___operator.html#ae9708875af4f8931b7adcbe78107b62b">CDFG_Operator::eType</a> &amp;type)</td></tr>
 <tr class="separator:ae65ef32a41615d06fc2ca57bfcacf397"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d3ba9afbf36c149a5512e4ca6198c3e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_operator_generator.html#a9d3ba9afbf36c149a5512e4ca6198c3e">set_latency</a> (const unsigned &amp;latency)</td></tr>
@@ -150,10 +143,10 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
 <tr class="memitem:adb7854f20d588d3bfcad02c57cd98469"><td class="memItemLeft" align="right" valign="top">std::list&lt; std::shared_ptr<br class="typebreak"/>
-&lt; <a class="el" href="class_c_operator_generator_1_1_c_node__data.html">CNode_data</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_operator_generator.html#adb7854f20d588d3bfcad02c57cd98469">_inode_info</a></td></tr>
+&lt; <a class="el" href="class_c_node__data.html">CNode_data</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_operator_generator.html#adb7854f20d588d3bfcad02c57cd98469">_inode_info</a></td></tr>
 <tr class="separator:adb7854f20d588d3bfcad02c57cd98469"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc738f352979a3fef8536fbee78f60af"><td class="memItemLeft" align="right" valign="top">std::list&lt; std::shared_ptr<br class="typebreak"/>
-&lt; <a class="el" href="class_c_operator_generator_1_1_c_node__data.html">CNode_data</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_operator_generator.html#abc738f352979a3fef8536fbee78f60af">_onode_info</a></td></tr>
+&lt; <a class="el" href="class_c_node__data.html">CNode_data</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_operator_generator.html#abc738f352979a3fef8536fbee78f60af">_onode_info</a></td></tr>
 <tr class="memdesc:abc738f352979a3fef8536fbee78f60af"><td class="mdescLeft">&#160;</td><td class="mdescRight">入力ノードのリスト  <a href="#abc738f352979a3fef8536fbee78f60af">More...</a><br/></td></tr>
 <tr class="separator:abc738f352979a3fef8536fbee78f60af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a311e90545f72d2e5739e59aed03dcc57"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_c_d_f_g___operator.html#ae9708875af4f8931b7adcbe78107b62b">CDFG_Operator::eType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_operator_generator.html#a311e90545f72d2e5739e59aed03dcc57">_type</a></td></tr>
@@ -208,7 +201,7 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a32bb696bd81101dd60206808f42e0272"></a>
+<a class="anchor" id="a8626b78452163b34520b089be25335d9"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -227,7 +220,7 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="class_c_d_f_g___node.html#a092116c8844e7398a928d10246e2af18">CDFG_Node::eNode</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="class_c_node__data.html#aea7382c121c08216667a195d6d2256c0">CNode_data::ePortType</a> &amp;&#160;</td>
           <td class="paramname"><em>type</em>, </td>
         </tr>
         <tr>
@@ -248,7 +241,8 @@ Private Attributes</h2></td></tr>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">name</td><td>ポート名 </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">bit_width</td><td>ポートのビット幅 </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">type</td><td>ポートの種類 </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">type</td><td>信号の種類 </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">is_signed</td><td>ポートがsignedか </td></tr>
   </table>
   </dd>
 </dl>
@@ -402,7 +396,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::list&lt;std::shared_ptr&lt;<a class="el" href="class_c_operator_generator_1_1_c_node__data.html">CNode_data</a>&gt; &gt; COperatorGenerator::_inode_info</td>
+          <td class="memname">std::list&lt;std::shared_ptr&lt;<a class="el" href="class_c_node__data.html">CNode_data</a>&gt; &gt; COperatorGenerator::_inode_info</td>
         </tr>
       </table>
   </td>
@@ -510,7 +504,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::list&lt;std::shared_ptr&lt;<a class="el" href="class_c_operator_generator_1_1_c_node__data.html">CNode_data</a>&gt; &gt; COperatorGenerator::_onode_info</td>
+          <td class="memname">std::list&lt;std::shared_ptr&lt;<a class="el" href="class_c_node__data.html">CNode_data</a>&gt; &gt; COperatorGenerator::_onode_info</td>
         </tr>
       </table>
   </td>
@@ -556,7 +550,7 @@ Private Attributes</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="class_c_operator_generator.html">COperatorGenerator</a></li>
-    <li class="footer">Generated on Tue Jul 28 2015 15:41:30 for FortRock by
+    <li class="footer">Generated on Fri Aug 7 2015 16:47:08 for FortRock by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

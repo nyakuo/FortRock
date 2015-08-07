@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['uge',['UGE',['../class_c_d_f_g___node.html#ab1bcc5428299032c91c3f65e7a9302abada0d6078de3703b5680eb9361f2d68fd',1,'CDFG_Node']]],
-  ['ugt',['UGT',['../class_c_d_f_g___node.html#ab1bcc5428299032c91c3f65e7a9302aba7efc25ec6c881b13261c1a6d88762483',1,'CDFG_Node']]],
-  ['ule',['ULE',['../class_c_d_f_g___node.html#ab1bcc5428299032c91c3f65e7a9302abae29e365fd3b5e59c86218486a0c1c7c1',1,'CDFG_Node']]],
-  ['ult',['ULT',['../class_c_d_f_g___node.html#ab1bcc5428299032c91c3f65e7a9302aba2b4652512a6c88f5a39c3288081b6e13',1,'CDFG_Node']]]
+  ['true',['TRUE',['../class_c_d_f_g___parameter.html#a1dea15f535c75d30902d76eefdce906cadcee42623a9c4874d1cac3ae031d410e',1,'CDFG_Parameter']]],
+  ['trunc',['TRUNC',['../class_c_d_f_g___operator.html#ae9708875af4f8931b7adcbe78107b62ba69c337ff6ad130861f8877b054f171ea',1,'CDFG_Operator']]]
 ];

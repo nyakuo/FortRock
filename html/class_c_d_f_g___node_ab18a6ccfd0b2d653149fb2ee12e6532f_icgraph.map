@@ -1,3 +1,4 @@
 <map id="CDFG_Node::get_bit_width" name="CDFG_Node::get_bit_width">
-<area shape="rect" id="node2" href="$class_c_d_f_g___node.html#a44de6d4431709f040a6d6ae1d3492fa1" title="CDFG_Node::get_param_str" alt="" coords="200,12,389,39"/>
+<area shape="rect" id="node2" href="$class_c_d_f_g___label.html#afe86eb538d4e1ae2cbf5b05f5badefd5" title="CDFG_Label::to_string" alt="" coords="201,5,357,32"/>
+<area shape="rect" id="node3" href="$class_c_d_f_g___parameter.html#aeced1642a1c491bcc654480487da3e1a" title="CDFG_Parameter::to\l_string" alt="" coords="205,57,352,98"/>
 </map>

@@ -10,10 +10,10 @@ var indexSectionsWithContent =
   0: "_abcdefgilmnoprstuvwxz~",
   1: "cf",
   2: "cfiv",
-  3: "_acfgimorsux~",
+  3: "_acdfgimorstux~",
   4: "_i",
   5: "e",
-  6: "abcdefilmnoprstuwxz",
+  6: "abcdefgilmnoprstuwxz",
   7: "t"
 };
 

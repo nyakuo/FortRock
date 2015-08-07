@@ -119,37 +119,39 @@ $(document).ready(function(){initNavTree('_c_instancing_operator_8hpp_source.htm
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;libxml/xmlmemory.h&gt;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_c_operator_generator_8hpp.html">COperatorGenerator.hpp</a>&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;../dfg/CModuleGenerator.hpp&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;../dfg/CDFG_Operator.hpp&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;../dfg/CDFG_Node.hpp&quot;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="class_c_instancing_operator.html">   22</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_c_instancing_operator.html">CInstancingOperator</a> {</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <a class="code" href="class_c_instancing_operator.html#a14851e3ed274313153d0556a2e4c5b11">CInstancingOperator</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <a class="code" href="class_c_instancing_operator.html#a1e63f63c6d2ed5275b5289c745ac2873">~CInstancingOperator</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="class_c_instancing_operator.html#a653f5389a86e03a569bb575d3d76b02e">instancing_operators</a> (std::shared_ptr&lt;CModuleGenerator&gt; &amp; module_gen,</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;                             <span class="keyword">const</span> std::string &amp; filename);</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="class_c_instancing_operator.html#ad21b07d244afbd4e57bcb5c1ab12fd2f">_parse_operator_info</a>(xmlDocPtr &amp; doc, xmlNodePtr &amp; cur,</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;                            std::shared_ptr&lt;CModuleGenerator&gt; &amp; module_gen);</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;};</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_c_node__data_8hpp.html">CNode_data.hpp</a>&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;../dfg/CModuleGenerator.hpp&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;../dfg/CDFG_Operator.hpp&quot;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;../dfg/CDFG_Node.hpp&quot;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
+<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="class_c_instancing_operator.html">   23</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_c_instancing_operator.html">CInstancingOperator</a> {</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <a class="code" href="class_c_instancing_operator.html#a14851e3ed274313153d0556a2e4c5b11">CInstancingOperator</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <a class="code" href="class_c_instancing_operator.html#a1e63f63c6d2ed5275b5289c745ac2873">~CInstancingOperator</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="class_c_instancing_operator.html#a653f5389a86e03a569bb575d3d76b02e">instancing_operators</a> (std::shared_ptr&lt;CModuleGenerator&gt; &amp; module_gen,</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;                             <span class="keyword">const</span> std::string &amp; filename);</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="class_c_instancing_operator.html#ad21b07d244afbd4e57bcb5c1ab12fd2f">_parse_operator_info</a>(xmlDocPtr &amp; doc, xmlNodePtr &amp; cur,</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;                            std::shared_ptr&lt;CModuleGenerator&gt; &amp; module_gen);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;};</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="ttc" id="class_c_instancing_operator_html_a1e63f63c6d2ed5275b5289c745ac2873"><div class="ttname"><a href="class_c_instancing_operator.html#a1e63f63c6d2ed5275b5289c745ac2873">CInstancingOperator::~CInstancingOperator</a></div><div class="ttdeci">~CInstancingOperator(void)</div><div class="ttdef"><b>Definition:</b> CInstancingOperator.cpp:11</div></div>
+<div class="ttc" id="_c_node__data_8hpp_html"><div class="ttname"><a href="_c_node__data_8hpp.html">CNode_data.hpp</a></div></div>
 <div class="ttc" id="class_c_instancing_operator_html_a653f5389a86e03a569bb575d3d76b02e"><div class="ttname"><a href="class_c_instancing_operator.html#a653f5389a86e03a569bb575d3d76b02e">CInstancingOperator::instancing_operators</a></div><div class="ttdeci">void instancing_operators(std::shared_ptr&lt; CModuleGenerator &gt; &amp;module_gen, const std::string &amp;filename)</div><div class="ttdef"><b>Definition:</b> CInstancingOperator.cpp:19</div></div>
 <div class="ttc" id="class_c_instancing_operator_html_ad21b07d244afbd4e57bcb5c1ab12fd2f"><div class="ttname"><a href="class_c_instancing_operator.html#ad21b07d244afbd4e57bcb5c1ab12fd2f">CInstancingOperator::_parse_operator_info</a></div><div class="ttdeci">void _parse_operator_info(xmlDocPtr &amp;doc, xmlNodePtr &amp;cur, std::shared_ptr&lt; CModuleGenerator &gt; &amp;module_gen)</div><div class="ttdef"><b>Definition:</b> CInstancingOperator.cpp:56</div></div>
 <div class="ttc" id="_c_operator_generator_8hpp_html"><div class="ttname"><a href="_c_operator_generator_8hpp.html">COperatorGenerator.hpp</a></div></div>
 <div class="ttc" id="class_c_instancing_operator_html_a14851e3ed274313153d0556a2e4c5b11"><div class="ttname"><a href="class_c_instancing_operator.html#a14851e3ed274313153d0556a2e4c5b11">CInstancingOperator::CInstancingOperator</a></div><div class="ttdeci">CInstancingOperator(void)</div><div class="ttdef"><b>Definition:</b> CInstancingOperator.cpp:6</div></div>
-<div class="ttc" id="class_c_instancing_operator_html"><div class="ttname"><a href="class_c_instancing_operator.html">CInstancingOperator</a></div><div class="ttdef"><b>Definition:</b> CInstancingOperator.hpp:22</div></div>
+<div class="ttc" id="class_c_instancing_operator_html"><div class="ttname"><a href="class_c_instancing_operator.html">CInstancingOperator</a></div><div class="ttdef"><b>Definition:</b> CInstancingOperator.hpp:23</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_c43b215a2ade73e6562bd37d8a11c12a.html">xml</a></li><li class="navelem"><a class="el" href="_c_instancing_operator_8hpp.html">CInstancingOperator.hpp</a></li>
-    <li class="footer">Generated on Tue Jul 28 2015 15:41:29 for FortRock by
+    <li class="footer">Generated on Fri Aug 7 2015 16:47:08 for FortRock by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

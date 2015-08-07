@@ -157,6 +157,8 @@ Private Member Functions</h2></td></tr>
 <tr class="separator:aed28067ff061818d1ea770e81d363ec6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0440ede0fccfb7840383d82b693a6df1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_fort_rock.html#a0440ede0fccfb7840383d82b693a6df1">_grub_variables</a> (const Module::FunctionListType::iterator &amp;funct)</td></tr>
 <tr class="separator:a0440ede0fccfb7840383d82b693a6df1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a94a71a46bdf3863a03379a0b67d8f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_fort_rock.html#a8a94a71a46bdf3863a03379a0b67d8f1">_grub_global_variables</a> (const Module &amp;M)</td></tr>
+<tr class="separator:a8a94a71a46bdf3863a03379a0b67d8f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9fc310231e1b7a1c6fcbf65407ba88bf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_fort_rock.html#a9fc310231e1b7a1c6fcbf65407ba88bf">_grub_labels</a> (const Module::FunctionListType::iterator &amp;funct)</td></tr>
 <tr class="separator:a9fc310231e1b7a1c6fcbf65407ba88bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab10388f80ff76352aa9b2b478943f62d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_fort_rock.html#ab10388f80ff76352aa9b2b478943f62d">_parse_instructions</a> (const Instruction *inst)</td></tr>
@@ -215,6 +217,8 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:a3fb0f9adc4155fd3d997e7091d342eba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_fort_rock.html#a3fb0f9adc4155fd3d997e7091d342eba">_add_trunc_inst</a> (const Instruction *inst)</td></tr>
 <tr class="memdesc:a3fb0f9adc4155fd3d997e7091d342eba"><td class="mdescLeft">&#160;</td><td class="mdescRight">b = trunc type a to type2 b &lt;= a[type2-1:0];  <a href="#a3fb0f9adc4155fd3d997e7091d342eba">More...</a><br/></td></tr>
 <tr class="separator:a3fb0f9adc4155fd3d997e7091d342eba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f56a375ca2b7aa5114ebfb0dff02c06"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_fort_rock.html#a4f56a375ca2b7aa5114ebfb0dff02c06">_add_getelementptr_inst</a> (const Instruction *inst)</td></tr>
+<tr class="separator:a4f56a375ca2b7aa5114ebfb0dff02c06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -356,6 +360,30 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a4f56a375ca2b7aa5114ebfb0dff02c06"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FortRock::_add_getelementptr_inst </td>
+          <td>(</td>
+          <td class="paramtype">const Instruction *&#160;</td>
+          <td class="paramname"><em>inst</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="aeb0175ce23cc5c9e19f5f7f592f43b88"></a>
 <div class="memitem">
 <div class="memproto">
@@ -380,7 +408,6 @@ Private Attributes</h2></td></tr>
 
 <p>b = icmp cond a0 a1 b = (a0 cond a1) </p>
 <p>ICMP命令をモジュールのDFGに追加する </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd>conditionへの対応 </dd></dl>
 
 </div>
 </div>
@@ -435,7 +462,7 @@ Private Attributes</h2></td></tr>
 
 <p>b = mul a0 a1 演算器の信号線による接続 </p>
 <p>MUL命令をモジュールの DFG に追加 </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000007">Todo:</a></b></dt><dd>使用した演算器にフラグを立てる </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000008">Todo:</a></b></dt><dd>使用した演算器にフラグを立てる </dd></dl>
 
 </div>
 </div>
@@ -551,7 +578,7 @@ Private Attributes</h2></td></tr>
 
 <p>b = sdiv a0 a1 演算器の信号線による接続 </p>
 <p>SDIV命令を module の DFG に追加 </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000006">Todo:</a></b></dt><dd>使用した演算器にフラグを立てる rem命令と演算器の共有 <dl class="section note"><dt>Note</dt><dd>dividerのquotientに接続 </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000007">Todo:</a></b></dt><dd>使用した演算器にフラグを立てる rem命令と演算器の共有 <dl class="section note"><dt>Note</dt><dd>dividerのquotientに接続 </dd></dl>
 </dd></dl>
 
 </div>
@@ -658,7 +685,7 @@ Private Attributes</h2></td></tr>
 
 <p>b = srem a0 a1 演算器の信号線による接続 </p>
 <p>SREM命令を module の DFG に追加 </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Todo:</a></b></dt><dd>使用した演算器にフラグを立てる div命令と演算器の共有 <dl class="section note"><dt>Note</dt><dd>dividerのfractionalに接続 </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000006">Todo:</a></b></dt><dd>使用した演算器にフラグを立てる div命令と演算器の共有 <dl class="section note"><dt>Note</dt><dd>dividerのfractionalに接続 </dd></dl>
 </dd></dl>
 
 </div>
@@ -741,7 +768,8 @@ Private Attributes</h2></td></tr>
 
 <p>switch val, label otherwise [ 0, label onzero 1, label onone 2, label ontwo ...] </p>
 <p>switch命令をモジュールのDFGに追加する case (val) 0: state &lt;= onzero; 1: state &lt;= onone; 2: state &lt;= ontwo; default: state &lt;= otherwise; endcase </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000008">Todo:</a></b></dt><dd>常にtrue </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000009">Todo:</a></b></dt><dd>常にtrue </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000010">Todo:</a></b></dt><dd>常にINTEGER </dd></dl>
 
 </div>
 </div>
@@ -907,7 +935,34 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>変数名 </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>引数vが定数の場合は定数値のstringを返す </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd>is signed 対応する </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd>Integer以外の型への対応 </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo:</a></b></dt><dd>is signed 対応する </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a8a94a71a46bdf3863a03379a0b67d8f1"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FortRock::_grub_global_variables </td>
+          <td>(</td>
+          <td class="paramtype">const Module &amp;&#160;</td>
+          <td class="paramname"><em>M</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>グローバル変数のインスタンス化 </p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000017">Todo:</a></b></dt><dd>zeroinitializerへの対応 </dd></dl>
 
 </div>
 </div>
@@ -966,10 +1021,12 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>プログラムで使用するすべてのレジスタを取得し variablesに格納する Labelについても列挙し，格納する </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000009">Todo:</a></b></dt><dd>is signedが常にtrue </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000010">Todo:</a></b></dt><dd>is signedが常にtrue </dd></dl>
 <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000011">Todo:</a></b></dt><dd>is signedが常にtrue </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000012">Todo:</a></b></dt><dd>is signedが常にtrue </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000012">Todo:</a></b></dt><dd>常にinteger </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000013">Todo:</a></b></dt><dd>is signedが常にtrue </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000014">Todo:</a></b></dt><dd>is signedが常にtrue </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000015">Todo:</a></b></dt><dd>常にINTGER </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000016">Todo:</a></b></dt><dd>is signedが常にtrue </dd></dl>
 
 </div>
 </div>
@@ -1022,8 +1079,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>moduleの入出力を定義 </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo:</a></b></dt><dd>浮動小数点対応 </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>isSigned対応 </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>浮動小数点対応 </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd>is signed 対応 </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Todo:</a></b></dt><dd>is signed 対応 </dd></dl>
 
 </div>
 </div>
@@ -1071,7 +1129,7 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_fort_rock_ace9d13af6e655887724cc5e26b731447_cgraph.png" border="0" usemap="#class_fort_rock_ace9d13af6e655887724cc5e26b731447_cgraph" alt=""/></div>
 <map name="class_fort_rock_ace9d13af6e655887724cc5e26b731447_cgraph" id="class_fort_rock_ace9d13af6e655887724cc5e26b731447_cgraph">
-<area shape="rect" id="node2" href="class_c_instancing_operator.html#a653f5389a86e03a569bb575d3d76b02e" title="CInstancingOperator\l::instancing_operators" alt="" coords="217,5,367,46"/></map>
+<area shape="rect" id="node2" href="class_c_debug.html#a2472679ab1b631738bcbf53c95ac8e06" title="CDebug::output_node_info" alt="" coords="217,5,394,32"/><area shape="rect" id="node3" href="class_c_instancing_operator.html#a653f5389a86e03a569bb575d3d76b02e" title="CInstancingOperator\l::instancing_operators" alt="" coords="230,57,381,98"/></map>
 </div>
 </p>
 
@@ -1281,7 +1339,7 @@ Here is the call graph for this function:</div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="class_fort_rock.html">FortRock</a></li>
-    <li class="footer">Generated on Tue Jul 28 2015 15:41:30 for FortRock by
+    <li class="footer">Generated on Fri Aug 7 2015 16:47:08 for FortRock by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

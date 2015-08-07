@@ -1,3 +1,4 @@
 <map id="FortRock::runOnModule" name="FortRock::runOnModule">
-<area shape="rect" id="node2" href="$class_c_instancing_operator.html#a653f5389a86e03a569bb575d3d76b02e" title="CInstancingOperator\l::instancing_operators" alt="" coords="217,5,367,46"/>
+<area shape="rect" id="node2" href="$class_c_debug.html#a2472679ab1b631738bcbf53c95ac8e06" title="CDebug::output_node_info" alt="" coords="217,5,394,32"/>
+<area shape="rect" id="node3" href="$class_c_instancing_operator.html#a653f5389a86e03a569bb575d3d76b02e" title="CInstancingOperator\l::instancing_operators" alt="" coords="230,57,381,98"/>
 </map>

@@ -1,3 +1,10 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$class_c_d_f_g___operator.html" title="演算器を定義するクラス " alt="" coords="5,5,123,32"/>
+<area shape="rect" id="node1" href="$class_c_d_f_g___node.html" title="演算器やモジュール(関数)を表すクラス " alt="" coords="5,132,104,159"/>
+<area shape="rect" id="node2" href="$class_c_d_f_g___addr.html" title="アドレスを表すクラス " alt="" coords="169,5,263,32"/>
+<area shape="rect" id="node3" href="$class_c_d_f_g___label.html" title="ラベルを表すクラス " alt="" coords="167,56,265,83"/>
+<area shape="rect" id="node4" href="$class_c_d_f_g___mem.html" title="メモリを表すクラス 配列やスタックなどのインタフェースモジュールが 実際にアクセスするデータを表すクラス " alt="" coords="168,107,264,133"/>
+<area shape="rect" id="node6" href="$class_c_d_f_g___parameter.html" title="定数ノードを表すクラス " alt="" coords="153,157,279,184"/>
+<area shape="rect" id="node7" href="$class_c_d_f_g___reg.html" title="Regを表すクラス " alt="" coords="171,208,261,235"/>
+<area shape="rect" id="node8" href="$class_c_d_f_g___wire.html" title="Wire信号を表すクラス " alt="" coords="169,259,263,285"/>
+<area shape="rect" id="node5" href="$class_c_d_f_g___array.html" title="メモリに対する配列アクセスを可能にするクラス " alt="" coords="328,107,427,133"/>
 </map>

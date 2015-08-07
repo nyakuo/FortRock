@@ -24,12 +24,13 @@ var class_c_d_f_g___operator =
       [ "OR", "class_c_d_f_g___operator.html#ae9708875af4f8931b7adcbe78107b62ba1d00e7dce692e8dc3f6877f035e3a616", null ],
       [ "XOR", "class_c_d_f_g___operator.html#ae9708875af4f8931b7adcbe78107b62ba97675eb3f268048604dc5155511a2a4d", null ],
       [ "COPY", "class_c_d_f_g___operator.html#ae9708875af4f8931b7adcbe78107b62bae8606d021da140a92c7eba8d9b8af84f", null ],
-      [ "TRUNC", "class_c_d_f_g___operator.html#ae9708875af4f8931b7adcbe78107b62ba69c337ff6ad130861f8877b054f171ea", null ]
+      [ "TRUNC", "class_c_d_f_g___operator.html#ae9708875af4f8931b7adcbe78107b62ba69c337ff6ad130861f8877b054f171ea", null ],
+      [ "GETELEMENTPTR", "class_c_d_f_g___operator.html#ae9708875af4f8931b7adcbe78107b62bad837172c176b7eb56fd8d0b68168e06c", null ]
     ] ],
     [ "CDFG_Operator", "class_c_d_f_g___operator.html#a9ea503137a72747dcdb547bb680fe48b", null ],
     [ "~CDFG_Operator", "class_c_d_f_g___operator.html#ab16a3317266900d4dfa930d2c9b735a6", null ],
-    [ "add_input_port", "class_c_d_f_g___operator.html#abe37d90a411d499bd410485a3fb9a4f0", null ],
-    [ "add_output_port", "class_c_d_f_g___operator.html#a29771c77ef8414577ff363297467b460", null ],
+    [ "add_input_port", "class_c_d_f_g___operator.html#a93862899a396988b6c6ca9725511fc62", null ],
+    [ "add_output_port", "class_c_d_f_g___operator.html#a68caefdd03fb03ed0f39fde4e8f44f55", null ],
     [ "get_input_node_at", "class_c_d_f_g___operator.html#ad8e3c6d16425f9e8001e435961a93238", null ],
     [ "get_input_signal_at", "class_c_d_f_g___operator.html#a4597b349525348607cd0664bcf3e7310", null ],
     [ "get_latency", "class_c_d_f_g___operator.html#aaa85a3e0e222aeca390862c0e7473e28", null ],

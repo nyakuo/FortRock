@@ -124,10 +124,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aebdc2bece3d78a3fe4433680bcf2fddd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#aebdc2bece3d78a3fe4433680bcf2fddd">CModule</a> (const std::string &amp;module_name)</td></tr>
 <tr class="memdesc:aebdc2bece3d78a3fe4433680bcf2fddd"><td class="mdescLeft">&#160;</td><td class="mdescRight">モジュールの名前を設定する  <a href="#aebdc2bece3d78a3fe4433680bcf2fddd">More...</a><br/></td></tr>
 <tr class="separator:aebdc2bece3d78a3fe4433680bcf2fddd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af8cb29aeaa6bb656d2787c5975737c23"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#af8cb29aeaa6bb656d2787c5975737c23">add_element</a> (std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___element.html">CDFG_Element</a> &gt; &amp;element)</td></tr>
-<tr class="separator:af8cb29aeaa6bb656d2787c5975737c23"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5efc826f753ec2c4b2e11219b4488235"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#a5efc826f753ec2c4b2e11219b4488235">add_node</a> (std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a> &gt; &amp;node)</td></tr>
-<tr class="separator:a5efc826f753ec2c4b2e11219b4488235"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28acf58b5d849209f08ba282eedd40e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#a28acf58b5d849209f08ba282eedd40e7">add_element</a> (const std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___element.html">CDFG_Element</a> &gt; element)</td></tr>
+<tr class="separator:a28acf58b5d849209f08ba282eedd40e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cace782980227f3b53e3e990c6e6cff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#a9cace782980227f3b53e3e990c6e6cff">add_node</a> (const std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a> &gt; &amp;node)</td></tr>
+<tr class="separator:a9cace782980227f3b53e3e990c6e6cff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae8e902bd7b3b1e53c5c95d9b7d43489e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#ae8e902bd7b3b1e53c5c95d9b7d43489e">add_operator</a> (std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___operator.html">CDFG_Operator</a> &gt; &amp;ope)</td></tr>
 <tr class="separator:ae8e902bd7b3b1e53c5c95d9b7d43489e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0982d70c15877da59ec9142eadd4b870"><td class="memItemLeft" align="right" valign="top">std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#a0982d70c15877da59ec9142eadd4b870">get_name</a> (void)</td></tr>
@@ -141,10 +141,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:adcf67373c084c54a01df18a16e07c0a7"><td class="memItemLeft" align="right" valign="top">std::list&lt; std::shared_ptr<br class="typebreak"/>
 &lt; <a class="el" href="class_c_d_f_g___operator.html">CDFG_Operator</a> &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#adcf67373c084c54a01df18a16e07c0a7">get_operator_list</a> (void)</td></tr>
 <tr class="separator:adcf67373c084c54a01df18a16e07c0a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf76e872b5eb2e12016a70f8775ccf1f"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#acf76e872b5eb2e12016a70f8775ccf1f">get_node</a> (<a class="el" href="class_c_d_f_g___node.html#a092116c8844e7398a928d10246e2af18">CDFG_Node::eNode</a> type)</td></tr>
-<tr class="separator:acf76e872b5eb2e12016a70f8775ccf1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a17f6899e88a402f27f3249dc8f3fc6b6"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#a17f6899e88a402f27f3249dc8f3fc6b6">get_node</a> (const std::string &amp;node_name)</td></tr>
-<tr class="separator:a17f6899e88a402f27f3249dc8f3fc6b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a166073802327b1861088daa9e772dc03"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#a166073802327b1861088daa9e772dc03">get_node</a> (const <a class="el" href="class_c_d_f_g___node.html#a092116c8844e7398a928d10246e2af18">CDFG_Node::eNode</a> &amp;type)</td></tr>
+<tr class="separator:a166073802327b1861088daa9e772dc03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58ba2ddadf0583cd1fcc3ad1cb1a7012"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#a58ba2ddadf0583cd1fcc3ad1cb1a7012">get_node</a> (const <a class="el" href="class_c_d_f_g___label.html#acf63223de6d3a64eede65258ae3f6fef">CDFG_Label::eLabelType</a> &amp;type)</td></tr>
+<tr class="separator:a58ba2ddadf0583cd1fcc3ad1cb1a7012"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a272c9dc9770b2c29792e92415e5fd131"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#a272c9dc9770b2c29792e92415e5fd131">get_node</a> (const <a class="el" href="class_c_d_f_g___parameter.html#a1dea15f535c75d30902d76eefdce906c">CDFG_Parameter::eParamType</a> &amp;type)</td></tr>
+<tr class="separator:a272c9dc9770b2c29792e92415e5fd131"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e0e4bf401ce6f8478ad86d9963e9c6a"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#a5e0e4bf401ce6f8478ad86d9963e9c6a">get_node</a> (const <a class="el" href="class_c_d_f_g___reg.html#a34e5fbce7da1656d85c777ccc44376ee">CDFG_Reg::eRegType</a> &amp;type)</td></tr>
+<tr class="separator:a5e0e4bf401ce6f8478ad86d9963e9c6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bc559e53a697a9a48d9a5a90ac470f7"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#a4bc559e53a697a9a48d9a5a90ac470f7">get_node</a> (const <a class="el" href="class_c_d_f_g___wire.html#a8981c3a7eda9468239939cb1d6ba0da3">CDFG_Wire::eWireType</a> &amp;type)</td></tr>
+<tr class="separator:a4bc559e53a697a9a48d9a5a90ac470f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a638c30ee8efc90f27fc866f939b26e27"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#a638c30ee8efc90f27fc866f939b26e27">get_node</a> (const std::string &amp;node_name, const <a class="el" href="class_c_d_f_g___node.html#a092116c8844e7398a928d10246e2af18">CDFG_Node::eNode</a> &amp;type)</td></tr>
+<tr class="separator:a638c30ee8efc90f27fc866f939b26e27"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8169591b33c509032fbae04728abcb13"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#a8169591b33c509032fbae04728abcb13">get_label_node</a> (const unsigned &amp;state)</td></tr>
 <tr class="separator:a8169591b33c509032fbae04728abcb13"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a522994954046badfaee3ad6938019170"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#a522994954046badfaee3ad6938019170">find_node</a> (const std::string &amp;asm_name)</td></tr>
@@ -155,16 +163,20 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
 <tr class="memitem:af4e893eb10417899a2108b5667ca7c17"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#af4e893eb10417899a2108b5667ca7c17">_module_name</a></td></tr>
+<tr class="memdesc:af4e893eb10417899a2108b5667ca7c17"><td class="mdescLeft">&#160;</td><td class="mdescRight">モジュール名  <a href="#af4e893eb10417899a2108b5667ca7c17">More...</a><br/></td></tr>
 <tr class="separator:af4e893eb10417899a2108b5667ca7c17"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a28a48c1b3ab371e9193e3a684c64ea41"><td class="memItemLeft" align="right" valign="top">std::list&lt; std::shared_ptr<br class="typebreak"/>
-&lt; <a class="el" href="class_c_d_f_g___element.html">CDFG_Element</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#a28a48c1b3ab371e9193e3a684c64ea41">_dfg</a></td></tr>
-<tr class="separator:a28a48c1b3ab371e9193e3a684c64ea41"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe3481135464959e6e7701b0ca831223"><td class="memItemLeft" align="right" valign="top">std::list&lt; std::shared_ptr<br class="typebreak"/>
-&lt; <a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#afe3481135464959e6e7701b0ca831223">_node_list</a></td></tr>
-<tr class="separator:afe3481135464959e6e7701b0ca831223"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab1b3111c60ce9743093050838e7b2a9b"><td class="memItemLeft" align="right" valign="top">std::list&lt; std::shared_ptr<br class="typebreak"/>
-&lt; <a class="el" href="class_c_d_f_g___operator.html">CDFG_Operator</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#ab1b3111c60ce9743093050838e7b2a9b">_operator_list</a></td></tr>
-<tr class="separator:ab1b3111c60ce9743093050838e7b2a9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f72175ae0be5de45539a30a3a4b7fb9"><td class="memItemLeft" align="right" valign="top">std::list&lt; std::shared_ptr<br class="typebreak"/>
+&lt; <a class="el" href="class_c_d_f_g___element.html">CDFG_Element</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#a9f72175ae0be5de45539a30a3a4b7fb9">_dfg</a></td></tr>
+<tr class="memdesc:a9f72175ae0be5de45539a30a3a4b7fb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">モジュール内のElementのリスト  <a href="#a9f72175ae0be5de45539a30a3a4b7fb9">More...</a><br/></td></tr>
+<tr class="separator:a9f72175ae0be5de45539a30a3a4b7fb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada9b0b6c1c5a251c75608dd801dbc6b0"><td class="memItemLeft" align="right" valign="top">std::list&lt; std::shared_ptr<br class="typebreak"/>
+&lt; <a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#ada9b0b6c1c5a251c75608dd801dbc6b0">_node_list</a></td></tr>
+<tr class="memdesc:ada9b0b6c1c5a251c75608dd801dbc6b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">モジュール内のNodeのリスト  <a href="#ada9b0b6c1c5a251c75608dd801dbc6b0">More...</a><br/></td></tr>
+<tr class="separator:ada9b0b6c1c5a251c75608dd801dbc6b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1362347201d78fed38f915bcc4f8a65"><td class="memItemLeft" align="right" valign="top">std::list&lt; std::shared_ptr<br class="typebreak"/>
+&lt; <a class="el" href="class_c_d_f_g___operator.html">CDFG_Operator</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_module.html#ae1362347201d78fed38f915bcc4f8a65">_operator_list</a></td></tr>
+<tr class="memdesc:ae1362347201d78fed38f915bcc4f8a65"><td class="mdescLeft">&#160;</td><td class="mdescRight">モジュール内の演算モジュールリスト  <a href="#ae1362347201d78fed38f915bcc4f8a65">More...</a><br/></td></tr>
+<tr class="separator:ae1362347201d78fed38f915bcc4f8a65"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>モジュールの情報を表すデータクラス </p>
@@ -195,14 +207,14 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="af8cb29aeaa6bb656d2787c5975737c23"></a>
+<a class="anchor" id="a28acf58b5d849209f08ba282eedd40e7"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void CModule::add_element </td>
           <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___element.html">CDFG_Element</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">const std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___element.html">CDFG_Element</a> &gt;&#160;</td>
           <td class="paramname"><em>element</em></td><td>)</td>
           <td></td>
         </tr>
@@ -218,14 +230,14 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a5efc826f753ec2c4b2e11219b4488235"></a>
+<a class="anchor" id="a9cace782980227f3b53e3e990c6e6cff"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void CModule::add_node </td>
           <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">const std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>node</em></td><td>)</td>
           <td></td>
         </tr>
@@ -367,14 +379,14 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="acf76e872b5eb2e12016a70f8775ccf1f"></a>
+<a class="anchor" id="a166073802327b1861088daa9e772dc03"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a> &gt; &amp; CModule::get_node </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_c_d_f_g___node.html#a092116c8844e7398a928d10246e2af18">CDFG_Node::eNode</a>&#160;</td>
+          <td class="paramtype">const <a class="el" href="class_c_d_f_g___node.html#a092116c8844e7398a928d10246e2af18">CDFG_Node::eNode</a> &amp;&#160;</td>
           <td class="paramname"><em>type</em></td><td>)</td>
           <td></td>
         </tr>
@@ -392,7 +404,103 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a17f6899e88a402f27f3249dc8f3fc6b6"></a>
+<a class="anchor" id="a58ba2ddadf0583cd1fcc3ad1cb1a7012"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a> &gt; &amp; CModule::get_node </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_d_f_g___label.html#acf63223de6d3a64eede65258ae3f6fef">CDFG_Label::eLabelType</a> &amp;&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>指定された種類のラベルを取得 </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">type</td><td>ラベルの種類 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>ラベルノード </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a272c9dc9770b2c29792e92415e5fd131"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a> &gt; &amp; CModule::get_node </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_d_f_g___parameter.html#a1dea15f535c75d30902d76eefdce906c">CDFG_Parameter::eParamType</a> &amp;&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>指定された種類の定数ノードを取得 </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">type</td><td>定数ノードの種類 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>定数ノード </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a5e0e4bf401ce6f8478ad86d9963e9c6a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a> &gt; &amp; CModule::get_node </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_d_f_g___reg.html#a34e5fbce7da1656d85c777ccc44376ee">CDFG_Reg::eRegType</a> &amp;&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>指定された種類のregノードを取得 </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">type</td><td>regノードの種類 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>regノード </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a4bc559e53a697a9a48d9a5a90ac470f7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a> &gt; &amp; CModule::get_node </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_c_d_f_g___wire.html#a8981c3a7eda9468239939cb1d6ba0da3">CDFG_Wire::eWireType</a> &amp;&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>指定された種類のwireノードを取得 </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">type</td><td>wireノードの種類 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>wireノード </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a638c30ee8efc90f27fc866f939b26e27"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -400,8 +508,18 @@ Private Attributes</h2></td></tr>
           <td class="memname">std::shared_ptr&lt; <a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a> &gt; &amp; CModule::get_node </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>node_name</em></td><td>)</td>
+          <td class="paramname"><em>node_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const <a class="el" href="class_c_d_f_g___node.html#a092116c8844e7398a928d10246e2af18">CDFG_Node::eNode</a> &amp;&#160;</td>
+          <td class="paramname"><em>type</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -409,6 +527,7 @@ Private Attributes</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">node_name</td><td>ノードの名前 </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">type</td><td>ノードの種類 </td></tr>
   </table>
   </dd>
 </dl>
@@ -453,7 +572,7 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a class="anchor" id="a28a48c1b3ab371e9193e3a684c64ea41"></a>
+<a class="anchor" id="a9f72175ae0be5de45539a30a3a4b7fb9"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -461,7 +580,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::list&lt;std::shared_ptr&lt;<a class="el" href="class_c_d_f_g___element.html">CDFG_Element</a>&gt; &gt; CModule::_dfg</td>
+          <td class="memname">std::list&lt;std::shared_ptr &lt;<a class="el" href="class_c_d_f_g___element.html">CDFG_Element</a>&gt; &gt; CModule::_dfg</td>
         </tr>
       </table>
   </td>
@@ -470,7 +589,8 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>モジュール名 </p>
+
+<p>モジュール内のElementのリスト </p>
 
 </div>
 </div>
@@ -492,30 +612,11 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-</div>
-</div>
-<a class="anchor" id="afe3481135464959e6e7701b0ca831223"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::list&lt;std::shared_ptr&lt;<a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a>&gt; &gt; CModule::_node_list</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>モジュール内のElementのリスト </p>
+<p>モジュール名 </p>
 
 </div>
 </div>
-<a class="anchor" id="ab1b3111c60ce9743093050838e7b2a9b"></a>
+<a class="anchor" id="ada9b0b6c1c5a251c75608dd801dbc6b0"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -523,7 +624,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::list&lt;std::shared_ptr&lt;<a class="el" href="class_c_d_f_g___operator.html">CDFG_Operator</a>&gt; &gt; CModule::_operator_list</td>
+          <td class="memname">std::list&lt;std::shared_ptr &lt;<a class="el" href="class_c_d_f_g___node.html">CDFG_Node</a>&gt; &gt; CModule::_node_list</td>
         </tr>
       </table>
   </td>
@@ -532,7 +633,30 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
 <p>モジュール内のNodeのリスト </p>
+
+</div>
+</div>
+<a class="anchor" id="ae1362347201d78fed38f915bcc4f8a65"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::list&lt;std::shared_ptr &lt;<a class="el" href="class_c_d_f_g___operator.html">CDFG_Operator</a>&gt; &gt; CModule::_operator_list</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>モジュール内の演算モジュールリスト </p>
 
 </div>
 </div>
@@ -546,7 +670,7 @@ Private Attributes</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="class_c_module.html">CModule</a></li>
-    <li class="footer">Generated on Tue Jul 28 2015 15:41:30 for FortRock by
+    <li class="footer">Generated on Fri Aug 7 2015 16:47:08 for FortRock by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

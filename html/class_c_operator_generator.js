@@ -1,9 +1,8 @@
 var class_c_operator_generator =
 [
-    [ "CNode_data", "class_c_operator_generator_1_1_c_node__data.html", "class_c_operator_generator_1_1_c_node__data" ],
     [ "COperatorGenerator", "class_c_operator_generator.html#a5b2c0833a30982cb04edae42a3efe772", null ],
     [ "~COperatorGenerator", "class_c_operator_generator.html#aa3a275981729c0d17d1adf6c71a9d120", null ],
-    [ "add_port_info", "class_c_operator_generator.html#a32bb696bd81101dd60206808f42e0272", null ],
+    [ "add_port_info", "class_c_operator_generator.html#a8626b78452163b34520b089be25335d9", null ],
     [ "generate_operator", "class_c_operator_generator.html#a9b55a0e77969e131c902f0e270f4ff3f", null ],
     [ "set_instance_name", "class_c_operator_generator.html#a6c2cbb0f3d7fb0e85d5bb3324ba03a78", null ],
     [ "set_latency", "class_c_operator_generator.html#a9d3ba9afbf36c149a5512e4ca6198c3e", null ],

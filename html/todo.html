@@ -102,48 +102,51 @@ $(document).ready(function(){initNavTree('todo.html','');});
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><dl class="reflist">
-<dt><a class="anchor" id="_todo000013"></a>Member <a class="el" href="class_c_d_f_g___element.html#a4dd6cc5a3b48d67be8e44c607820f037">CDFG_Element::CDFG_Element</a>  (const <a class="el" href="class_c_d_f_g___operator.html#ae9708875af4f8931b7adcbe78107b62b">CDFG_Operator::eType</a> &amp;type, const unsigned &amp;num_input, const unsigned &amp;state, const unsigned &amp;step)</dt>
+<dt><a class="anchor" id="_todo000018"></a>Member <a class="el" href="class_c_d_f_g___array.html#ad1580c16b992b5c91c3796a9740f1f1b">CDFG_Array::init_string</a>  (void) overridefinal</dt>
+<dd>すべて0で初期化する場合などはforループで実装する  </dd>
+<dt><a class="anchor" id="_todo000019"></a>Member <a class="el" href="class_c_d_f_g___element.html#a4dd6cc5a3b48d67be8e44c607820f037">CDFG_Element::CDFG_Element</a>  (const <a class="el" href="class_c_d_f_g___operator.html#ae9708875af4f8931b7adcbe78107b62b">CDFG_Operator::eType</a> &amp;type, const unsigned &amp;num_input, const unsigned &amp;state, const unsigned &amp;step)</dt>
 <dd>演算器の出力を1つに限定  </dd>
-<dt><a class="anchor" id="_todo000014"></a>Member <a class="el" href="class_c_d_f_g___operator.html#a9ea503137a72747dcdb547bb680fe48b">CDFG_Operator::CDFG_Operator</a>  (const std::string &amp;name, const std::string &amp;mod_name, const unsigned &amp;latency, const eType &amp;type)</dt>
-<dd><p class="startdd">入出力Nodeを自動的に作成する機能 </p>
-<p class="enddd">演算器の入力ポートの名前などを外部の入力ファイルを用いて指定する機能  </p>
-</dd>
-<dt><a class="anchor" id="_todo000019"></a>Member <a class="el" href="class_c_instancing_operator.html#ad21b07d244afbd4e57bcb5c1ab12fd2f">CInstancingOperator::_parse_operator_info</a>  (xmlDocPtr &amp;doc, xmlNodePtr &amp;cur, std::shared_ptr&lt; CModuleGenerator &gt; &amp;module_gen)</dt>
+<dt><a class="anchor" id="_todo000024"></a>Member <a class="el" href="class_c_instancing_operator.html#ad21b07d244afbd4e57bcb5c1ab12fd2f">CInstancingOperator::_parse_operator_info</a>  (xmlDocPtr &amp;doc, xmlNodePtr &amp;cur, std::shared_ptr&lt; CModuleGenerator &gt; &amp;module_gen)</dt>
 <dd><p class="startdd">その他の種類への対応 </p>
 <p class="enddd">FUNC (独自関数)への対応  </p>
 </dd>
-<dt><a class="anchor" id="_todo000017"></a>Member <a class="el" href="class_c_module_generator.html#a854c582bd1b866000f9a7f91ca747bea">CModuleGenerator::_generate_always</a>  (void)</dt>
-<dd><p class="startdd">返り値への対応 </p>
-<p class="enddd">未対応の命令に対応  </p>
-</dd>
-<dt><a class="anchor" id="_todo000016"></a>Member <a class="el" href="class_c_module_generator.html#a8245b34938496e2498801c8b2efca750">CModuleGenerator::_generate_test_data</a>  (void)</dt>
+<dt><a class="anchor" id="_todo000023"></a>Member <a class="el" href="class_c_module_generator.html#a854c582bd1b866000f9a7f91ca747bea">CModuleGenerator::_generate_always</a>  (void)</dt>
+<dd>返り値への対応  </dd>
+<dt><a class="anchor" id="_todo000022"></a>Member <a class="el" href="class_c_module_generator.html#a8245b34938496e2498801c8b2efca750">CModuleGenerator::_generate_test_data</a>  (void)</dt>
 <dd>CLKやCEの接続を行うとElementの入出力と整合性がとれなくなる  </dd>
-<dt><a class="anchor" id="_todo000015"></a>Member <a class="el" href="class_c_module_generator.html#a42ffcfdcea5e294da2148c349815f17a">CModuleGenerator::get_operator</a>  (const <a class="el" href="class_c_d_f_g___operator.html#ae9708875af4f8931b7adcbe78107b62b">CDFG_Operator::eType</a> &amp;type)</dt>
+<dt><a class="anchor" id="_todo000021"></a>Member <a class="el" href="class_c_module_generator.html#a42ffcfdcea5e294da2148c349815f17a">CModuleGenerator::get_operator</a>  (const <a class="el" href="class_c_d_f_g___operator.html#ae9708875af4f8931b7adcbe78107b62b">CDFG_Operator::eType</a> &amp;type)</dt>
 <dd>取得する演算器の番号による指定など <dl class="section attention"><dt>Attention</dt><dd>暫定版  </dd></dl>
 </dd>
-<dt><a class="anchor" id="_todo000004"></a>Member <a class="el" href="class_fort_rock.html#aeb0175ce23cc5c9e19f5f7f592f43b88">FortRock::_add_icmp_inst</a>  (const Instruction *inst)</dt>
-<dd>conditionへの対応  </dd>
-<dt><a class="anchor" id="_todo000007"></a>Member <a class="el" href="class_fort_rock.html#adae657eafe6822038fc96eb6c23d8506">FortRock::_add_mul_inst</a>  (const Instruction *inst)</dt>
+<dt><a class="anchor" id="_todo000008"></a>Member <a class="el" href="class_fort_rock.html#adae657eafe6822038fc96eb6c23d8506">FortRock::_add_mul_inst</a>  (const Instruction *inst)</dt>
 <dd>使用した演算器にフラグを立てる  </dd>
-<dt><a class="anchor" id="_todo000006"></a>Member <a class="el" href="class_fort_rock.html#ab5b0f148fa1f0ef8a23888c12a8f182b">FortRock::_add_sdiv_inst</a>  (const Instruction *inst)</dt>
+<dt><a class="anchor" id="_todo000007"></a>Member <a class="el" href="class_fort_rock.html#ab5b0f148fa1f0ef8a23888c12a8f182b">FortRock::_add_sdiv_inst</a>  (const Instruction *inst)</dt>
 <dd>使用した演算器にフラグを立てる rem命令と演算器の共有 <dl class="section note"><dt>Note</dt><dd>dividerのquotientに接続  </dd></dl>
 </dd>
-<dt><a class="anchor" id="_todo000005"></a>Member <a class="el" href="class_fort_rock.html#a36cdd0c4ed67ba4822ebf7708c6cf0ce">FortRock::_add_srem_inst</a>  (const Instruction *inst)</dt>
+<dt><a class="anchor" id="_todo000006"></a>Member <a class="el" href="class_fort_rock.html#a36cdd0c4ed67ba4822ebf7708c6cf0ce">FortRock::_add_srem_inst</a>  (const Instruction *inst)</dt>
 <dd>使用した演算器にフラグを立てる div命令と演算器の共有 <dl class="section note"><dt>Note</dt><dd>dividerのfractionalに接続  </dd></dl>
 </dd>
-<dt><a class="anchor" id="_todo000008"></a>Member <a class="el" href="class_fort_rock.html#a0e021822bcbbc7983c7ea716eaec73ec">FortRock::_add_switch_inst</a>  (const Instruction *inst)</dt>
-<dd>常にtrue  </dd>
+<dt><a class="anchor" id="_todo000009"></a>Member <a class="el" href="class_fort_rock.html#a0e021822bcbbc7983c7ea716eaec73ec">FortRock::_add_switch_inst</a>  (const Instruction *inst)</dt>
+<dd><p class="startdd">常にtrue </p>
+<p class="enddd">常にINTEGER  </p>
+</dd>
 <dt><a class="anchor" id="_todo000001"></a>Member <a class="el" href="class_fort_rock.html#a6151be68707033edb4b9ac9a3b7c1873">FortRock::_get_value_name</a>  (const Value *v)</dt>
-<dd>is signed 対応する  </dd>
-<dt><a class="anchor" id="_todo000009"></a>Member <a class="el" href="class_fort_rock.html#a0440ede0fccfb7840383d82b693a6df1">FortRock::_grub_variables</a>  (const Module::FunctionListType::iterator &amp;funct)</dt>
+<dd><p class="startdd">Integer以外の型への対応 </p>
+<p class="enddd">is signed 対応する  </p>
+</dd>
+<dt><a class="anchor" id="_todo000017"></a>Member <a class="el" href="class_fort_rock.html#a8a94a71a46bdf3863a03379a0b67d8f1">FortRock::_grub_global_variables</a>  (const Module &amp;M)</dt>
+<dd>zeroinitializerへの対応  </dd>
+<dt><a class="anchor" id="_todo000011"></a>Member <a class="el" href="class_fort_rock.html#a0440ede0fccfb7840383d82b693a6df1">FortRock::_grub_variables</a>  (const Module::FunctionListType::iterator &amp;funct)</dt>
 <dd><p class="startdd">is signedが常にtrue </p>
+<p>常にinteger </p>
 <p>is signedが常にtrue </p>
 <p>is signedが常にtrue </p>
+<p>常にINTGER </p>
 <p class="enddd">is signedが常にtrue  </p>
 </dd>
-<dt><a class="anchor" id="_todo000002"></a>Member <a class="el" href="class_fort_rock.html#aed28067ff061818d1ea770e81d363ec6">FortRock::_set_IO</a>  (const Module::FunctionListType::iterator &amp;funct)</dt>
+<dt><a class="anchor" id="_todo000003"></a>Member <a class="el" href="class_fort_rock.html#aed28067ff061818d1ea770e81d363ec6">FortRock::_set_IO</a>  (const Module::FunctionListType::iterator &amp;funct)</dt>
 <dd><p class="startdd">浮動小数点対応 </p>
-<p class="enddd">isSigned対応 </p>
+<p>is signed 対応 </p>
+<p class="enddd">is signed 対応 </p>
 </dd>
 </dl>
 </div></div><!-- contents -->
@@ -151,7 +154,7 @@ $(document).ready(function(){initNavTree('todo.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Jul 28 2015 15:41:30 for FortRock by
+    <li class="footer">Generated on Fri Aug 7 2015 16:47:08 for FortRock by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>
