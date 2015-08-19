@@ -23,7 +23,7 @@ public:
   CDFG_Element(std::shared_ptr<CDFG_Operator> & ope);
   virtual ~CDFG_Element(void) {}
 
-  /* セッター */
+  // setter
   int set_operator(std::shared_ptr<CDFG_Operator> & ope);
   int set_input(std::shared_ptr<CDFG_Node> input,
                 const unsigned & number);
@@ -32,7 +32,7 @@ public:
   void set_state(const unsigned & state);
   void set_step(const unsigned & step);
 
-  /* ゲッター */
+  // getter
   std::shared_ptr<CDFG_Node> & get_input_at(const unsigned & at);
   std::shared_ptr<CDFG_Node> & get_output_at(const unsigned & at);
   unsigned get_num_input(void);
