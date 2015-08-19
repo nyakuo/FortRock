@@ -1500,48 +1500,19 @@ void FortRock::_grub_global_variables
       auto array = dyn_cast<ArrayType>(type);
       auto elem_type = array->getTypeAtIndex((unsigned)0);
 
-#if 0
-      {
-      // array
-      std::cout << "-------- array --------" << std::endl;
-      std::cout << "name: " << name
-                << std::endl;
-      std::cout << "num elements: "
-                << array->getNumElements()
-                << std::endl;
-      std::cout << "type at index 0: "
-                << array->getTypeAtIndex((unsigned)0)->getTypeID()
-                << std::endl;
-      std::cout << "elem width: "
-                << elem_type->getPrimitiveSizeInBits()
-                << std::endl;
-
-      // initializer
-      std::cout << "-------- initializer --------" << std::endl;
-      std::cout << "gettype: " // ok (arraytype)
-                << init->getType()->getTypeID()
-                << std::endl;
-      std::cout << "has name: " // ok
-                << init->hasName()
-                << std::endl;
-      }
-#endif
-
       // 初期化子の取得
-      std::vector<int> initializer;
-      initializer.reserve(array->getNumElements());
+      //! @todo Integer以外の初期化しへの対応
+      if (elem_type->isIntegerTy()) {
+        std::vector<int> initializer;
+        initializer.reserve(array->getNumElements());
 
-      for (auto i=0; i<array->getNumElements(); ++i) {
-        auto val = init->getAggregateElement(i);
-        auto type = val->getType();
-        if (type->isIntegerTy()) {
+        for (auto i=0; i<array->getNumElements(); ++i) {
+          auto val = init->getAggregateElement(i);
+          auto type = val->getType();
           auto int_value = dyn_cast<ConstantInt>(val);
           initializer.push_back(int_value->getLimitedValue());
-          // std::cout << int_value->getValue().toString(10, true)
-          //           << std::endl;
-        } // if : isIntegerTy()
-      } // for : i
-
+        } // for : i
+      }
       // 初期化子を用いたメモリの確保
       auto mem = std::make_shared<CDFG_Array>
         (name,
