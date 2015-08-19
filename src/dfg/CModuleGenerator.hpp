@@ -10,6 +10,8 @@
 #include <algorithm>
 
 #include "CDFG_Element.hpp"
+#include "CDFG_IcmpElem.hpp"
+#include "CDFG_TruncElem.hpp"
 #include "CDFG_Node.hpp"
 #include "CDFG_Parameter.hpp"
 #include "CDFG_Label.hpp"
@@ -18,7 +20,6 @@
 #include "CDFG_Mem.hpp"
 #include "CDFG_Addr.hpp"
 #include "CDFG_Array.hpp"
-#include "CDFG_IcmpElem.hpp"
 #include "CDFG_Operator.hpp"
 #include "CStateMachineGen.hpp"
 #include "COutput.hpp"
@@ -42,7 +43,8 @@ public:
   void add_element(const std::shared_ptr<CDFG_Element> elem);
 
   // getter
-  bool find_node(const std::string & node_name);
+  bool find_node(const std::string & node_name,
+                 const CDFG_Node::eNode & type);
   bool find_node(std::shared_ptr<CDFG_Node> node);
   std::shared_ptr<CDFG_Node>
   get_node(const std::string & node_name,
