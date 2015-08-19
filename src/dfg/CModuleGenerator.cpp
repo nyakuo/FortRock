@@ -5,8 +5,10 @@
    @brief テスト用の入力(DFG)を与えている
    @param[in] filename 出力ファイル名
  */
-CModuleGenerator::CModuleGenerator(const std::string & filename,
-                                   const std::string & module_name) {
+CModuleGenerator::CModuleGenerator
+(const std::string & filename,
+ const std::string & module_name)
+{
   this->_module = std::make_shared<CModule>(module_name);
   this->_cout.open_ofstream(filename);
 
@@ -39,32 +41,35 @@ CModuleGenerator::CModuleGenerator(const std::string & filename,
   this->_module->add_node(p_true);
   this->_module->add_node(p_false);
   this->_module->add_node(p_zero);
-}
+} // CModuleGenerator
 
 /**
    モジュールにノードを追加する
    @note FortRock 本体から呼び出すために使用
  */
 void CModuleGenerator::add_node
-(const std::shared_ptr<CDFG_Node> & node) {
+(const std::shared_ptr<CDFG_Node> & node)
+{
   this->_module->add_node(node);
-}
+} // add_node
 
 /**
    モジュールに演算器を追加する
  */
 void CModuleGenerator::add_operator
-(std::shared_ptr<CDFG_Operator> & ope) {
+(std::shared_ptr<CDFG_Operator> & ope)
+{
   this->_module->add_operator(ope);
-}
+} // add_operator
 
 /**
    モジュールにElement(処理)を追加する
  */
 void CModuleGenerator::add_element
-(const std::shared_ptr<CDFG_Element> elem) {
+(const std::shared_ptr<CDFG_Element> elem)
+{
   this->_module->add_element(elem);
-}
+} // add_element
 
 /**
    モジュール内のノードを検索する
@@ -73,20 +78,22 @@ void CModuleGenerator::add_element
 */
 bool CModuleGenerator::find_node
 (const std::string & node_name,
- const CDFG_Node::eNode & type) {
+ const CDFG_Node::eNode & type)
+{
   return this->_module->find_node(node_name,
                                   type);
-}
+} // find_node (name, type)
 
 /**
    モジュール内のノードを検索する
    @note FortRock 本体から呼び出すために使用
 */
 bool CModuleGenerator::find_node
-(std::shared_ptr<CDFG_Node> node) {
+(std::shared_ptr<CDFG_Node> node)
+{
   return this->_module->find_node(node->get_asm_name(),
                                   node->get_type());
-}
+} // find_node (node)
 
 /**
    モジュール内のノードを取得する
@@ -100,7 +107,7 @@ CModuleGenerator::get_node
  const CDFG_Node::eNode & type)
 {
   return this->_module->get_node(node_name, type);
-}
+} // get_node (name, type)
 
 /**
    モジュール内のノードを取得
@@ -110,9 +117,10 @@ CModuleGenerator::get_node
 */
 std::shared_ptr<CDFG_Node>
 CModuleGenerator::get_node
-(const CDFG_Node::eNode & type) {
+(const CDFG_Node::eNode & type)
+{
   return this->_module->get_node(type);
-}
+} // get_node (type)
 
 /**
    モジュール内のノードを取得
@@ -121,9 +129,10 @@ CModuleGenerator::get_node
 */
 std::shared_ptr<CDFG_Node>
 CModuleGenerator::get_node
-(const CDFG_Label::eLabelType & type) {
+(const CDFG_Label::eLabelType & type)
+{
   return this->_module->get_node(type);
-}
+} // get_node (label)
 
 /**
    モジュール内のノードを取得
@@ -132,9 +141,10 @@ CModuleGenerator::get_node
  */
 std::shared_ptr<CDFG_Node>
 CModuleGenerator::get_node
-(const CDFG_Parameter::eParamType & type) {
+(const CDFG_Parameter::eParamType & type)
+{
   return this->_module->get_node(type);
-}
+} // get_node (param)
 
 /**
    モジュール内のノードを取得
@@ -143,9 +153,10 @@ CModuleGenerator::get_node
  */
 std::shared_ptr<CDFG_Node>
 CModuleGenerator::get_node
-(const CDFG_Reg::eRegType & type) {
+(const CDFG_Reg::eRegType & type)
+{
   return this->_module->get_node(type);
-}
+} // get_node (reg)
 
 /**
    モジュール内のノードを取得
@@ -154,10 +165,10 @@ CModuleGenerator::get_node
  */
 std::shared_ptr<CDFG_Node>
 CModuleGenerator::get_node
-(const CDFG_Wire::eWireType & type) {
+(const CDFG_Wire::eWireType & type)
+{
   return this->_module->get_node(type);
-}
-
+} // get_node (wire)
 
 /**
    モジュール内の演算器の取得
@@ -167,7 +178,8 @@ CModuleGenerator::get_node
  */
 std::shared_ptr<CDFG_Operator>
 CModuleGenerator::get_operator
-(const CDFG_Operator::eType & type) {
+(const CDFG_Operator::eType & type)
+{
   auto l = this->_module->get_operator_list();
   auto ite =
     std::find_if(l.begin(), l.end(),
@@ -176,7 +188,7 @@ CModuleGenerator::get_operator
                  });
 
   return *ite;
-}
+} // get_operator
 
 /**
    モジュールの最大ステップを取得
@@ -185,15 +197,17 @@ CModuleGenerator::get_operator
    @return step信号に必要なビット幅
  */
 unsigned
-CModuleGenerator::get_max_step(void) {
+CModuleGenerator::get_max_step(void)
+ {
   return this->_module->get_max_step();
-}
+ } // get_max_step
 
 /**
    テストデータ(DFG)の生成
    @note テスト用
  */
-void CModuleGenerator::_generate_test_data(void) {
+void CModuleGenerator::_generate_test_data(void)
+ {
   // ノード確保
   // 基本入出力
   auto i_clk = std::make_shared<CDFG_Wire>
@@ -323,12 +337,13 @@ void CModuleGenerator::_generate_test_data(void) {
   elem2->set_state(1);
   elem2->set_step(3);
   this->_module->add_element(elem2);
-}
+ } // _generate_test_data
 
 /**
    ステートマシン回路をファイルへ出力
  */
-int CModuleGenerator::generate(void) {
+int CModuleGenerator::generate(void)
+{
   this->_generate_header();
   this->_generate_define();
   //  this->_generate_define_array();
@@ -339,12 +354,13 @@ int CModuleGenerator::generate(void) {
   this->_generate_footer();
 
   return 0;
-}
+} // generate
 
 /**
    moduleの入出力定義部の出力
 */
-void CModuleGenerator::_generate_header(void) {
+void CModuleGenerator::_generate_header(void)
+{
   std::list<std::string> io_list;
   this->_cout << "`default_nettype none\n\n"
               << "module " << this->_module->get_name() << std::endl;
@@ -397,12 +413,13 @@ void CModuleGenerator::_generate_header(void) {
   }
 
   this->_cout << ");" << std::endl;
-}
+} // _generate_header
 
 /**
    moduleの信号宣言部の出力
 */
-void CModuleGenerator::_generate_define(void) {
+void CModuleGenerator::_generate_define(void)
+{
   unsigned type;
   std::string types[3] = {"reg", "wire", "parameter"};
   std::array<std::stringstream, 3> streams;
@@ -457,12 +474,13 @@ void CModuleGenerator::_generate_define(void) {
   for (auto & s : streams)
     if (s.rdbuf()->in_avail() != 0)
       this->_cout <<= s.str() + "\n";
-}
+} // _generate_define
 
 /**
    配列の宣言部の出力
  */
-void CModuleGenerator::_generate_define_array(void) {
+void CModuleGenerator::_generate_define_array(void)
+{
   for (auto & node : this->_module->get_node_list()) {
     if (node->get_type() != CDFG_Node::eNode::MEM)
       continue;
@@ -481,7 +499,8 @@ void CModuleGenerator::_generate_define_array(void) {
    moduleのassign文の定義
    @note function文の assign に使用
 */
-void CModuleGenerator::_generate_assign(void) {
+void CModuleGenerator::_generate_assign(void)
+{
   auto prev_state_node = this->get_node
     (CDFG_Reg::eRegType::PREV_STATE);
 
@@ -519,7 +538,8 @@ void CModuleGenerator::_generate_assign(void) {
    @note PHI命令の実装に用いる
    @attention 少なくとも2つ以上の条件が存在すると仮定
  */
-void CModuleGenerator::_generate_function(void) {
+void CModuleGenerator::_generate_function(void)
+{
   auto prev_state =
     this->get_node(CDFG_Reg::eRegType::PREV_STATE);
 
@@ -591,7 +611,8 @@ void CModuleGenerator::_generate_function(void) {
 /**
    moduleの演算器定義の出力
 */
-void CModuleGenerator::_generate_calculator(void) {
+void CModuleGenerator::_generate_calculator(void)
+{
   // 各演算器の入出力信号の接続
   for (auto & module : this->_module->get_operator_list()) {
     this->_cout << module->get_mod_name() << ' '
@@ -625,12 +646,13 @@ void CModuleGenerator::_generate_calculator(void) {
     this->_cout.indent_left();
     this->_cout << ");\n" << std::endl;
   }
-}
+} // _generate_calculator
 
 /**
    moduleのステートマシンの出力
 */
-void CModuleGenerator::_generate_always(void) {
+void CModuleGenerator::_generate_always(void)
+{
   // 出力に必要な情報(信号名など)を取得
   auto clk_name   = this->get_node(CDFG_Wire::eWireType::CLK)->get_verilog_name();
   auto res_name   = this->get_node(CDFG_Wire::eWireType::RES)->get_verilog_name();
@@ -1259,14 +1281,15 @@ void CModuleGenerator::_generate_always(void) {
   this->_cout.indent_left(2);
   this->_cout << "end\n";
   this->_cout.indent_left();
-}
+} // _generate_always
 
 /**
    module定義の尾部の出力
    @note デバッグ用データの出力などに利用
 */
-void CModuleGenerator::_generate_footer(void) {
+void CModuleGenerator::_generate_footer(void)
+{
   this->_cout.indent_left();
   this->_cout << "endmodule\n\n"
               << "`default_nettype wire" << std::endl;
-}
+} // _generate_footer
