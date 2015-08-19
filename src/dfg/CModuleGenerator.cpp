@@ -795,7 +795,7 @@ void CModuleGenerator::_generate_always(void) {
           (elem->get_input_at(0));
         auto out = elem->get_output_at(0);
 
-        // レジスタ参照
+        // レジスタ参照の場合
         if (in->is_reg_ref())
           process_str.append(this->_cout.output_indent()
                              + out->get_verilog_name()
@@ -803,9 +803,28 @@ void CModuleGenerator::_generate_always(void) {
                              + in->get_reference()->get_verilog_name()
                              + ";\n");
 
+        // メモリ参照の場合
+        else if (in->is_mem_ref()) {
+          auto mem
+            = std::dynamic_pointer_cast<CDFG_Mem>
+            (in->get_reference());
+
+          //! @todo 配列参照以外への対応
+          if (mem->get_mem_type()
+              == CDFG_Mem::eMemType::ARRAY)
+            process_str.append(this->_cout.output_indent()
+                               + out->get_verilog_name()
+                               + " <= "
+                               + mem->access_string(in)
+                               + ";\n");
+
+          std::cout << "end load" << std::endl;
+
+        } // if : is_mem_ref()
         sm_gen.add_state_process(state,
                                  step,
                                  process_str);
+
         break;
       }
 
@@ -815,15 +834,36 @@ void CModuleGenerator::_generate_always(void) {
         auto out = std::dynamic_pointer_cast<CDFG_Addr>
           (elem->get_output_at(0));
 
-        if (out->is_reg_ref()) // レジスタ参照の場合
+        std::cout << "store inst: "
+                  << out->is_reg_ref()
+                  << ' '
+                  << out->is_mem_ref()
+                  << std::endl;
+
+        // レジスタ参照の場合
+        if (out->is_reg_ref())
           process_str.append(this->_cout.output_indent()
                              + out->get_reference()->get_verilog_name()
                              + " <= "
                              + in->get_verilog_name()
                              + ";\n");
-        else { ///< @todo メモリ参照の場合
-        }
 
+        // メモリ参照の場合
+        else if (out->is_mem_ref()) {
+          auto mem =
+            std::dynamic_pointer_cast<CDFG_Mem>
+            (out->get_reference());
+
+          // 配列参照の場合
+          //! @todo 配列参照以外への対応
+          if (mem->get_mem_type()
+              == CDFG_Mem::eMemType::ARRAY)
+            process_str.append(this->_cout.output_indent()
+                               + mem->access_string(out)
+                               + " <= "
+                               + in->get_verilog_name()
+                               + ";\n");
+        } // if : is_mem_ref()
         sm_gen.add_state_process(state,
                                  step,
                                  process_str);
