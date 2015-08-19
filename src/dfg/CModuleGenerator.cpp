@@ -72,8 +72,10 @@ void CModuleGenerator::add_element
    @note FortRock 本体から呼び出すために使用
 */
 bool CModuleGenerator::find_node
-(const std::string & node_name) {
-  return this->_module->find_node(node_name);
+(const std::string & node_name,
+ const CDFG_Node::eNode & type) {
+  return this->_module->find_node(node_name,
+                                  type);
 }
 
 /**
@@ -82,7 +84,8 @@ bool CModuleGenerator::find_node
 */
 bool CModuleGenerator::find_node
 (std::shared_ptr<CDFG_Node> node) {
-  return this->_module->find_node(node->get_asm_name());
+  return this->_module->find_node(node->get_asm_name(),
+                                  node->get_type());
 }
 
 /**
@@ -717,7 +720,6 @@ void CModuleGenerator::_generate_always(void) {
                   << ";\n";
     }
   }
-
   this->_cout.indent_left();
   this->_cout << "end\n";
   this->_cout.indent_left(2);
@@ -747,16 +749,24 @@ void CModuleGenerator::_generate_always(void) {
         // 入力の接続
         for (auto i=0; i<ope->get_num_input(); ++i) {
           auto node = ope->get_input_node_at(i);
-          if (node->get_type() ==
-              CDFG_Node::eNode::REG // clk など回避
-              ) {
+
+          // clk, res, req, ceの入力の回避
+          bool is_system_in = true;
+          if (node->get_type() == CDFG_Node::eNode::WIRE) {
+            auto w_type = std::dynamic_pointer_cast
+              <CDFG_Wire>(node)->get_type();
+            if (w_type == CDFG_Wire::eWireType::WIRE ||
+                w_type == CDFG_Wire::eWireType::IN_ORIG)
+              is_system_in = false;
+          } // if : node->get_type()
+
+          if (!is_system_in)
             process_str.append(this->_cout.output_indent()
                                + node->get_verilog_name()
                                + " <= "
                                + elem->get_input_at(i)->get_verilog_name()
                                + ";\n");
-          }
-        }
+        } // for : i
         sm_gen.add_state_process(state, step, process_str);
 
         // 出力の接続
@@ -805,11 +815,15 @@ void CModuleGenerator::_generate_always(void) {
         auto out = std::dynamic_pointer_cast<CDFG_Addr>
           (elem->get_output_at(0));
 
-        process_str.append(this->_cout.output_indent()
-                           + out->get_reference()->get_verilog_name()
-                           + " <= "
-                           + in->get_verilog_name()
-                           + ";\n");
+        if (out->is_reg_ref()) // レジスタ参照の場合
+          process_str.append(this->_cout.output_indent()
+                             + out->get_reference()->get_verilog_name()
+                             + " <= "
+                             + in->get_verilog_name()
+                             + ";\n");
+        else { ///< @todo メモリ参照の場合
+        }
+
         sm_gen.add_state_process(state,
                                  step,
                                  process_str);
@@ -849,13 +863,18 @@ void CModuleGenerator::_generate_always(void) {
           cond_str = " < "; break;
         default:;
         }
-
+        std::cout << "begin output icmp"
+                  << std::endl
+                  << in_0->to_string()
+                  << std::endl
+                  << in_1->to_string()
+                  << std::endl;
         process_str.append(this->_cout.output_indent()
                            + out->get_verilog_name()
                            + " <= ("
-                           + in_0->get_verilog_name()
+                           + in_0->to_string()
                            + cond_str
-                           + in_1->get_verilog_name()
+                           + in_1->to_string()
                            + ");\n");
 
         sm_gen.add_state_process(state,
@@ -1117,16 +1136,17 @@ void CModuleGenerator::_generate_always(void) {
 
     case CDFG_Operator::eType::TRUNC:
       {
-        auto a = elem->get_input_at(0);
-        auto type2 = elem->get_input_at(1);
-        auto b = elem->get_output_at(0);
+        auto trunc_elem
+          = std::dynamic_pointer_cast<CDFG_TruncElem>(elem);
+        auto a = trunc_elem->get_input_at(0);
+        auto b = trunc_elem->get_output_at(0);
 
         process_str.append(this->_cout.output_indent()
                            + b->get_verilog_name()
                            + " <= "
                            + a->get_verilog_name()
                            + "["
-                           + std::to_string(type2->get_bit_width())
+                           + std::to_string(trunc_elem->get_dest_bit_width())
                            + "-1:0];\n");
 
         sm_gen.add_state_process(state,
