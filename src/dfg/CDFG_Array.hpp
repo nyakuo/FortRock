@@ -6,6 +6,7 @@
 #include <memory>
 #include "CDFG_Addr.hpp"
 #include "CDFG_Mem.hpp"
+#include "CDFG_Parameter.hpp"
 
 /**
    @class CDFG_Array
@@ -48,7 +49,7 @@ public:
   virtual std::string init_string(void) override final;
   virtual std::string define_string(void) override final {return "";}
   virtual std::string access_string
-  (const std::shared_ptr<CDFG_Addr> & addr) override final {return "";}
+  (const std::shared_ptr<CDFG_Addr> & addr) override final;
 
 private:
   const unsigned _dimension; ///< 配列の次元数

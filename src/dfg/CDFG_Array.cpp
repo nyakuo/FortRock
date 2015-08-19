@@ -69,3 +69,36 @@ CDFG_Array::init_string(void) {
 
   return ret_str;
 }
+
+/**
+   メモリの指定したアドレスへのアクセス記述(Verilog)を出力
+   @param[in] addr 参照するアドレス
+   @return メモリの指定したアドレスへのアクセス記述(Verilog)
+ */
+std::string CDFG_Array::access_string
+(const std::shared_ptr<CDFG_Addr> & addr)
+{
+  std::string ret_str(this->get_verilog_name());
+
+  for (auto i=0; i<addr->get_addr_dim();
+       ++i) {
+    auto address = addr->get_address(i);
+    if (address->get_type()
+        == CDFG_Node::eNode::REG)
+      ret_str.append("["
+                     + address->get_verilog_name()
+                     + "]");
+
+    else if (address->get_type()
+             == CDFG_Node::eNode::PARAM) {
+      auto param
+        = std::dynamic_pointer_cast
+        <CDFG_Parameter>(address);
+      ret_str.append("["
+                     + std::to_string(param->get_parameter())
+                     + "]");
+    }
+  } // for
+
+  return ret_str;
+}
