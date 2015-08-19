@@ -6,6 +6,7 @@
 #include "llvm/Support/InstIterator.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/IR/Constants.h"
+#include "llvm/IR/Operator.h"
 
 #include <iostream>
 #include <list>
@@ -26,6 +27,7 @@
 #include "../dfg/CDFG_Element.hpp"
 #include "../dfg/CDFG_IcmpElem.hpp"
 #include "../dfg/CDFG_TruncElem.hpp"
+#include  "../dfg/CDFG_LoadElem.hpp"
 #include "../xml/CInstancingOperator.hpp"
 #include "CDebug.hpp"
 using namespace llvm;
