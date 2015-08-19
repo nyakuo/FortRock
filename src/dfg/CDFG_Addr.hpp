@@ -23,39 +23,60 @@ public:
    */
   CDFG_Addr(const std::string & asm_name,
             const unsigned & bit_width,
-            const std::shared_ptr<CDFG_Node> & ref,
-            const unsigned & addr)
-    : _addr(addr),
-      _ref(ref),
-      CDFG_Node(asm_name,
+            const std::shared_ptr<CDFG_Node> & ref = NULL,
+            const std::shared_ptr<CDFG_Node> & addr = NULL)
+    : CDFG_Node(asm_name,
                 bit_width,
                 false, // == is signed
                 CDFG_Node::eNode::ADDR,
-                "ra_") {}
+                "ra_")
+  {
+    if (ref != NULL)
+      this->_ref = ref;
 
-  CDFG_Addr(const std::string & asm_name,
-            const unsigned & bit_width,
-            const std::shared_ptr<CDFG_Node> & ref)
-    : _addr((unsigned)0),
-      _ref(ref),
-      CDFG_Node(asm_name,
-                bit_width,
-                false, // == is signed
-                CDFG_Node::eNode::ADDR,
-                "ra_") {}
+    if (addr != NULL)
+      this->_addr.push_back(addr);
+  }
 
   ~CDFG_Addr(void) {}
+
+  // setter
+  void add_addr(const std::shared_ptr<CDFG_Node> & addr)
+  { this->_addr.push_back(addr); }
+  void set_ref(const std::shared_ptr<CDFG_Node> & ref)
+  { this->_ref = ref; }
 
   // getter
   virtual bool is_input(void) override final { return false; }
   virtual bool is_output(void) override final { return false; }
+
   bool is_mem_ref(void);
   bool is_reg_ref(void);
+
+  /**
+     参照対象の取得
+     @return メモリ，レジスタへの参照
+   */
   std::shared_ptr<CDFG_Node> &
   get_reference(void) { return this->_ref; }
 
+  /**
+     アドレスの取得
+     @param[in] idx 取得する
+   */
+  std::shared_ptr<CDFG_Node> &
+  get_address(const unsigned & idx)
+  { return this->_addr[idx]; }
+
+  /**
+     アドレスの数を取得
+     @return アドレスの数 (配列の次元)
+   */
+  unsigned get_addr_dim(void)
+  { return this->_addr.size(); }
+
 private:
-  const unsigned _addr;            ///< アドレス
+  std::vector<std::shared_ptr<CDFG_Node> > _addr;
   std::shared_ptr<CDFG_Node> _ref; ///< 参照 (mem or reg)
 };
 
