@@ -207,15 +207,18 @@ CModule::get_label_node(const unsigned & state) {
 /**
    モジュール内のノードの検索
    @param[in] asm_name ノードLLVM IR上での名前
+   @param[in] type ノードの種類
    @return 検索結果 T/F
  */
 bool
-CModule::find_node(const std::string & asm_name) {
+CModule::find_node(const std::string & asm_name,
+                   const CDFG_Node::eNode & type) {
   auto ite =
     std::find_if(this->_node_list.begin(),
                  this->_node_list.end(),
-                 [asm_name](std::shared_ptr<CDFG_Node> obj) -> bool {
-                   return obj->get_asm_name() == asm_name;
+                 [asm_name, type](std::shared_ptr<CDFG_Node> obj) -> bool {
+                   return obj->get_asm_name() == asm_name
+                     && obj->get_type() == type;
                  });
   return ite != this->_node_list.end();
 }

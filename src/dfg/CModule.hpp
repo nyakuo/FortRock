@@ -46,7 +46,8 @@ public:
   get_node (const std::string & node_name,
             const CDFG_Node::eNode & type);
   std::shared_ptr<CDFG_Node> & get_label_node(const unsigned & state);
-  bool find_node(const std::string & asm_name);
+  bool find_node(const std::string & asm_name,
+                 const CDFG_Node::eNode & type);
   unsigned get_max_step(void);
 
 private:
