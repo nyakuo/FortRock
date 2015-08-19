@@ -345,13 +345,8 @@ void FortRock::_add_load_inst
 
       a->add_addr
         (this->_module_gen->get_node
-         (value->getName(),
+         (this->_get_value_name(value),
           type));
-
-      // std::cout << "load address: "
-      //           << this->_module_gen->get_node(value->getName(),
-      //                                          type)->get_verilog_name()
-      //           << std::endl;
     } // for : ite
   } // if : isa<GEPOperator>
   // 通常のload命令
@@ -1321,41 +1316,79 @@ void FortRock::_grub_variables
       if (it->getOpcode() == Instruction::Load) {
         auto vv = dyn_cast<LoadInst>(&*it)->getPointerOperand();
         // getelementptrであれば，add_load_inst()時に取得する
-        if (isa<GEPOperator>(vv))
-          continue;
-      }
+        if (isa<GEPOperator>(vv)) {
+          // getelementptr内の定数のインスタンス化
+          auto gepope = dyn_cast<GEPOperator>(vv);
+          for (auto ite = gepope->idx_begin() + 1; // 最初は無視
+               ite != gepope->idx_end();
+               ++ite) {
+            auto value = ite->get();
+            auto type = value->getType();
 
-      // 未定義のregの追加
-      for (auto i=0; i<getop; ++i) {
-        value = it->getOperand(i);
-        type = value->getType();
+            auto name = this->_get_value_name(value);
 
-        auto name = this->_get_value_name(value);
-        std::cout << name << std::endl;
-        if (type->isPointerTy()) { // ポインタ
-          // ポインタに対する参照の追加
-          type = type->getPointerElementType();
-          node = std::make_shared<CDFG_Addr>
-            (name,
-             type->getPrimitiveSizeInBits());
+            // 定数の場合
+            if (!value->hasName()) {
+              node = std::make_shared<CDFG_Parameter>
+                (name,
+                 type->getPrimitiveSizeInBits(),
+                 true, ///< @todo is_signed が常にtrue
+                 CDFG_Parameter::eParamType::INTEGER, ///< @todo 常にinteger
+                 std::stol(name));
+            }
+            // 変数の場合
+            else {
+              node = std::make_shared<CDFG_Reg>
+                (name,
+                 type->getPrimitiveSizeInBits(),
+                 true, ///, @todo is_signed が常にtrue
+                 CDFG_Reg::eRegType::REG);
+            }
+
+          // 未定義のregの追加
+          if (!this->_module_gen->find_node(node))
+            this->_module_gen->add_node(node);
+
+          } // for : ite
         }
-        else if(!value->hasName()) { // 定数
-          node = std::make_shared<CDFG_Parameter>
-            (name,
-             type->getPrimitiveSizeInBits(),
-             true, //! @todo is signedが常にtrue
-             CDFG_Parameter::eParamType::INTEGER, //! @todo 常にinteger
-             std::stol(this->_get_value_name(value)));
-        }
-        else { // 変数
-          node = std::make_shared<CDFG_Reg>
-            (name,
-             type->getPrimitiveSizeInBits(),
-             true, //! @todo is signedが常にtrue
-             CDFG_Reg::eRegType::REG);
-        }
-        if (!this->_module_gen->find_node(node))
-          this->_module_gen->add_node(node);
+      } // if : Instruction::Load
+      else { // Load 命令以外
+        for (auto i=0; i<getop; ++i) {
+          value = it->getOperand(i);
+          type = value->getType();
+
+          auto name = this->_get_value_name(value);
+
+          // ポインタ
+          if (type->isPointerTy()) {
+            // ポインタに対する参照の追加
+            type = type->getPointerElementType();
+            node = std::make_shared<CDFG_Addr>
+              (name,
+               type->getPrimitiveSizeInBits());
+          }
+          // 定数
+          else if(!value->hasName()) {
+            node = std::make_shared<CDFG_Parameter>
+              (name,
+               type->getPrimitiveSizeInBits(),
+               true, ///< @todo is_signedが常にtrue
+               CDFG_Parameter::eParamType::INTEGER, ///< @todo 常にinteger
+               std::stol(name));
+          }
+          // 変数
+          else {
+            node = std::make_shared<CDFG_Reg>
+              (name,
+               type->getPrimitiveSizeInBits(),
+               true, //! @todo is signedが常にtrue
+               CDFG_Reg::eRegType::REG);
+          }
+          // 未定義のregの追加
+          if (!this->_module_gen->find_node(node))
+            this->_module_gen->add_node(node);
+
+        } // for : i
       } // for : getop
     } // if : use_empty()
     else {
