@@ -59,21 +59,37 @@ FortRock::_get_value_name
   std::string ret_str ("");
   auto type = v->getType();
 
-  if (type->isPointerTy())
+  // std::cout <<  "get value name: "
+  //           << std::to_string((unsigned)type->getTypeID())
+  //           << std::endl;
+
+  ///< @todo getelementptr inbounds対応
+  if (type->isPointerTy()) {
+    // if (typeid(v) == typeid(GetElementPtrConstantExpr*)) {
+    //   std::cout << "get typeid" << std::endl;
+    // }
+    // std::cout << typeid(v) << std::endl;
     type = type->getPointerElementType();
+  }
+
+  // std::cout <<  "get value name: "
+  //           << std::to_string((unsigned)type->getTypeID())
+  //           << std::endl;
 
   if (!v->hasName()) { // 定数
     if (type->isIntegerTy()) { //! @todo Integer以外の型への対応
       auto int_value = dyn_cast<ConstantInt>(v);
       //! @todo is signed 対応する
       ret_str.append(int_value->getValue()
-                     .toString(10,     /* 基数 */
-                               true)); /* is signed */
+                     .toString(10,     // 基数
+                               true)); // is signed
     } // if : isIntegerTy()
   } // if : hasName()
   else { // 変数
     ret_str.append(v->getName());
   }
+
+  //  std::cout << ret_str << std::endl << std::endl;
 
   return ret_str;
 } // _get_value_name
@@ -250,18 +266,28 @@ void FortRock::_parse_instructions
     case Instruction::Sub:    this->_add_sub_inst(inst);    break;
     case Instruction::Switch: this->_add_switch_inst(inst); break;
     case Instruction::Shl:    this->_add_shift_inst(inst,
-                                                    true,
-                                                    true);  break;
+                             /* is left shift == */ true,
+                          /* is logical shift == */ true);
+      break;
+
     case Instruction::LShr:   this->_add_shift_inst(inst,
-                                                    false,
-                                                    true);  break;
+                             /* is left shift == */ false,
+                          /* is logical shift == */ true);
+      break;
+
     case Instruction::AShr:   this->_add_shift_inst(inst,
-                                                    false,
-                                                    false); break;
+                             /* is left shift == */ false,
+                          /* is logical shift == */ false);
+      break;
+
     case Instruction::And:    this->_add_and_inst(inst);    break;
     case Instruction::Or:     this->_add_or_inst(inst);     break;
     case Instruction::Xor:    this->_add_xor_inst(inst);    break;
     case Instruction::Trunc:  this->_add_trunc_inst(inst);  break;
+
+    case Instruction::GetElementPtr:
+      this->_add_getelementptr_inst(inst);
+      break;
 
     default:
       throw std::string(std::string("ERROR (") + __func__ + " :"
@@ -284,21 +310,68 @@ void FortRock::_parse_instructions
  */
 void FortRock::_add_load_inst
 (const Instruction * inst) {
-  auto elem = std::make_shared<CDFG_Element>
-    (CDFG_Operator::eType::LOAD,
-     1, /* Num operator input */
-     this->_state,
-     this->_step);
+  std::shared_ptr<CDFG_Addr> a;
+  bool is_gepope = false;
 
   // 入力
-  auto a = this->_module_gen->get_node
-    (this->_get_value_name(inst->getOperand(0)),
-     CDFG_Node::eNode::ADDR);
+  // getelementptr の場合
+  auto ope = dyn_cast<LoadInst>(inst)->getPointerOperand();
+  if (isa<GEPOperator>(ope)) {
+    auto gepope = dyn_cast<GEPOperator>(ope);
+    is_gepope = true;
+    auto ptr = gepope->getPointerOperand();
+
+    auto array
+      = this->_module_gen->get_node
+      (ptr->getName(),
+       CDFG_Node::eNode::MEM);
+
+    a = std::dynamic_pointer_cast<CDFG_Addr>
+      (this->_module_gen->get_node
+       (gepope->getPointerOperand()->getName(),
+        CDFG_Node::eNode::ADDR));
+
+    a->set_ref(array);
+
+    // アドレスの追加
+    for (auto ite = gepope->idx_begin() + 1; // 最初は無視
+         ite != gepope->idx_end();
+         ++ite) {
+      auto value = ite->get();
+      auto type = CDFG_Node::eNode::REG;
+
+      if (!value->hasName())
+        type = CDFG_Node::eNode::PARAM;
+
+      a->add_addr
+        (this->_module_gen->get_node
+         (value->getName(),
+          type));
+
+      // std::cout << "load address: "
+      //           << this->_module_gen->get_node(value->getName(),
+      //                                          type)->get_verilog_name()
+      //           << std::endl;
+    } // for : ite
+  } // if : isa<GEPOperator>
+  // 通常のload命令
+  else {
+    a = std::dynamic_pointer_cast<CDFG_Addr>
+      (this->_module_gen->get_node
+       (this->_get_value_name
+        (inst->getOperand(0)),
+        CDFG_Node::eNode::ADDR));
+  }
 
   // 出力
-  auto b = this->_module_gen->
-    get_node(inst->getName().str(),
-             CDFG_Node::eNode::REG);
+  auto b = this->_module_gen
+    ->get_node(inst->getName().str(),
+               CDFG_Node::eNode::REG);
+
+  auto elem = std::make_shared<CDFG_LoadElem>
+    (is_gepope,
+     this->_state,
+     this->_step);
 
   elem->set_input(a, 0);
   elem->set_output(b, 0);
@@ -317,7 +390,7 @@ void FortRock::_add_store_inst
 (const Instruction * inst) {
   auto elem = std::make_shared<CDFG_Element>
     (CDFG_Operator::eType::STORE,
-     1, /* Number of operator input */
+     1, // Number of operator input
      this->_state,
      this->_step);
 
@@ -1141,7 +1214,6 @@ void FortRock::_add_trunc_inst
   elem->set_output(b, 0);
 
   this->_module_gen->add_element(elem);
-
   ++this->_step;
 }
 
@@ -1151,13 +1223,45 @@ void FortRock::_add_trunc_inst
  */
 void FortRock::_add_getelementptr_inst
 (const Instruction * inst) {
-  std::cout << "called _add_getelementptr_inst()" << std::endl;
+  auto elem = std::make_shared<CDFG_Element>
+    (CDFG_Operator::eType::GETELEMENTPTR,
+     1,
+     this->_state,
+     this->_step);
+
   auto getelemptr_inst = dynamic_cast<GetElementPtrInst*>
     (const_cast<Instruction*>(inst));
 
-  auto ptr = getelemptr_inst->getType();
-  auto array = ptr->getElementType();
-  //  std::cout << array->getName() << std::endl;
+  auto ptr = getelemptr_inst->getPointerOperand();
+  auto array
+    = this->_module_gen->get_node(ptr->getName(),
+                                  CDFG_Node::eNode::MEM);
+
+  auto addr
+    = std::dynamic_pointer_cast<CDFG_Addr>
+    (this->_module_gen->get_node
+     (getelemptr_inst->getName(),
+      CDFG_Node::eNode::ADDR));
+
+  addr->set_ref(array);
+
+  // アドレスの追加
+  for (auto ite = getelemptr_inst->idx_begin() + 1; // 最初は無視
+       ite != getelemptr_inst->idx_end();
+       ++ite) {
+    auto value = ite->get();
+    auto type = CDFG_Node::eNode::REG;
+
+    if (!value->hasName()) // 定数の場合
+      type = CDFG_Node::eNode::PARAM;
+
+    addr->add_addr
+      (this->_module_gen->get_node(value->getName(),
+                                   type));
+  }
+  elem->set_input(addr, 0);
+  this->_module_gen->add_element(elem);
+  ++this->_step;
 }
 
 /**
@@ -1166,16 +1270,17 @@ void FortRock::_add_getelementptr_inst
    Labelについても列挙し，格納する
  */
 void FortRock::_grub_variables
-(const Module::FunctionListType::iterator & funct) {
+(const Module::FunctionListType::iterator & funct)
+{
   BranchInst * binst;
   Value      * value;
   Type       * type;
   std::shared_ptr<CDFG_Node> node;
 
-  for (auto it = inst_begin(*funct); //funct->begin();
-       it != inst_end(*funct);   // funct->end();
+  for (auto it = inst_begin(*funct); // funct->begin();
+       it != inst_end(*funct);       // funct->end();
        ++it) {
-    errs() << it->getOpcodeName() << "\n";
+
     if (!it->use_empty()) {
       // 命令に対応するオペランド数の指定
       int getop = 1;
@@ -1213,28 +1318,28 @@ void FortRock::_grub_variables
         continue;
       } // if
 
-        // 未定義のregの追加
+      if (it->getOpcode() == Instruction::Load) {
+        auto vv = dyn_cast<LoadInst>(&*it)->getPointerOperand();
+        // getelementptrであれば，add_load_inst()時に取得する
+        if (isa<GEPOperator>(vv))
+          continue;
+      }
+
+      // 未定義のregの追加
       for (auto i=0; i<getop; ++i) {
         value = it->getOperand(i);
         type = value->getType();
 
         auto name = this->_get_value_name(value);
-
+        std::cout << name << std::endl;
         if (type->isPointerTy()) { // ポインタ
           // ポインタに対する参照の追加
           type = type->getPointerElementType();
-
-          // auto ref_node = this->_module_gen
-          //   ->get_node(
-
-          // node = std::make_shared<CDFG_Addr>
-          //   (name,
-          //    type->getPrimitiveSizeInBits(),
-          //    false, // == is signed
-          //    );
+          node = std::make_shared<CDFG_Addr>
+            (name,
+             type->getPrimitiveSizeInBits());
         }
-
-        if(!value->hasName()) { // 定数
+        else if(!value->hasName()) { // 定数
           node = std::make_shared<CDFG_Parameter>
             (name,
              type->getPrimitiveSizeInBits(),
@@ -1289,32 +1394,38 @@ void FortRock::_grub_variables
           {
             // 未定義のregの追加
             for(auto i=0; i<2; ++i) {
-            value = it->getOperand(i);
-            type = value->getType();
+              value = it->getOperand(i);
+              type = value->getType();
 
-            if(type->isPointerTy())
-              type = type->getPointerElementType();
+              auto name = this->_get_value_name(value);
 
-            auto name = this->_get_value_name(value);
+              if (type->isPointerTy()) { // ポインタ
+                // ポインタに対する参照の追加
+                type = type->getPointerElementType();
+                node = std::make_shared<CDFG_Addr>
+                  (name,
+                   type->getPrimitiveSizeInBits());
+              }
+              else if(!value->hasName()) { // 定数
+                node = std::make_shared<CDFG_Parameter>
+                  (name,
+                   type->getPrimitiveSizeInBits(),
+                   true, //! @todo is signedが常にtrue
+                   CDFG_Parameter::eParamType::INTEGER, //! @todo 常にINTGER
+                   std::stol(this->_get_value_name(value)));
+              }
+              else { // 変数
+                node = std::make_shared<CDFG_Reg>
+                  (name,
+                   type->getPrimitiveSizeInBits(),
+                   true, //! @todo is signedが常にtrue
+                   CDFG_Reg::eRegType::REG);
+              }
 
-            if(!value->hasName()) { // 定数
-              node = std::make_shared<CDFG_Parameter>
-                (name,
-                 type->getPrimitiveSizeInBits(),
-                 true, //! @todo is signedが常にtrue
-                 CDFG_Parameter::eParamType::INTEGER, //! @todo 常にINTGER
-                 std::stol(this->_get_value_name(value)));
-            }
-            else { // 変数
-              node = std::make_shared<CDFG_Reg>
-                (name,
-                 type->getPrimitiveSizeInBits(),
-                 true, //! @todo is signedが常にtrue
-                 CDFG_Reg::eRegType::REG);
-            }
-            if (!this->_module_gen->find_node(node))
-              this->_module_gen->add_node(node);
-          }
+              if (!this->_module_gen->find_node(node))
+                this->_module_gen->add_node(node);
+
+            } // for
             break;
           } // store
 
@@ -1338,7 +1449,8 @@ void FortRock::_grub_variables
    グローバル変数のインスタンス化
  */
 void FortRock::_grub_global_variables
-(const Module & M) {
+(const Module & M)
+{
   for (auto ite = M.global_begin();
        ite != M.global_end();
        ++ite) {
@@ -1392,8 +1504,8 @@ void FortRock::_grub_global_variables
         if (type->isIntegerTy()) {
           auto int_value = dyn_cast<ConstantInt>(val);
           initializer.push_back(int_value->getLimitedValue());
-          std::cout << int_value->getValue().toString(10, true)
-                    << std::endl;
+          // std::cout << int_value->getValue().toString(10, true)
+          //           << std::endl;
         } // if : isIntegerTy()
       } // for : i
 
@@ -1409,7 +1521,7 @@ void FortRock::_grub_global_variables
 
     } // type : isArrayTy
   } // for : ite
-}
+} // _grub_global_variables
 
 /**
    ステートマシンのラベル(ステート)の列挙
@@ -1418,7 +1530,8 @@ void FortRock::_grub_global_variables
    @attention このタイミングでState管理NodeがCModuleに追加される
 */
 void FortRock::_grub_labels
-(const Module::FunctionListType::iterator & funct) {
+(const Module::FunctionListType::iterator & funct)
+{
   int num_label
     = std::distance(funct->begin(), funct->end());
   auto label_bit_width
