@@ -1186,8 +1186,9 @@ void CModuleGenerator::_generate_always(void) {
                            + " <= "
                            + a->get_verilog_name()
                            + "["
-                           + std::to_string(trunc_elem->get_dest_bit_width())
-                           + "-1:0];\n");
+                           + std::to_string
+                           (trunc_elem->get_dest_bit_width() - 1)
+                           + ":0];\n");
 
         sm_gen.add_state_process(state,
                                  step,
