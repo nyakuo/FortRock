@@ -40,7 +40,8 @@ public:
 
   // setter
   void set_type(const CDFG_Node::eNode & type);
-  virtual std::string to_string(void) { return "to_string"; }
+  virtual std::string to_string(void)
+  { return this->get_verilog_name(); }
 
 protected:
   std::string _asm_name;     ///< ノードの名前
