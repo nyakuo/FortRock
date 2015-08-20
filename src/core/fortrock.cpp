@@ -8,7 +8,8 @@
 */
 unsigned
 FortRock::_get_required_bit_width
-(const unsigned & num) {
+(const unsigned & num)
+{
   unsigned val = num;
 
   val |= val >> 1;
@@ -24,7 +25,7 @@ FortRock::_get_required_bit_width
   val += val >> 16;
 
   return val;
-}
+} // _get_required_bit_width
 
 /**
    moduleの名前を取得
@@ -33,7 +34,8 @@ FortRock::_get_required_bit_width
 */
 std::string
 FortRock::_get_module_name
-(const Module & M) {
+(const Module & M)
+{
   std::string mod_name = M.getModuleIdentifier();
   std::regex pattern(".*/(.*)\\.s");
   std::smatch match;
@@ -55,7 +57,8 @@ FortRock::_get_module_name
  */
 std::string
 FortRock::_get_value_name
-(const Value * v) {
+(const Value * v)
+{
   std::string ret_str ("");
   auto type = v->getType();
 
@@ -98,7 +101,8 @@ FortRock::_get_value_name
    moduleの入出力を定義
 */
 void FortRock::_set_IO
-(const Module::FunctionListType::iterator & funct) {
+(const Module::FunctionListType::iterator & funct)
+{
   auto arg_it  = funct->arg_begin();
   auto arg_end = funct->arg_end();
 
@@ -1408,9 +1412,8 @@ void FortRock::_grub_variables
               if(type->isPointerTy())
                 type = type->getPointerElementType();
             }
-            else { // 無条件分岐
-              value = binst->getSuccessor(0);
-            }
+            else // 無条件分岐
+              continue; // labelは別の場所で確保
 
             node = std::make_shared<CDFG_Reg>
               (value->getName(),
@@ -1494,35 +1497,46 @@ void FortRock::_grub_global_variables
     if (type->isPointerTy())
       type = type->getPointerElementType();
 
-    if (type->isArrayTy()) { // 配列の場合
+    // 配列の場合
+    if (type->isArrayTy()) {
       //! @todo zeroinitializerへの対応
       auto init_array = dyn_cast<ConstantArray>(init);
-      auto array = dyn_cast<ArrayType>(type);
-      auto elem_type = array->getTypeAtIndex((unsigned)0);
+      auto array      = dyn_cast<ArrayType>(type);
+      auto elem_type  = array->getTypeAtIndex((unsigned)0);
 
       // 初期化子の取得
-      //! @todo Integer以外の初期化しへの対応
+      //! @todo Integer以外の初期化子への対応
       if (elem_type->isIntegerTy()) {
-        std::vector<int> initializer;
-        initializer.reserve(array->getNumElements());
+        //! @todo 1次元配列以外への対応
+        std::vector<std::vector<int> > initializer;
+        initializer.resize(1);
+        initializer[0].reserve(array->getNumElements());
 
-        for (auto i=0; i<array->getNumElements(); ++i) {
+        for (auto i=0;
+             i<array->getNumElements();
+             ++i) {
           auto val = init->getAggregateElement(i);
           auto type = val->getType();
           auto int_value = dyn_cast<ConstantInt>(val);
-          initializer.push_back(int_value->getLimitedValue());
+          initializer[0].push_back(int_value->getLimitedValue());
         } // for : i
+
+        // 初期化子を用いたメモリの確保
+        std::vector<unsigned> length;
+        length.reserve(1);
+        length.push_back(array->getNumElements());
+
+        auto mem = std::make_shared<CDFG_Array>
+          (name,
+           CDFG_Array::eDataType::INTEGER,
+           elem_type->getPrimitiveSizeInBits(),
+           1, // write_ports
+           1, // read_ports
+           length,
+           initializer);
+
+        this->_module_gen->add_node(mem);
       }
-      // 初期化子を用いたメモリの確保
-      auto mem = std::make_shared<CDFG_Array>
-        (name,
-         elem_type->getPrimitiveSizeInBits(),
-         1, // write_ports
-         1, // read_ports
-         initializer);
-
-      this->_module_gen->add_node(mem);
-
     } // type : isArrayTy
   } // for : ite
 } // _grub_global_variables
