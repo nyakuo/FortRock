@@ -31,11 +31,11 @@ void COperatorGenerator::generate_operator
                             node);
       }
       else if (inode->get_type() == CNode_data::ePortType::IN) {
-        node = std::make_shared<CDFG_Wire>
+        node = std::make_shared<CDFG_Reg>
           (this->_instance_name + '_' + inode->get_name(),
            inode->get_bit_width(),
            inode->get_is_signed(),
-           CDFG_Wire::eWireType::WIRE);
+           CDFG_Reg::eRegType::REG);
 
         ope->add_input_port(inode->get_name(),
                             node);
@@ -45,11 +45,11 @@ void COperatorGenerator::generate_operator
 
     // 出力ポートのインスタンス化
     for (auto & onode : this->_onode_info) {
-      auto node = std::make_shared<CDFG_Reg>
+      auto node = std::make_shared<CDFG_Wire>
         (this->_instance_name + '_' + onode->get_name(),
          onode->get_bit_width(),
          onode->get_is_signed(),
-         CDFG_Reg::eRegType::REG);
+         CDFG_Wire::eWireType::WIRE);
       ope->add_output_port(onode->get_name(),
                            node);
       module_gen->add_node(node);
