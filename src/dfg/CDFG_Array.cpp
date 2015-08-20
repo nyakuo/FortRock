@@ -3,69 +3,114 @@
 /**
    コンストラクタ
    @param[in] name インスタンス名
+   @param[in] type 格納されるデータ型
    @param[in] word_length ワード長
    @param[in] write_ports 書き込みポート数 (同時書き込み数)
    @param[in] read_ports 読み込みポート数 (同時読み込み数)
    @param[in] length 配列の長さ
-   @param[in] dimension 配列の次元数
 */
 CDFG_Array::CDFG_Array
 (const std::string & name,
+ const CDFG_Array::eDataType & type,
  const unsigned & word_length,
  const unsigned & write_ports,
  const unsigned & read_ports,
- const unsigned & length,
- const unsigned & dimension)
-  : _length(length),
-    _dimension(dimension),
+ const std::vector<unsigned> & length)
+  : _data_type(type),
+    _length(length),
+    _is_initialized(false),
     CDFG_Mem(name,
-             length * dimension,
+             std::accumulate(length.begin(),
+                             length.end(), 0),
              word_length,
              write_ports,
              read_ports,
              CDFG_Mem::eMemType::ARRAY) {}
-
 /**
    コンストラクタ
    @param[in] name インスタンス名
+   @param[in] type 格納されるデータ型
    @param[in] write_ports 書き込みポート数 (同時書き込み数)
    @param[in] read_ports 読み込みポート数 (同時読み込み数)
    @param[in] length 配列の長さ
    @param[in] initializer 初期化子
-   @note 1次元配列のみ対応
 */
 CDFG_Array::CDFG_Array
 (const std::string & name,
+ const CDFG_Array::eDataType & type,
  const unsigned & word_length,
  const unsigned & write_ports,
  const unsigned & read_ports,
- const std::vector<int> & initializer)
-  : _length(initializer.size()),
-    _dimension(1),
+ const std::vector<unsigned> & length,
+ const std::vector<std::vector<int> > & initializer)
+  : _data_type(type),
+    _length(length),
+    _is_initialized(true),
     CDFG_Mem(name,
-             initializer,
+             std::accumulate(length.begin(),
+                             length.end(), 0),
              word_length,
              write_ports,
              read_ports,
-             CDFG_Mem::eMemType::ARRAY) {}
+             CDFG_Mem::eMemType::ARRAY)
+{
+  // メモリの初期化
+  //! @todo 多次元配列への対応
+  this->_int_data.resize(initializer.size());
+
+  for (auto & vec : initializer) {
+    this->_int_data.reserve(vec.size());
+    for (auto & val : vec)
+      this->_int_data[0].push_back(val);
+  } // for : vec
+}
 
 /**
    配列の初期化部の文字列を出力する
    @todo すべて0で初期化する場合などはforループで実装する
 */
 std::string
-CDFG_Array::init_string(void) {
+CDFG_Array::init_string
+(const std::string & indent) {
   std::string ret_str("");
 
-  for (auto i=0; i<this->_num_datas; ++i)
-    ret_str.append(this->_verilog_name
-                   + "["
-                   + std::to_string(i)
-                   + "] <= "
-                   + std::to_string(this->_int_init[i])
-                   + ";\n");
+  if (this->_is_initialized) {
+    if (this->_data_type
+        == CDFG_Array::eDataType::INTEGER) {
+      for (auto i=0; i<this->_length[0]; ++i)
+        ret_str.append(indent
+                       + this->_verilog_name
+                       + "["
+                       + std::to_string(i)
+                       + "] <= "
+                       + std::to_string(this->_int_data[0][i])
+                       + ";\n");
+    } // if : this->_data_type
+  } // if : this->_is_initialized
+  return ret_str;
+}
 
-  ret_str.append("end\n");
+/**
+   配列の宣言文(Verilog)の出力
+   @return 配列の宣言文(Verilog)
+   @todo 一次元配列のみ対応
+ */
+std::string
+CDFG_Array::define_string
+(void) {
+  std::string ret_str ("");
+
+  for (auto dim=0;
+       dim < 1;
+       ++dim) {
+    ret_str.append("reg ["
+                   + std::to_string(this->_word_length - 1)
+                   + ":0] "
+                   + this->_verilog_name
+                   + "[0:"
+                   + std::to_string(this->_length[dim] - 1)
+                   + "];\n");
+  } // for : dim
 
   return ret_str;
 }
@@ -75,7 +120,8 @@ CDFG_Array::init_string(void) {
    @param[in] addr 参照するアドレス
    @return メモリの指定したアドレスへのアクセス記述(Verilog)
  */
-std::string CDFG_Array::access_string
+std::string
+CDFG_Array::access_string
 (const std::shared_ptr<CDFG_Addr> & addr)
 {
   std::string ret_str(this->get_verilog_name());
