@@ -33,9 +33,10 @@ CDFG_Wire::is_output(void) {
    @return 信号の接頭辞
  */
 std::string
-CDFG_Wire::_get_prefix(void)
+CDFG_Wire::_get_prefix
+(const CDFG_Wire::eWireType & type)
 {
-  switch(this->_type)
+  switch (type)
     {
     case eWireType::WIRE:
       return "w_";

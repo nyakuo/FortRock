@@ -37,7 +37,7 @@ public:
                 bit_width,
                 is_signed,
                 CDFG_Node::eNode::REG,
-                this->_get_prefix())
+                this->_get_prefix(type))
   {}
 
   // getter
@@ -48,7 +48,7 @@ public:
 private:
   eRegType _type; ///< 信号線の種類
 
-  std::string _get_prefix(void);
+  std::string _get_prefix(const eRegType & type);
 };
 
 #endif

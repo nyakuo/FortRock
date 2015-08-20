@@ -38,7 +38,7 @@ public:
                 bit_width,
                 is_signed,
                 CDFG_Node::eNode::WIRE,
-                this->_get_prefix())
+                this->_get_prefix(type))
   {}
 
   // getter
@@ -49,7 +49,7 @@ public:
 private:
   eWireType _type; ///< 信号の種類
 
-  std::string _get_prefix(void);
+  std::string _get_prefix(const eWireType & type);
 };
 
 #endif

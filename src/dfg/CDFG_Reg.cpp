@@ -31,8 +31,9 @@ CDFG_Reg::is_output(void) {
    @return 信号名の接頭辞
  */
 std::string
-CDFG_Reg::_get_prefix(void) {
-  switch (this->_type) {
+CDFG_Reg::_get_prefix
+(const CDFG_Reg::eRegType & type) {
+  switch (type) {
   case eRegType::IN_COPY:
   case eRegType::REG:
     return "r_";
