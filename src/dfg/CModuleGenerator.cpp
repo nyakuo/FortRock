@@ -346,7 +346,7 @@ int CModuleGenerator::generate(void)
 {
   this->_generate_header();
   this->_generate_define();
-  //  this->_generate_define_array();
+  this->_generate_define_array();
   this->_generate_assign();
   this->_generate_function();
   this->_generate_calculator();
@@ -625,7 +625,9 @@ void CModuleGenerator::_generate_calculator(void)
     for (at = 0; at < module->get_num_input(); ++at) {
       this->_cout << '.'
                   << module->get_input_signal_at(at)
-                  << '(' << module->get_input_node_at(at)->get_verilog_name() << "),"
+                  << '('
+                  << module->get_input_node_at(at)->get_verilog_name()
+                  << "),"
                   << std::endl;
     }
 
@@ -633,7 +635,9 @@ void CModuleGenerator::_generate_calculator(void)
     for (at = 0; at < module->get_num_output() - 1; ++at) {
       this->_cout << '.'
                   << module->get_output_signal_at(at)
-                  << '(' << module->get_output_node_at(at)->get_verilog_name() << "),"
+                  << '('
+                  << module->get_output_node_at(at)->get_verilog_name()
+                  << "),"
                   << std::endl;
     }
 
@@ -665,7 +669,7 @@ void CModuleGenerator::_generate_always(void)
   auto true_node  = this->get_node(CDFG_Parameter::eParamType::TRUE);
   auto false_node = this->get_node(CDFG_Parameter::eParamType::FALSE);
   auto zero_node  = this->get_node(CDFG_Parameter::eParamType::ZERO);
-
+  auto out_node   = this->get_node(CDFG_Reg::eRegType::OUT);
 
   this->_cout << "always @(posedge "
               << clk_name
@@ -723,6 +727,10 @@ void CModuleGenerator::_generate_always(void)
               << " <= "
               << zero_node->get_verilog_name()
               << ";\n";
+  this->_cout << out_node->get_verilog_name()
+              << " <= "
+              << zero_node->get_verilog_name()
+              << ";\n";
   this->_cout << "if (" << req_name << ")\n";
   this->_cout.indent_right();
   this->_cout << "begin\n";
@@ -742,6 +750,17 @@ void CModuleGenerator::_generate_always(void)
                   << ";\n";
     }
   }
+
+  // 配列の初期化
+  //! @todo 配列以外の対応
+  for (auto & node : this->_module->get_node_list())
+    if (node->get_type() == CDFG_Node::eNode::MEM) {
+      auto mem
+        = std::dynamic_pointer_cast<CDFG_Mem>(node);
+      this->_cout
+        <<= mem->init_string(this->_cout.output_indent());
+    }
+
   this->_cout.indent_left();
   this->_cout << "end\n";
   this->_cout.indent_left(2);
@@ -773,21 +792,13 @@ void CModuleGenerator::_generate_always(void)
           auto node = ope->get_input_node_at(i);
 
           // clk, res, req, ceの入力の回避
-          bool is_system_in = true;
-          if (node->get_type() == CDFG_Node::eNode::WIRE) {
-            auto w_type = std::dynamic_pointer_cast
-              <CDFG_Wire>(node)->get_type();
-            if (w_type == CDFG_Wire::eWireType::WIRE ||
-                w_type == CDFG_Wire::eWireType::IN_ORIG)
-              is_system_in = false;
-          } // if : node->get_type()
-
-          if (!is_system_in)
+          if (node->get_type() == CDFG_Node::eNode::REG) {
             process_str.append(this->_cout.output_indent()
                                + node->get_verilog_name()
                                + " <= "
                                + elem->get_input_at(i)->get_verilog_name()
                                + ";\n");
+          } // if : node->get_type()
         } // for : i
         sm_gen.add_state_process(state, step, process_str);
 
@@ -925,18 +936,12 @@ void CModuleGenerator::_generate_always(void)
           cond_str = " < "; break;
         default:;
         }
-        std::cout << "begin output icmp"
-                  << std::endl
-                  << in_0->to_string()
-                  << std::endl
-                  << in_1->to_string()
-                  << std::endl;
         process_str.append(this->_cout.output_indent()
                            + out->get_verilog_name()
                            + " <= ("
-                           + in_0->to_string()
+                           + in_0->get_verilog_name()
                            + cond_str
-                           + in_1->to_string()
+                           + in_1->get_verilog_name()
                            + ");\n");
 
         sm_gen.add_state_process(state,
