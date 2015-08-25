@@ -735,8 +735,15 @@ void CModuleGenerator::_generate_always(void)
   this->_cout.indent_right();
   this->_cout << "begin\n";
   this->_cout.indent_right();
-  this->_cout << state_node->get_verilog_name() << " <= "
-              << state_node->get_bit_width() << "'h1;\n";
+  // if文の中身 (リセット)
+  this->_cout << state_node->get_verilog_name()
+              << " <= "
+              << state_node->get_bit_width()
+              << "'h1;\n";
+  this->_cout << prev_state->get_verilog_name()
+              << " <= "
+              << zero_node->get_verilog_name()
+              << ";\n";
 
   // 入力のコピー
   for (auto & elem : this->_module->get_element_list()) {
@@ -785,6 +792,7 @@ void CModuleGenerator::_generate_always(void)
     case CDFG_Operator::eType::DIV:
     case CDFG_Operator::eType::FUNC:
     case CDFG_Operator::eType::MUL:
+    case CDFG_Operator::eType::FMUL:
     case CDFG_Operator::eType::SREM:
     case CDFG_Operator::eType::SDIV:
       {

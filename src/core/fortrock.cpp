@@ -313,6 +313,7 @@ void FortRock::_parse_instructions
     case Instruction::Select: this->_add_select_inst(inst); break;
     case Instruction::SRem:   this->_add_srem_inst(inst);   break;
     case Instruction::Mul:    this->_add_mul_inst(inst);    break;
+    case Instruction::FMul:   this->_add_fmul_inst(inst);   break;
     case Instruction::SDiv:   this->_add_sdiv_inst(inst);   break;
     case Instruction::Add:    this->_add_add_inst(inst);    break;
     case Instruction::FAdd:   this->_add_fadd_inst(inst);   break;
@@ -694,8 +695,8 @@ void FortRock::_add_sdiv_inst
 }
 
 /**
-   MUL命令をモジュールの DFG に追加
-   @brief b = mul a0 a1
+   mul命令をモジュールの DFG に追加
+   @brief b = fmul a0 a1
          演算器の信号線による接続
 
    @todo 使用した演算器にフラグを立てる
@@ -750,10 +751,10 @@ void FortRock::_add_mul_inst
  */
 void FortRock::_add_fmul_inst
 (const Instruction * inst) {
-  auto mul = this->_module_gen->get_operator
-    (CDFG_Operator::eType::MUL);
+  auto fmul = this->_module_gen->get_operator
+    (CDFG_Operator::eType::FMUL);
 
-  auto elem = std::make_shared<CDFG_Element>(mul);
+  auto elem = std::make_shared<CDFG_Element>(fmul);
   elem->set_state(this->_state);
   elem->set_step(this->_step);
 
@@ -786,7 +787,7 @@ void FortRock::_add_fmul_inst
 
   this->_module_gen->add_element(elem);
 
-  this->_step += mul->get_latency() + 2;
+  this->_step += fmul->get_latency() + 2;
 }
 
 /**
@@ -1433,6 +1434,7 @@ void FortRock::_grub_variables
       case Instruction::ICmp:
       case Instruction::SRem:
       case Instruction::Mul:
+      case Instruction::FMul:
       case Instruction::SDiv:
       case Instruction::Add:
       case Instruction::FAdd:
