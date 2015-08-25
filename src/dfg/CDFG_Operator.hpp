@@ -18,6 +18,7 @@ public:
     ADD = 0,
       FADD,
       SUB,
+      FSUB,
       ADD_SUB,
       DIV,
       FUNC,

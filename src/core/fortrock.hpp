@@ -82,30 +82,31 @@ private:
   void _grub_labels(const Module::FunctionListType::iterator &funct);
 
   // 命令パース
-  void _parse_instructions(const Instruction * inst);
-  void _add_ret_inst(const Instruction * inst);
-  void _add_br_inst(const Instruction * inst);
-  void _add_load_inst(const Instruction * inst);
-  void _add_store_inst(const Instruction * inst);
-  void _add_icmp_inst(const Instruction * inst);
-  void _add_phi_inst(const Instruction * inst);
-  void _add_select_inst(const Instruction * inst);
-  void _add_srem_inst(const Instruction * inst);
-  void _add_mul_inst(const Instruction * inst);
-  void _add_fmul_inst(const Instruction * inst);
-  void _add_sdiv_inst(const Instruction * inst);
-  void _add_add_inst(const Instruction * inst);
-  void _add_fadd_inst(const Instruction * inst);
-  void _add_sub_inst(const Instruction * inst);
-  void _add_switch_inst(const Instruction * inst);
-  void _add_shift_inst(const Instruction * inst,
-                       const bool is_left,
-                       const bool is_logical);
-  void _add_and_inst(const Instruction * inst);
-  void _add_or_inst(const Instruction * inst);
-  void _add_xor_inst(const Instruction * inst);
-  void _add_trunc_inst(const Instruction * inst);
-  void _add_getelementptr_inst(const Instruction * inst);
+  void _parse_instructions     (const Instruction * inst);
+  void _add_ret_inst           (const Instruction * inst);
+  void _add_br_inst            (const Instruction * inst);
+  void _add_load_inst          (const Instruction * inst);
+  void _add_store_inst         (const Instruction * inst);
+  void _add_icmp_inst          (const Instruction * inst);
+  void _add_phi_inst           (const Instruction * inst);
+  void _add_select_inst        (const Instruction * inst);
+  void _add_srem_inst          (const Instruction * inst);
+  void _add_mul_inst           (const Instruction * inst);
+  void _add_fmul_inst          (const Instruction * inst);
+  void _add_sdiv_inst          (const Instruction * inst);
+  void _add_add_inst           (const Instruction * inst);
+  void _add_fadd_inst          (const Instruction * inst);
+  void _add_sub_inst           (const Instruction * inst);
+  void _add_fsub_inst          (const Instruction * inst);
+  void _add_switch_inst        (const Instruction * inst);
+  void _add_shift_inst         (const Instruction * inst,
+                                const bool is_left,
+                                const bool is_logical);
+  void _add_and_inst           (const Instruction * inst);
+  void _add_or_inst            (const Instruction * inst);
+  void _add_xor_inst           (const Instruction * inst);
+  void _add_trunc_inst         (const Instruction * inst);
+  void _add_getelementptr_inst (const Instruction * inst);
 }; // FortRock
 
 #endif

@@ -318,6 +318,7 @@ void FortRock::_parse_instructions
     case Instruction::Add:    this->_add_add_inst(inst);    break;
     case Instruction::FAdd:   this->_add_fadd_inst(inst);   break;
     case Instruction::Sub:    this->_add_sub_inst(inst);    break;
+    case Instruction::FSub:   this->_add_fsub_inst(inst);   break;
     case Instruction::Switch: this->_add_switch_inst(inst); break;
     case Instruction::Shl:    this->_add_shift_inst(inst,
                              /* is left shift == */ true,
@@ -437,7 +438,8 @@ void FortRock::_add_load_inst
           b <= a; // latency == 0
 */
 void FortRock::_add_store_inst
-(const Instruction * inst) {
+(const Instruction * inst)
+{
   auto elem = std::make_shared<CDFG_Element>
     (CDFG_Operator::eType::STORE,
      1, // Number of operator input
@@ -466,7 +468,7 @@ void FortRock::_add_store_inst
   this->_module_gen->add_element(elem);
 
   ++this->_step;
-}
+} // _add_store_inst
 
 /**
    ICMP命令をモジュールのDFGに追加する
@@ -474,7 +476,8 @@ void FortRock::_add_store_inst
    b = (a0 cond a1)
  */
 void FortRock::_add_icmp_inst
-(const Instruction * inst) {
+(const Instruction * inst)
+{
   // 比較条件
   auto icmp_inst = dynamic_cast<ICmpInst*>
     (const_cast<Instruction*>(inst));
@@ -543,7 +546,7 @@ void FortRock::_add_icmp_inst
   this->_module_gen->add_element(elem);
 
   ++this->_step;
-}
+} // _add_icmp_inst
 
 /**
    SELECT命令をモジュールのDFGに追加する
@@ -551,7 +554,8 @@ void FortRock::_add_icmp_inst
    b <= (a0 t/f a1)
  */
 void FortRock::_add_select_inst
-(const Instruction * inst) {
+(const Instruction * inst)
+{
   auto elem = std::make_shared<CDFG_Element>
     (CDFG_Operator::eType::SELECT,
      3, /* Number of operator input */
@@ -594,7 +598,7 @@ void FortRock::_add_select_inst
   this->_module_gen->add_element(elem);
 
   ++this->_step;
-}
+} // _add_select_inst
 
 /**
    SREM命令を module の DFG に追加
@@ -605,7 +609,8 @@ void FortRock::_add_select_inst
    @note dividerのfractionalに接続
  */
 void FortRock::_add_srem_inst
-(const Instruction * inst) {
+(const Instruction * inst)
+{
   auto srem = this->_module_gen->get_operator
     (CDFG_Operator::eType::SREM);
 
@@ -643,7 +648,7 @@ void FortRock::_add_srem_inst
   this->_module_gen->add_element(elem);
 
   this->_step += srem->get_latency() + 2;
-}
+} // _add_srem_inst
 
 /**
    SDIV命令を module の DFG に追加
@@ -654,7 +659,8 @@ void FortRock::_add_srem_inst
    @note dividerのquotientに接続
  */
 void FortRock::_add_sdiv_inst
-(const Instruction * inst) {
+(const Instruction * inst)
+{
   auto sdiv = this->_module_gen->get_operator
     (CDFG_Operator::eType::SDIV);
 
@@ -692,7 +698,7 @@ void FortRock::_add_sdiv_inst
   this->_module_gen->add_element(elem);
 
   this->_step += sdiv->get_latency() + 2;
-}
+} // _add_sdiv_inst
 
 /**
    mul命令をモジュールの DFG に追加
@@ -702,7 +708,8 @@ void FortRock::_add_sdiv_inst
    @todo 使用した演算器にフラグを立てる
  */
 void FortRock::_add_mul_inst
-(const Instruction * inst) {
+(const Instruction * inst)
+{
   auto mul = this->_module_gen->get_operator
     (CDFG_Operator::eType::MUL);
 
@@ -740,7 +747,7 @@ void FortRock::_add_mul_inst
   this->_module_gen->add_element(elem);
 
   this->_step += mul->get_latency() + 2;
-}
+} // _add_mul_inst
 
 /**
    fmul命令をモジュールの DFG に追加
@@ -750,7 +757,8 @@ void FortRock::_add_mul_inst
    @todo 使用した演算器にフラグを立てる
  */
 void FortRock::_add_fmul_inst
-(const Instruction * inst) {
+(const Instruction * inst)
+{
   auto fmul = this->_module_gen->get_operator
     (CDFG_Operator::eType::FMUL);
 
@@ -788,7 +796,7 @@ void FortRock::_add_fmul_inst
   this->_module_gen->add_element(elem);
 
   this->_step += fmul->get_latency() + 2;
-}
+} // _add_fmul_inst
 
 /**
    BR命令をモジュールのDFGに追加する
@@ -796,7 +804,8 @@ void FortRock::_add_fmul_inst
    state <= (cond) ? ltrue : lfalse;
  */
 void FortRock::_add_br_inst
-(const Instruction * inst) {
+(const Instruction * inst)
+{
   unsigned num_ope_input = 1;
   auto binst = dyn_cast<BranchInst>(&*inst);
 
@@ -838,7 +847,7 @@ void FortRock::_add_br_inst
   this->_module_gen->add_element(elem);
 
   ++this->_step;
-}
+} // _add_br_inst
 
 /**
    PHI命令をモジュールの DFG に追加する
@@ -860,7 +869,8 @@ void FortRock::_add_br_inst
    b = phi_b(prev_state);
  */
 void FortRock::_add_phi_inst
-(const Instruction * inst) {
+(const Instruction * inst)
+{
   auto phinode = dynamic_cast<PHINode*>
     (const_cast<Instruction*>(inst));
   auto elem = std::make_shared<CDFG_Element>
@@ -902,13 +912,14 @@ void FortRock::_add_phi_inst
   this->_module_gen->add_element(elem);
 
   ++this->_step;
-}
+} // _add_phi_inst
 
 /**
    RET命令をモジュールのDFGに追加する
  */
 void FortRock::_add_ret_inst
-(const Instruction * inst) {
+(const Instruction * inst)
+{
   auto finish_state_label
     = this->_module_gen->get_node
     (CDFG_Label::eLabelType::FINISH);
@@ -924,14 +935,15 @@ void FortRock::_add_ret_inst
   this->_module_gen->add_element(elem);
 
   this->_step = 0;
-}
+} // _add_ret_inst
 
 /**
    ADD命令をモジュールのDFGに追加する
    @brief b = add a0, a1
  */
 void FortRock::_add_add_inst
-(const Instruction * inst) {
+(const Instruction * inst)
+{
   auto add = this->_module_gen->get_operator
     (CDFG_Operator::eType::ADD);
 
@@ -968,14 +980,15 @@ void FortRock::_add_add_inst
 
   this->_module_gen->add_element(elem);
   this->_step += add->get_latency() + 2;
-}
+} // _add_add_inst
 
 /**
    fadd命令をモジュールのDFGに追加する
    @brief b = fadd a0, a1
  */
 void FortRock::_add_fadd_inst
-(const Instruction * inst) {
+(const Instruction * inst)
+{
   auto fadd = this->_module_gen->get_operator
     (CDFG_Operator::eType::FADD);
 
@@ -1012,14 +1025,15 @@ void FortRock::_add_fadd_inst
 
   this->_module_gen->add_element(elem);
   this->_step += fadd->get_latency() + 2;
-}
+} // _add_fadd_inst
 
 /**
    SUB命令をモジュールのDFGに追加する
    @brief b = sub a0, a1
  */
 void FortRock::_add_sub_inst
-(const Instruction * inst) {
+(const Instruction * inst)
+{
   auto sub = this->_module_gen->get_operator
     (CDFG_Operator::eType::SUB);
 
@@ -1056,7 +1070,52 @@ void FortRock::_add_sub_inst
 
   this->_module_gen->add_element(elem);
   this->_step += sub->get_latency() + 2;
-}
+} // _add_sub_inst
+
+/**
+   fsub命令をモジュールのDFGに追加する
+   @brief b = fsub a0, a1
+ */
+void FortRock::_add_fsub_inst
+(const Instruction * inst)
+{
+  auto fsub = this->_module_gen->get_operator
+    (CDFG_Operator::eType::FSUB);
+
+  auto elem = std::make_shared<CDFG_Element>(fsub);
+  elem->set_state(this->_state);
+  elem->set_step(this->_step);
+
+  // 入力
+  auto a0 = this->_module_gen->get_node
+    (inst->getOperand(0)->getName(),
+     CDFG_Node::eNode::REG);
+  auto a1 = this->_module_gen->get_node
+    (inst->getOperand(1)->getName(),
+     CDFG_Node::eNode::REG);
+
+  // 入力の定数対応
+  if (!inst->getOperand(0)->hasName())
+    a0 = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(0)),
+       CDFG_Node::eNode::PARAM);
+  if (!inst->getOperand(1)->hasName())
+    a1 = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(1)),
+       CDFG_Node::eNode::PARAM);
+
+  // 出力
+  auto b = this->_module_gen->get_node
+    (inst->getName(),
+     CDFG_Node::eNode::REG);
+
+  elem->set_input(a0, 0);
+  elem->set_input(a1, 1);
+  elem->set_output(b, 0);
+
+  this->_module_gen->add_element(elem);
+  this->_step += fsub->get_latency() + 2;
+} // _add_fsub_inst
 
 /**
    switch命令をモジュールのDFGに追加する
@@ -1074,7 +1133,8 @@ void FortRock::_add_sub_inst
           endcase
  */
 void FortRock::_add_switch_inst
-(const Instruction * inst) {
+(const Instruction * inst)
+{
   auto sw_inst = dyn_cast<SwitchInst>(&*inst);
 
   auto elem = std::make_shared<CDFG_Element>
@@ -1120,7 +1180,7 @@ void FortRock::_add_switch_inst
 
   this->_module_gen->add_element(elem);
   this->_step += 1;
-}
+} // _add_switch_inst
 
 /**
    シフト演算(shl, lshr, ashr命令)をモジュールのDFGに追加する
@@ -1133,7 +1193,8 @@ void FortRock::_add_switch_inst
 void FortRock::_add_shift_inst
 (const Instruction * inst,
  const bool is_left,
- const bool is_logical) {
+ const bool is_logical)
+{
   CDFG_Operator::eType type;
 
   // シフト演算の種類を確定
@@ -1179,7 +1240,7 @@ void FortRock::_add_shift_inst
   this->_module_gen->add_element(elem);
 
   ++this->_step;
-}
+} // _add_shift_inst
 
 /**
    and命令をDFGに追加
@@ -1188,7 +1249,8 @@ void FortRock::_add_shift_inst
           b <= a0 && a1
  */
 void FortRock::_add_and_inst
-(const Instruction * inst) {
+(const Instruction * inst)
+{
   auto elem = std::make_shared<CDFG_Element>
     (CDFG_Operator::eType::AND,
      2, // 入力の数
@@ -1225,7 +1287,7 @@ void FortRock::_add_and_inst
   this->_module_gen->add_element(elem);
 
   ++this->_step;
-}
+} // _add_and_inst
 
 /**
    or命令をDFGに追加
@@ -1234,7 +1296,8 @@ void FortRock::_add_and_inst
           b <= a0 || a1
  */
 void FortRock::_add_or_inst
-(const Instruction * inst) {
+(const Instruction * inst)
+{
   auto elem = std::make_shared<CDFG_Element>
     (CDFG_Operator::eType::OR,
      2, // 入力の数
@@ -1271,7 +1334,7 @@ void FortRock::_add_or_inst
   this->_module_gen->add_element(elem);
 
   ++this->_step;
-}
+} // _add_or_inst
 
 /**
    xor命令をDFGに追加
@@ -1280,7 +1343,8 @@ void FortRock::_add_or_inst
           b <= a0 ^ a1
  */
 void FortRock::_add_xor_inst
-(const Instruction * inst) {
+(const Instruction * inst)
+{
   auto elem = std::make_shared<CDFG_Element>
     (CDFG_Operator::eType::XOR,
      2, // 入力の数
@@ -1317,7 +1381,7 @@ void FortRock::_add_xor_inst
   this->_module_gen->add_element(elem);
 
   ++this->_step;
-}
+} // _add_xor_inst
 
 /**
    trunc命令をDFGに追加
@@ -1327,7 +1391,8 @@ void FortRock::_add_xor_inst
    @note ビット幅を指定して切り詰めた代入
  */
 void FortRock::_add_trunc_inst
-(const Instruction * inst) {
+(const Instruction * inst)
+ {
   auto trunc_inst = dynamic_cast<TruncInst*>
     (const_cast<Instruction*>(inst));
 
@@ -1357,14 +1422,15 @@ void FortRock::_add_trunc_inst
 
   this->_module_gen->add_element(elem);
   ++this->_step;
-}
+ } // _add_trunc_inst
 
 /**
    getelemntptr命令をDFGに追加
    @param[in] inst 命令の参照
  */
 void FortRock::_add_getelementptr_inst
-(const Instruction * inst) {
+(const Instruction * inst)
+ {
   auto elem = std::make_shared<CDFG_Element>
     (CDFG_Operator::eType::GETELEMENTPTR,
      1,
@@ -1404,7 +1470,7 @@ void FortRock::_add_getelementptr_inst
   elem->set_input(addr, 0);
   this->_module_gen->add_element(elem);
   ++this->_step;
-}
+ } // _add_getelementptr_inst
 
 /**
    プログラムで使用するすべてのレジスタを取得し
@@ -1439,6 +1505,7 @@ void FortRock::_grub_variables
       case Instruction::Add:
       case Instruction::FAdd:
       case Instruction::Sub:
+      case Instruction::FSub:
       case Instruction::Shl:
       case Instruction::LShr:
       case Instruction::AShr:
