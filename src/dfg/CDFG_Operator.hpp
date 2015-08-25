@@ -16,6 +16,7 @@ class CDFG_Operator {
 public:
   enum class eType : unsigned {
     ADD = 0,
+      FADD,
       SUB,
       ADD_SUB,
       DIV,

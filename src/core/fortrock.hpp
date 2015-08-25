@@ -92,8 +92,10 @@ private:
   void _add_select_inst(const Instruction * inst);
   void _add_srem_inst(const Instruction * inst);
   void _add_mul_inst(const Instruction * inst);
+  void _add_fmul_inst(const Instruction * inst);
   void _add_sdiv_inst(const Instruction * inst);
   void _add_add_inst(const Instruction * inst);
+  void _add_fadd_inst(const Instruction * inst);
   void _add_sub_inst(const Instruction * inst);
   void _add_switch_inst(const Instruction * inst);
   void _add_shift_inst(const Instruction * inst,

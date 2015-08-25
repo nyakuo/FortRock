@@ -779,6 +779,7 @@ void CModuleGenerator::_generate_always(void)
 
     switch (ope->get_type()) {
     case CDFG_Operator::eType::ADD:
+    case CDFG_Operator::eType::FADD:
     case CDFG_Operator::eType::SUB:
     case CDFG_Operator::eType::ADD_SUB:
     case CDFG_Operator::eType::DIV:

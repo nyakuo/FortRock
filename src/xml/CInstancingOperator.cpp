@@ -67,6 +67,9 @@ void CInstancingOperator::_parse_operator_info
     if (xmlStrcmp(cur->name, (const xmlChar*)"add_int") == 0)
       ope_gen->set_type(CDFG_Operator::eType::ADD);
 
+    else if (xmlStrcmp(cur->name, (const xmlChar*)"fadd") == 0)
+      ope_gen->set_type(CDFG_Operator::eType::FADD);
+
     else if (xmlStrcmp(cur->name, (const xmlChar*)"sub_int") == 0)
       ope_gen->set_type(CDFG_Operator::eType::SUB);
 
@@ -120,15 +123,11 @@ void CInstancingOperator::_parse_operator_info
         else if (xmlStrcmp(mod_info->name, (const xmlChar*)"io") == 0) {
           CNode_data::ePortType type;
 
-          if (xmlStrcmp(mod_info->name, (const xmlChar*)"input") == 0)
-            type = CNode_data::ePortType::IN;
-          else if (xmlStrcmp(mod_info->name, (const xmlChar*)"output") == 0)
-            type = CNode_data::ePortType::OUT;
-
           for (auto & info = mod_info->xmlChildrenNode;
                info != NULL;
                info = info->next) {
-            if (xmlStrcmp(info->name, (const xmlChar*)"info") == 0) {
+            if (xmlStrcmp(info->name,
+                          (const xmlChar*)"info") == 0) {
               std::string port_name;
               unsigned bit_width;
               bool is_signed;
