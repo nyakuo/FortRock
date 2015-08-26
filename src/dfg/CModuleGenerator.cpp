@@ -791,6 +791,7 @@ void CModuleGenerator::_generate_always(void)
     case CDFG_Operator::eType::FSUB:
     case CDFG_Operator::eType::ADD_SUB:
     case CDFG_Operator::eType::DIV:
+    case CDFG_Operator::eType::FDIV:
     case CDFG_Operator::eType::FUNC:
     case CDFG_Operator::eType::MUL:
     case CDFG_Operator::eType::FMUL:

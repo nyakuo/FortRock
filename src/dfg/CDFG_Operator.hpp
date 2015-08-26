@@ -25,6 +25,7 @@ public:
       MUL,
       FMUL,
       SDIV,
+      FDIV,
       SREM,   // ↑演算器使用のレイテンシあり
       RET,    // ↓演算器不使用のレイテンシなし (代入など)
       BR,
