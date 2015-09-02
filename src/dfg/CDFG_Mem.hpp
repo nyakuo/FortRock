@@ -14,14 +14,14 @@ class CDFG_Addr; // 循環参照によるクラスの重複定義対応
    @brief メモリを表すクラス
    配列やスタックなどのインタフェースモジュールが
    実際にアクセスするデータを表すクラス
- */
+*/
 class CDFG_Mem : public CDFG_Node {
 public:
   /** メモリの種類を表す定数 */
   enum class eMemType : unsigned {
     ARRAY = 0, ///< 配列
       OTHER,   ///< その他
-  };
+      };
 
   CDFG_Mem(const std::string & name,
            const unsigned & num_datas,
@@ -37,7 +37,7 @@ public:
   (const std::string & indent) = 0;   ///< 初期化部の出力
   virtual std::string define_string(void) = 0; ///< 宣言部の出力
   virtual std::string access_string
-(const std::shared_ptr<CDFG_Addr> & addr) = 0; ///< アクセス部(制御部も含む)の出力
+  (const std::shared_ptr<CDFG_Addr> & addr) = 0; ///< アクセス部(制御部も含む)の出力
 
   // getter
   eMemType get_mem_type(void) { return this->_mem_type; }
