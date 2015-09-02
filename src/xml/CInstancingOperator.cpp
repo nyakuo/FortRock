@@ -91,6 +91,9 @@ void CInstancingOperator::_parse_operator_info
     else if (xmlStrcmp(cur->name, (const xmlChar*)"fdiv") == 0)
       ope_gen->set_type(CDFG_Operator::eType::FDIV);
 
+    else if (xmlStrcmp(cur->name, (const xmlChar*)"fcmp") == 0)
+      ope_gen->set_type(CDFG_Operator::eType::FCMP);
+
     else {
       cur = cur->next;
       continue;

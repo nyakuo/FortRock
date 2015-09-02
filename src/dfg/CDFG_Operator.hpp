@@ -32,6 +32,7 @@ public:
       LOAD,
       STORE,
       ICMP,
+      FCMP,
       PHI,
       SELECT,
       SWITCH,

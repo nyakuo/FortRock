@@ -11,6 +11,7 @@
 
 #include "CDFG_Element.hpp"
 #include "CDFG_IcmpElem.hpp"
+#include "CDFG_FcmpElem.hpp"
 #include "CDFG_TruncElem.hpp"
 #include "CDFG_Node.hpp"
 #include "CDFG_Parameter.hpp"

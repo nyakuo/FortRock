@@ -2,6 +2,8 @@
 #define _CDFG_PARAMETER_H
 
 #include <string>
+#include <sstream>
+#include <iostream>
 
 #include "CDFG_Node.hpp"
 
@@ -11,45 +13,67 @@
  */
 class CDFG_Parameter : public CDFG_Node {
 public:
+  //! 単精度浮動小数点のビット幅
+  static const unsigned SINGLE_FP_BIT_WIDTH;
+
+  //! 倍精度浮動小数点のビット幅
+  static const unsigned DOUBLE_FP_BIT_WIDTH;
+
+  //! 回路が正論理かどうか
+  //! @brief TRUE/FALSE の0/1に影響
+  static const bool IS_POSITIVE_LOGIC;
+
   /** 定数の種類を表す定数 */
   enum eParamType {
     INTEGER = 1 << 0,
     FLOAT   = 1 << 1,
-    TRUE    = 1 << 2,
-    FALSE   = 1 << 3,
+    DOUBLE  = 1 << 2,
+    TRUE    = 1 << 3,
+    FALSE   = 1 << 4,
     BOOL    = (TRUE | FALSE),
-    ZERO    = 1 << 4,
+    ZERO    = 1 << 5,
   };
 
+  //! 整数型のコンストラクタ
   CDFG_Parameter(const std::string & asm_name,
-                 const unsigned & bit_width,
-                 const bool & is_signed,
-                 const eParamType & param_type,
-                 const double & parameter)
-    : _param_type(param_type),
-      CDFG_Node(asm_name,
-                bit_width,
-                is_signed,
-                CDFG_Node::eNode::PARAM,
-                "p_")
-  { this->set_parameter(parameter); }
-  ~CDFG_Parameter(void) {}
+                 const unsigned    & bit_width,
+                 const long        & parameter);
 
-  // setter
-  void set_parameter(const double & parameter);
+  //! 倍精度浮動小数点型のコンストラクタ
+  CDFG_Parameter(const std::string & asm_name,
+                 const double      & parameter);
 
-  // getter
+  //! 単精度浮動小数点型のコンストラクタ
+  CDFG_Parameter(const std::string & asm_name,
+                 const float       & parameter);
+
+  //! bool型のコンストラクタ
+  CDFG_Parameter(const std::string & asm_name,
+                 const bool        & parameter);
+
+  //! 定数型(true, false, zero)のコンストラクタ
+  CDFG_Parameter(const std::string & asm_name,
+                 const eParamType  & param_type);
+
+  // Getter
   long get_parameter(void);
-  double get_fparameter(void);
+  double get_lfparameter(void);
+  float get_fparameter(void);
   eParamType get_type(void) { return this->_param_type; }
   virtual std::string to_string(void) override final;
   virtual bool is_input(void) override final { return false; }
   virtual bool is_output(void) override final { return false; }
 
 private:
-  long        _parameter;  ///< 整数の定数値
-  double      _fparameter; ///< 浮動小数点の定数値
-  eParamType  _param_type; ///< 定数の種類
-};
+  //! 定数値
+  union data {
+    long   param;   ///< 整数の定数値
+    double lfparam; ///< 倍精度浮動小数点の定数値
+    float  fparam;  ///< 浮動小数点の定数値
+    char   c[8];    ///< 1バイト毎にアクセスするため
+  };
 
+  union data _data;       ///< 定数値
+  const eParamType _param_type; ///< 定数の種類
+};
 #endif

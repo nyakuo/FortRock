@@ -20,6 +20,7 @@ EXTRA_OBJS := \
 	../dfg/CDFG_Array.o \
 	../dfg/CModule.o \
 	../dfg/CDFG_Element.o \
+	../dfg/CDFG_FcmpElem.o \
 	../dfg/CStateMachineGen.o \
 
 TARGET := xml_test

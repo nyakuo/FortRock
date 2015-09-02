@@ -14,6 +14,7 @@ EXTRA_OBJS := \
 	../dfg/CDFG_Addr.o \
 	../dfg/CDFG_Mem.o \
 	../dfg/CDFG_Element.o \
+	../dfg/CDFG_FcmpElem.o \
 	../dfg/CDFG_Operator.o \
 	../dfg/CStateMachineGen.o \
 	../dfg/COutput.o \
