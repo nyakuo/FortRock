@@ -27,11 +27,11 @@ CModuleGenerator::CModuleGenerator
 
   // 定数
   auto p_true = std::make_shared<CDFG_Parameter>
-    ("TRUE", 1, false, CDFG_Parameter::eParamType::TRUE, 1);
+    ("TRUE", CDFG_Parameter::eParamType::TRUE);
   auto p_false = std::make_shared<CDFG_Parameter>
-    ("FALSE", 1, false, CDFG_Parameter::eParamType::FALSE, 0);
+    ("FALSE", CDFG_Parameter::eParamType::FALSE);
   auto p_zero = std::make_shared<CDFG_Parameter>
-    ("ZERO", 1, false, CDFG_Parameter::eParamType::ZERO, 0);
+    ("ZERO", CDFG_Parameter::eParamType::ZERO);
 
   this->_module->add_node(i_clk);
   this->_module->add_node(i_res);
@@ -198,7 +198,7 @@ CModuleGenerator::get_operator
  */
 unsigned
 CModuleGenerator::get_max_step(void)
- {
+{
   return this->_module->get_max_step();
  } // get_max_step
 
@@ -207,7 +207,7 @@ CModuleGenerator::get_max_step(void)
    @note テスト用
  */
 void CModuleGenerator::_generate_test_data(void)
- {
+{
   // ノード確保
   // 基本入出力
   auto i_clk = std::make_shared<CDFG_Wire>
@@ -233,13 +233,13 @@ void CModuleGenerator::_generate_test_data(void)
 
   // 定数
   std::shared_ptr<CDFG_Node> p_3 = std::make_shared<CDFG_Parameter>
-    ("p_3", 8, true, CDFG_Parameter::eParamType::INTEGER, 3);
+    ("p_3", 8, 3L);
   std::shared_ptr<CDFG_Node> p_true = std::make_shared<CDFG_Parameter>
-    ("TRUE", 1, false, CDFG_Parameter::eParamType::TRUE, 1);
+    ("TRUE", CDFG_Parameter::eParamType::TRUE);
   std::shared_ptr<CDFG_Node> p_false = std::make_shared<CDFG_Parameter>
-    ("FALSE", 1, false, CDFG_Parameter::eParamType::FALSE, 0);
+    ("FALSE", CDFG_Parameter::eParamType::FALSE);
   std::shared_ptr<CDFG_Node> p_zero = std::make_shared<CDFG_Parameter>
-    ("ZERO", 1, false, CDFG_Parameter::eParamType::ZERO, 0);
+    ("ZERO", CDFG_Parameter::eParamType::ZERO);
 
   // テンプレートレジスタ
   auto t1 = std::make_shared<CDFG_Reg>
@@ -321,21 +321,21 @@ void CModuleGenerator::_generate_test_data(void)
 
   // DFG
   // t1 = input_a + input_b
-  auto elem1 = std::make_shared<CDFG_Element>(add);
+  auto elem1 = std::make_shared<CDFG_Element>(add,
+                                              1, /* state */
+                                              0  /* step */ );
   elem1->set_input(a, 0);
   elem1->set_input(b, 1);
   elem1->set_output(t1, 0);
-  elem1->set_state(1);
-  elem1->set_step(0);
   this->_module->add_element(elem1);
 
   // out = t1 + p_3
-  auto elem2 = std::make_shared<CDFG_Element>(sub);
+  auto elem2 = std::make_shared<CDFG_Element>(sub,
+                                              1, /* state */
+                                              3  /* step */);
   elem2->set_input(t1, 0);
   elem2->set_input(p_3, 1);
   elem2->set_output(out, 0);
-  elem2->set_state(1);
-  elem2->set_step(3);
   this->_module->add_element(elem2);
  } // _generate_test_data
 
@@ -861,9 +861,6 @@ void CModuleGenerator::_generate_always(void)
                                + " <= "
                                + mem->access_string(in)
                                + ";\n");
-
-          std::cout << "end load" << std::endl;
-
         } // if : is_mem_ref()
         sm_gen.add_state_process(state,
                                  step,
@@ -877,12 +874,6 @@ void CModuleGenerator::_generate_always(void)
         auto in = elem->get_input_at(0);
         auto out = std::dynamic_pointer_cast<CDFG_Addr>
           (elem->get_output_at(0));
-
-        std::cout << "store inst: "
-                  << out->is_reg_ref()
-                  << ' '
-                  << out->is_mem_ref()
-                  << std::endl;
 
         // レジスタ参照の場合
         if (out->is_reg_ref())
@@ -961,6 +952,72 @@ void CModuleGenerator::_generate_always(void)
         break;
       }
 
+    case CDFG_Operator::eType::FCMP:
+      {
+        auto fcmp
+          = std::dynamic_pointer_cast<CDFG_FcmpElem>(elem);
+
+        auto in_0 = elem->get_input_at(0);
+        auto in_1 = elem->get_input_at(1);
+        auto out  = elem->get_output_at(0);
+        auto ope  = elem->get_operator();
+
+        // 入力の接続
+        {
+          process_str.append
+            (this->_cout.output_indent()
+             + ope->get_input_node_at(0)->get_verilog_name()
+             + " <= "
+             + in_0->get_verilog_name()
+             + ";\n"
+             + this->_cout.output_indent()
+             + ope->get_input_node_at(1)->get_verilog_name()
+             + " <= "
+             + in_1->get_verilog_name()
+             + ";\n");
+
+          sm_gen.add_state_process
+            (state,
+             step,
+             process_str);
+        }
+
+        // 出力の接続
+        {
+          auto cond = fcmp->get_condition();
+
+          if (cond == CDFG_FcmpElem::eCond::TRUE)
+            process_str.assign
+              (this->_cout.output_indent()
+               + out->get_verilog_name()
+               + " <= "
+               + true_node->get_verilog_name()
+               + ";\n");
+
+          else if (cond == CDFG_FcmpElem::eCond::FALSE)
+            process_str.assign
+              (this->_cout.output_indent()
+               + out->get_verilog_name()
+               + " <= "
+               + false_node->get_verilog_name()
+               + ";\n");
+
+          else
+            process_str.assign
+              (this->_cout.output_indent()
+               + out->get_verilog_name()
+               + " <= "
+               + fcmp->get_condition_code()
+               + ";\n");
+
+          sm_gen.add_state_process
+            (state,
+             step + latency + 1,
+             process_str);
+        }
+        break;
+      }
+
     case CDFG_Operator::eType::SELECT:
     case CDFG_Operator::eType::BR:
       {
@@ -1019,40 +1076,40 @@ void CModuleGenerator::_generate_always(void)
       case CDFG_Operator::eType::RET:
         {
           auto finish_state_label
-            = std::dynamic_pointer_cast<CDFG_Label>(elem->get_input_at(0));
-
-          ///< @todo 返り値への対応
+            = std::dynamic_pointer_cast
+            <CDFG_Label>(elem->get_input_at(0));
 
           // 終了状態への遷移
-          process_str.append(this->_cout.output_indent()
-                             + state_node->get_verilog_name()
-                             + " <= "
-                             + finish_state_label->get_verilog_name()
-                             + ";\n"
-                             + this->_cout.output_indent()
-                             + step_node->get_verilog_name()
-                             + " <= 0;\n");
+          process_str.append
+            (this->_cout.output_indent()
+             + state_node->get_verilog_name()
+             + " <= "
+             + finish_state_label->get_verilog_name()
+             + ";\n"
+             + this->_cout.output_indent()
+             + step_node->get_verilog_name()
+             + " <= 0;\n");
 
-          sm_gen.add_state_process(state,
-                                   step,
-                                   process_str);
+          sm_gen.add_state_process
+            (state, step, process_str);
 
           // 終了状態
-          process_str.assign(this->_cout.output_indent()
-                             + fin_name
-                             + " <= "
-                             + true_node->get_verilog_name()
-                             + ";\n"
-                             + this->_cout.output_indent()
-                             + state_node->get_verilog_name()
-                             + " <= "
-                             + zero_node->get_verilog_name()
-                             + ";\n");
+          process_str.assign
+            (this->_cout.output_indent()
+             + fin_name
+             + " <= "
+             + true_node->get_verilog_name()
+             + ";\n"
+             + this->_cout.output_indent()
+             + state_node->get_verilog_name()
+             + " <= "
+             + zero_node->get_verilog_name()
+             + ";\n");
 
-          sm_gen.add_state_process(finish_state_label->get_state(),
-                                   0 /* step */,
-                                   process_str);
-
+          sm_gen.add_state_process
+            (finish_state_label->get_state(),
+             0 /* step */,
+             process_str);
           break;
         }
 
