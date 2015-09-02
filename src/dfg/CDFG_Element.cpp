@@ -12,34 +12,42 @@ CDFG_Element::CDFG_Element
 (const CDFG_Operator::eType & type,
  const unsigned & num_input,
  const unsigned & state,
- const unsigned & step) {
+ const unsigned & step)
+  : _state(state),
+      _step(step)
+{
   auto phony_ope = std::make_shared<CDFG_Operator>
     ("phony",
      "phony_mod",
      0, /* latency */
      type);
   this->_input_list.resize(num_input);
-  this->_output_list.resize(1); ///< @todo 演算器の出力を1つに限定
+  this->_output_list.resize(1);
   this->_ope = phony_ope;
   this->_ope->set_num_input(num_input);
-  this->_state = state;
-  this->_step = step;
-}
+} // CDFG_Element
 
 /**
    コンストラクタ
    @param[in] ope 演算に使用する演算器の参照
  */
-CDFG_Element::CDFG_Element(std::shared_ptr<CDFG_Operator> & ope) {
+CDFG_Element::CDFG_Element
+(const std::shared_ptr<CDFG_Operator> & ope,
+ const unsigned & state,
+ const unsigned & step)
+  : _state(state),
+      _step(step)
+{
   this->set_operator(ope);
-}
+} // CDFG_Element
 
 /**
    オペレータのセット
    @param[in] ope セットするオペレータ
    @return 1 オペレータを上書き, 0 オペレータを新規にセット
  */
-int CDFG_Element::set_operator(std::shared_ptr<CDFG_Operator> & ope) {
+int CDFG_Element::set_operator
+(const std::shared_ptr<CDFG_Operator> & ope) {
   int ret = 0;
 
   // overwrite
