@@ -26,8 +26,9 @@
 #include "../dfg/CDFG_Array.hpp"
 #include "../dfg/CDFG_Element.hpp"
 #include "../dfg/CDFG_IcmpElem.hpp"
+#include "../dfg/CDFG_FcmpElem.hpp"
 #include "../dfg/CDFG_TruncElem.hpp"
-#include  "../dfg/CDFG_LoadElem.hpp"
+#include "../dfg/CDFG_LoadElem.hpp"
 #include "../xml/CInstancingOperator.hpp"
 #include "CDebug.hpp"
 using namespace llvm;
@@ -56,19 +57,19 @@ private:
   unsigned _state; //! 現在処理中の命令の実行ステート番号
 
   //! ステートマシンの遷移前の状態を保持するレジスタの名前
-  const std::string _PREV_STATE_NAME = "prev_state";
+  static const std::string _PREV_STATE_NAME;
 
   //! ステートマシンの現在の状態を保持するレジスタの名前
-  const std::string _CUR_STATE_NAME = "current_state";
+  static const std::string _CUR_STATE_NAME;
 
   //! ステートマシンの終了状態のステート(label)名
-  const std::string _FINISH_STATE_NAME = "finish_state";
+  static const std::string _FINISH_STATE_NAME;
 
   //! ステートマシンのステップ信号名
-  const std::string _STEP_NAME = "step";
+  static const std::string _STEP_NAME;
 
   //! 演算器の設定ファイル名
-  const std::string _OPERATOR_CONFIG_FILENAME = "./config/operator_config.xml";
+  static const std::string _OPERATOR_CONFIG_FILENAME;
 
   // 補助関数
   std::string _get_module_name(const Module & M);
@@ -88,6 +89,7 @@ private:
   void _add_load_inst          (const Instruction * inst);
   void _add_store_inst         (const Instruction * inst);
   void _add_icmp_inst          (const Instruction * inst);
+  void _add_fcmp_inst          (const Instruction * inst);
   void _add_phi_inst           (const Instruction * inst);
   void _add_select_inst        (const Instruction * inst);
   void _add_srem_inst          (const Instruction * inst);
@@ -109,5 +111,21 @@ private:
   void _add_trunc_inst         (const Instruction * inst);
   void _add_getelementptr_inst (const Instruction * inst);
 }; // FortRock
+
+// static const data member の初期化
+const std::string
+FortRock::_PREV_STATE_NAME = "prev_state";
+
+const std::string
+FortRock::_CUR_STATE_NAME = "current_state";
+
+const std::string
+FortRock::_FINISH_STATE_NAME = "finish_state";
+
+const std::string
+FortRock::_STEP_NAME = "step";
+
+const std::string
+FortRock::_OPERATOR_CONFIG_FILENAME = "./config/operator_config.xml";
 
 #endif
