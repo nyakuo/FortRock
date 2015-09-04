@@ -696,13 +696,13 @@ void FortRock::_add_select_inst
      CDFG_Node::eNode::REG);
 
   // 入力の定数対応
-  if (!inst->getOperand(0)->hasName())
-    a0 = this->_module_gen->get_node
-      (this->_get_value_name(inst->getOperand(0)),
-       CDFG_Node::eNode::PARAM);
   if (!inst->getOperand(1)->hasName())
-    a1 = this->_module_gen->get_node
+    a0 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(1)),
+       CDFG_Node::eNode::PARAM);
+  if (!inst->getOperand(2)->hasName())
+    a1 = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(2)),
        CDFG_Node::eNode::PARAM);
 
   // 出力
@@ -1951,6 +1951,7 @@ void FortRock::_grub_global_variables
     if (type->isPointerTy())
       type = type->getPointerElementType();
 
+    //! @todo 他の型への対応
     // 配列の場合
     if (type->isArrayTy()) {
       //! @todo zeroinitializerへの対応
@@ -1992,6 +1993,23 @@ void FortRock::_grub_global_variables
         this->_module_gen->add_node(mem);
       }
     } // type : isArrayTy
+    if (type->isIntegerTy()) {
+      auto int_value
+        = dyn_cast<ConstantInt>(init);
+
+      auto param = std::make_shared<CDFG_Parameter>
+        (this->_get_value_name(int_value),
+         type->getPrimitiveSizeInBits(),
+         int_value->getValue().getSExtValue());
+
+      auto addr = std::make_shared<CDFG_Addr>
+        (name,
+         type->getPrimitiveSizeInBits(),
+         param);
+
+      this->_module_gen->add_node(param);
+      this->_module_gen->add_node(addr);
+    } // type : isIntegerTy
   } // for : ite
 } // _grub_global_variables
 
