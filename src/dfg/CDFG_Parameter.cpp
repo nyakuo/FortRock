@@ -162,12 +162,8 @@ CDFG_Parameter::to_string(void){
   char buf[64];
 
   // 負の数
-  if ((this->_param_type == eParamType::INTEGER
+  if (this->_param_type == eParamType::INTEGER
        && this->_data.param < 0)
-      || (this->_param_type == eParamType::FLOAT
-          && this->_data.fparam < 0.0)
-      || (this->_param_type == eParamType::DOUBLE
-          && this->_data.lfparam < 0.0))
     ret = "-";
 
   // ビット幅
@@ -180,22 +176,21 @@ CDFG_Parameter::to_string(void){
   case eParamType::FALSE:
   case eParamType::BOOL:
   case eParamType::ZERO:
+    snprintf(buf, sizeof(buf), "%ld", std::abs(this->_data.param));
+    ret += buf;
     break;
 
   case eParamType::FLOAT:
-    break;
-
   case eParamType::DOUBLE:
+    for (int i=this->_bit_width / 8 - 1 * ((this->_bit_width % 8) == 0);
+         i >= 0;
+         --i) {
+      snprintf(buf, sizeof(buf), "%02x", this->_data.c[i]);
+      ret += buf;
+    }
     break;
 
   default:;
-  }
-
-  for (int i=this->_bit_width / 8 - 1 * ((this->_bit_width % 8) == 0);
-       i >= 0;
-       --i) {
-    snprintf(buf, sizeof(buf), "%02x", this->_data.c[i]);
-    ret += buf;
   }
 
   return ret;
