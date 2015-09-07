@@ -1638,7 +1638,6 @@ void FortRock::_add_getelementptr_inst
   }
   elem->set_input(addr, 0);
   this->_module_gen->add_element(elem);
-  ++this->_step;
  } // _add_getelementptr_inst
 
 /**
