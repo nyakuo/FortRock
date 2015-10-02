@@ -12,6 +12,7 @@ OBJS := \
 	CDFG_Element.o \
 	CDFG_FcmpElem.o \
 	CDFG_Operator.o \
+	CDFG_Scheduler.o \
 	CStateMachineGen.o \
 	COutput.o \
 	CModuleGenerator.o \
@@ -38,6 +39,7 @@ CDFG_Array.o: CDFG_Array.hpp CDFG_Array.cpp
 CDFG_Element.o: CDFG_Element.cpp CDFG_Element.hpp
 CDFG_FcmpElem.o: CDFG_FcmpElem.cpp CDFG_FcmpElem.hpp
 CDFG_Operator.o: CDFG_Operator.cpp CDFG_Operator.hpp
+CDFG_Scheduler.o: CDFG_Scheduler.cpp CDFG_Scheduler.hpp
 CStateMachineGen.o: CStateMachineGen.cpp CStateMachineGen.hpp
 COutput.o: COutput.cpp COutput.hpp
 CModule.o: CModule.cpp CModule.hpp
