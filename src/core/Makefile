@@ -16,6 +16,7 @@ EXTRA_OBJS := \
 	../dfg/CDFG_Element.o \
 	../dfg/CDFG_FcmpElem.o \
 	../dfg/CDFG_Operator.o \
+	../dfg/CDFG_Scheduler.o \
 	../dfg/CStateMachineGen.o \
 	../dfg/COutput.o \
 	../dfg/CModuleGenerator.o \
