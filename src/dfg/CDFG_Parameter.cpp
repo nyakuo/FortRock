@@ -176,7 +176,7 @@ CDFG_Parameter::to_string(void){
   case eParamType::FALSE:
   case eParamType::BOOL:
   case eParamType::ZERO:
-    snprintf(buf, sizeof(buf), "%ld", std::abs(this->_data.param));
+    snprintf(buf, sizeof(buf), "%lx", std::abs(this->_data.param));
     ret += buf;
     break;
 
