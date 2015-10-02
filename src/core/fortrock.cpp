@@ -385,16 +385,15 @@ void FortRock::_add_load_inst
 (const Instruction * inst)
 {
   std::shared_ptr<CDFG_Addr> a;
-  bool is_gepope = false;
+  auto ope = dyn_cast<LoadInst>(inst)->getPointerOperand();
+  bool is_gepope = isa<GEPOperator>(ope);
 
   // 入力
   // getelementptr の場合
-  auto ope = dyn_cast<LoadInst>(inst)->getPointerOperand();
-  if (isa<GEPOperator>(ope)) {
+  is_gepope = false;
+  if (is_gepope) {
     auto gepope = dyn_cast<GEPOperator>(ope);
-    is_gepope = true;
     auto ptr = gepope->getPointerOperand();
-
     auto array
       = this->_module_gen->get_node
       (ptr->getName(),
@@ -404,7 +403,6 @@ void FortRock::_add_load_inst
       (this->_module_gen->get_node
        (gepope->getPointerOperand()->getName(),
         CDFG_Node::eNode::ADDR));
-
     a->set_ref(array);
 
     // アドレスの追加
@@ -1599,7 +1597,7 @@ void FortRock::_add_trunc_inst
  */
 void FortRock::_add_getelementptr_inst
 (const Instruction * inst)
- {
+{
   auto elem = std::make_shared<CDFG_Element>
     (CDFG_Operator::eType::GETELEMENTPTR,
      1,
@@ -1636,9 +1634,10 @@ void FortRock::_add_getelementptr_inst
       (this->_module_gen->get_node(value->getName(),
                                    type));
   }
+
   elem->set_input(addr, 0);
   this->_module_gen->add_element(elem);
- } // _add_getelementptr_inst
+} // _add_getelementptr_inst
 
 /**
    プログラムで使用するすべてのレジスタを取得し
@@ -1656,7 +1655,81 @@ void FortRock::_grub_variables
   for (auto it = inst_begin(*funct); // funct->begin();
        it != inst_end(*funct);       // funct->end();
        ++it) {
+    // 戻り値の代入先変数のインスタンス化
+    switch (it->getOpcode()) {
+    case Instruction::Trunc:
+    case Instruction::Load:
+    case Instruction::ICmp:
+    case Instruction::FCmp:
+    case Instruction::SRem:
+    case Instruction::Mul:
+    case Instruction::FMul:
+    case Instruction::SDiv:
+    case Instruction::FDiv:
+    case Instruction::Add:
+    case Instruction::FAdd:
+    case Instruction::Sub:
+    case Instruction::FSub:
+    case Instruction::Shl:
+    case Instruction::LShr:
+    case Instruction::AShr:
+    case Instruction::PHI:
+    case Instruction::And:
+    case Instruction::Or:
+    case Instruction::Xor:
+    case Instruction::Select:
+      {
+        auto name = this->_get_value_name(&(*it));
+        auto type = (*it).getType();
 
+        auto node = std::make_shared<CDFG_Reg>
+          (name,
+           type->getPrimitiveSizeInBits(),
+           true, //! @todo is signedが常にtrue
+           CDFG_Reg::eRegType::REG);
+
+        // 未定義のregの追加
+        if (!this->_module_gen->find_node(node))
+          this->_module_gen->add_node(node);
+
+        break;
+      }
+
+    case Instruction::GetElementPtr:
+      {
+        auto name = this->_get_value_name(&(*it));
+        auto type = (*it).getType();
+
+        auto node = std::make_shared<CDFG_Addr>
+          (name,
+           type->getPrimitiveSizeInBits());
+
+        // 未定義のregの追加
+        if (!this->_module_gen->find_node(node))
+          this->_module_gen->add_node(node);
+
+        break;
+      }
+
+    case Instruction::Br:
+    case Instruction::Store:
+    case Instruction::Ret:
+      // nothing to do
+      break;
+
+    default:
+      {
+        errs() << "ERROR ("
+               << __func__
+               << "):"
+               << it->getOpcodeName() << " "
+               << it->getOpcode() << " 未定義のオペランド\n";
+        continue;
+      }
+    } // switch : it->getOpcode()
+
+#if 1
+    // 引数の変数のインスタンス化
     if (!it->use_empty()) {
       // 命令に対応するオペランド数の指定
       int getop = 1;
@@ -1746,6 +1819,7 @@ void FortRock::_grub_variables
                    (float)fp_value->getValueAPF().convertToDouble());
               }
             }
+#if 0
             // 変数の場合
             else {
               node = std::make_shared<CDFG_Reg>
@@ -1754,7 +1828,7 @@ void FortRock::_grub_variables
                  true, ///, @todo is_signed が常にtrue
                  CDFG_Reg::eRegType::REG);
             }
-
+#endif
           // 未定義のregの追加
           if (!this->_module_gen->find_node(node))
             this->_module_gen->add_node(node);
@@ -1769,7 +1843,7 @@ void FortRock::_grub_variables
         type = value->getType();
 
         auto name = this->_get_value_name(value);
-
+#if 0
         // ポインタ
         if (type->isPointerTy()) {
           // ポインタに対する参照の追加
@@ -1778,8 +1852,11 @@ void FortRock::_grub_variables
             (name,
              type->getPrimitiveSizeInBits());
         }
+
         // 定数
-        else if(!value->hasName()) {
+        else
+#endif
+          if(!value->hasName()) {
           // 整数型
           if (type->isIntegerTy()) {
             auto int_value
@@ -1811,6 +1888,7 @@ void FortRock::_grub_variables
                (float)fp_value->getValueAPF().convertToDouble());
           }
         }
+#if 0
         // 変数
         else {
           node = std::make_shared<CDFG_Reg>
@@ -1819,6 +1897,7 @@ void FortRock::_grub_variables
              true, //! @todo is signedが常にtrue
              CDFG_Reg::eRegType::REG);
         }
+#endif
         // 未定義のregの追加
         if (!this->_module_gen->find_node(node))
           this->_module_gen->add_node(node);
@@ -1833,6 +1912,7 @@ void FortRock::_grub_variables
 
         case Instruction::Br:
           {
+#if 0
             binst = dyn_cast<BranchInst>(&*it);
             if (binst->isConditional()) { // 条件付き分岐
               value = binst->getCondition();
@@ -1852,6 +1932,7 @@ void FortRock::_grub_variables
 
             if (!this->_module_gen->find_node(node))
               this->_module_gen->add_node(node);
+#endif
             break;
           } // br
 
@@ -1863,7 +1944,7 @@ void FortRock::_grub_variables
               type = value->getType();
 
               auto name = this->_get_value_name(value);
-
+#if 0
               if (type->isPointerTy()) { // ポインタ
                 // ポインタに対する参照の追加
                 type = type->getPointerElementType();
@@ -1871,7 +1952,9 @@ void FortRock::_grub_variables
                   (name,
                    type->getPrimitiveSizeInBits());
               }
-              else if(!value->hasName()) { // 定数
+              else
+#endif
+                if(!value->hasName()) { // 定数
                 // 整数型
                 if (type->isIntegerTy()) {
                   auto int_value
@@ -1903,6 +1986,7 @@ void FortRock::_grub_variables
                      (float)fp_value->getValueAPF().convertToDouble());
                 }
               }
+#if 0
               else { // 変数
                 node = std::make_shared<CDFG_Reg>
                   (name,
@@ -1910,7 +1994,7 @@ void FortRock::_grub_variables
                    true, //! @todo is signedが常にtrue
                    CDFG_Reg::eRegType::REG);
               }
-
+#endif
               if (!this->_module_gen->find_node(node))
                 this->_module_gen->add_node(node);
 
@@ -1931,6 +2015,7 @@ void FortRock::_grub_variables
         errs() << err;
       }
     } // else
+#endif
   } // for
 } // _grub_variables
 
