@@ -7,6 +7,7 @@
 
 #include "CModule.hpp"
 #include "CDFG_Element.hpp"
+#include "CDFG_Addr.hpp"
 
 /**
    @class CDFG_Scheduler
