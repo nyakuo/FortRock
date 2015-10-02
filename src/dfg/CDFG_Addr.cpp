@@ -19,3 +19,13 @@ CDFG_Addr::is_reg_ref(void) {
   return this->_ref->get_type()
     == CDFG_Node::eNode::REG;
 }
+
+/**
+   パラメータに対する参照か否かを取得
+   @return パラメータに対する参照か否か
+ */
+bool
+CDFG_Addr::is_param_ref(void) {
+  return this->_ref->get_type()
+    == CDFG_Node::eNode::PARAM;
+}

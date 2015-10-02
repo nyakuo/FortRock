@@ -52,6 +52,7 @@ public:
 
   bool is_mem_ref(void);
   bool is_reg_ref(void);
+  bool is_param_ref(void);
 
   /**
      参照対象の取得
