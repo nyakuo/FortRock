@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 #include "CDFG_Node.hpp"
+#include "CDFG_Wire.hpp"
 #include "CDFG_Operator.hpp"
 
 /**

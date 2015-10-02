@@ -23,6 +23,11 @@ CDFG_Element::CDFG_Element
      type);
   this->_input_list.resize(num_input);
   this->_output_list.resize(1);
+
+  // getElementPtr inst の場合は出力は無し
+  if (type == CDFG_Operator::eType::GETELEMENTPTR)
+      this->_output_list.resize(0);
+
   this->_ope = phony_ope;
   this->_ope->set_num_input(num_input);
 } // CDFG_Element
@@ -58,7 +63,20 @@ int CDFG_Element::set_operator
   this->_ope = ope;
 
   // 入出力数の設定
-  this->_input_list.resize(ope->get_num_input());
+  auto cnt = 0;
+  for (auto i=0; i<ope->get_num_input(); ++i) {
+    auto input = ope->get_input_node_at(i);
+
+    if (input->get_type() == CDFG_Node::eNode::WIRE) {
+      auto reg = std::dynamic_pointer_cast<CDFG_Wire>(input);
+      // clk, ceの場合は Elementの入力に登録しない
+      if (reg->get_type() == CDFG_Wire::eWireType::CLK
+          || reg->get_type() == CDFG_Wire::eWireType::CE)
+        continue;
+    }
+    ++cnt;
+  }
+  this->_input_list.resize(cnt);
   this->_output_list.resize(ope->get_num_output());
 
   return ret;
@@ -133,20 +151,20 @@ CDFG_Element::get_output_at(const unsigned & at) {
 /**
    接続されている演算器の入力の数を取得
    @return 接続されている演算器の入力の数
+   @note 演算器に接続されているCLK，CEは含まない
  */
 unsigned
 CDFG_Element::get_num_input(void) {
-  return this->_ope->get_num_input();
+  return this->_input_list.size();
 }
 
 /**
    接続されている演算器の出力の数を取得
    @return 接続されている演算器の出力の数
  */
-
 unsigned
 CDFG_Element::get_num_output(void) {
-  return this->_ope->get_num_output();
+  return this->_output_list.size();
 }
 
 /**
