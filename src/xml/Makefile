@@ -18,10 +18,12 @@ EXTRA_OBJS := \
 	../dfg/CDFG_Mem.o \
 	../dfg/CDFG_Addr.o \
 	../dfg/CDFG_Array.o \
+	../dfg/CDFG_Scheduler.o \
 	../dfg/CModule.o \
 	../dfg/CDFG_Element.o \
 	../dfg/CDFG_FcmpElem.o \
 	../dfg/CStateMachineGen.o \
+
 
 TARGET := xml_test
 TARGETS := $(TARGET)
@@ -32,9 +34,6 @@ $(TARGET): $(OBJS) $(EXTRA_OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $(OBJS) $(EXTRA_OBJS) $(LIBS) $(LDFLAGS)
 
 instance_test.o: instance_test.cpp
-
 COperatorManager.o: COperatorManager.cpp COperatorManager.hpp
-
 CInstancingOperator.o: CInstancingOperator.cpp CInstancingOperator.hpp
-
 COperatorGenerator.o: COperatorGenerator.cpp COperatorGenerator.hpp
