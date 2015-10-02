@@ -256,9 +256,7 @@ void // for debug
 CDFG_Scheduler::_show_list
 (const std::list<std::shared_ptr<CDFG_Element> > & list) {
   for (auto & elem : list)
-    std::cout << elem->get_operator()->get_type_name()
-              << " "
-              << elem->get_operator()->get_latency()
+    std::cout << elem->get_operator()->get_latency()
               << ": "
               << elem->get_state()
               << ' '
