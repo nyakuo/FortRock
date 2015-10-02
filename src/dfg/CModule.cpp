@@ -51,6 +51,11 @@ std::string & CModule::get_name(void) {
  */
 std::list<std::shared_ptr<CDFG_Element> > &
 CModule::get_element_list(void) {
+  this->_dfg.sort([](const std::shared_ptr<CDFG_Element> & obj1,
+                     const std::shared_ptr<CDFG_Element> & obj2) -> bool {
+                    return obj1->get_state() < obj2->get_state()
+                      && obj1->get_step() < obj2->get_step();
+                  });
   return this->_dfg;
 }
 
@@ -84,7 +89,7 @@ CModule::get_node
   auto ite =
     std::find_if(this->_node_list.begin(),
                  this->_node_list.end(),
-                 [type](std::shared_ptr<CDFG_Node> obj) -> bool {
+                 [type](const std::shared_ptr<CDFG_Node> & obj) -> bool {
                    return obj->get_type() == type;
                  });
   return *ite;
@@ -101,7 +106,7 @@ CModule::get_node
   auto ite =
     std::find_if(this->_node_list.begin(),
                  this->_node_list.end(),
-                 [type](std::shared_ptr<CDFG_Node> obj) -> bool {
+                 [type](const std::shared_ptr<CDFG_Node> & obj) -> bool {
                    return obj->get_type() == CDFG_Node::eNode::LABEL
                      && std::dynamic_pointer_cast<CDFG_Label>
                           (obj)->get_type() == type;
@@ -120,7 +125,7 @@ CModule::get_node
   auto ite =
     std::find_if(this->_node_list.begin(),
                  this->_node_list.end(),
-                 [type](std::shared_ptr<CDFG_Node> obj) -> bool {
+                 [type](const std::shared_ptr<CDFG_Node> & obj) -> bool {
                    return obj->get_type() == CDFG_Node::eNode::PARAM
                      && std::dynamic_pointer_cast<CDFG_Parameter>
                            (obj)->get_type() == type;
@@ -139,7 +144,7 @@ CModule::get_node
   auto ite =
     std::find_if(this->_node_list.begin(),
                  this->_node_list.end(),
-                 [type](std::shared_ptr<CDFG_Node> obj) -> bool {
+                 [type](const std::shared_ptr<CDFG_Node> & obj) -> bool {
                    return obj->get_type() == CDFG_Node::eNode::REG
                      && std::dynamic_pointer_cast<CDFG_Reg>
                            (obj)->get_type() == type;
@@ -158,7 +163,7 @@ CModule::get_node
   auto ite =
     std::find_if(this->_node_list.begin(),
                  this->_node_list.end(),
-                 [type](std::shared_ptr<CDFG_Node> obj) -> bool {
+                 [type](const std::shared_ptr<CDFG_Node> & obj) -> bool {
                    return obj->get_type() == CDFG_Node::eNode::WIRE
                      && std::dynamic_pointer_cast<CDFG_Wire>
                            (obj)->get_type() == type;
@@ -180,7 +185,7 @@ CModule::get_node
     std::find_if(this->_node_list.begin(),
                  this->_node_list.end(),
                  [node_name, type]
-                 (std::shared_ptr<CDFG_Node> obj) -> bool {
+                 (const std::shared_ptr<CDFG_Node> & obj) -> bool {
                    return type == obj->get_type()
                      && obj->get_asm_name() == node_name;
                  });
@@ -197,9 +202,10 @@ CModule::get_label_node(const unsigned & state) {
   auto ite =
     std::find_if(this->_node_list.begin(),
                  this->_node_list.end(),
-                 [state](std::shared_ptr<CDFG_Node> obj) -> bool {
+                 [state](const std::shared_ptr<CDFG_Node> & obj) -> bool {
                    return (obj->get_type() == CDFG_Node::eNode::LABEL)
-                     && (std::dynamic_pointer_cast<CDFG_Label>(obj)->get_state() == state);
+                     && (std::dynamic_pointer_cast<CDFG_Label>
+                         (obj)->get_state() == state);
                  });
   return *ite;
 }
@@ -216,7 +222,7 @@ CModule::find_node(const std::string & asm_name,
   auto ite =
     std::find_if(this->_node_list.begin(),
                  this->_node_list.end(),
-                 [asm_name, type](std::shared_ptr<CDFG_Node> obj) -> bool {
+                 [asm_name, type](const std::shared_ptr<CDFG_Node> & obj) -> bool {
                    return obj->get_asm_name() == asm_name
                      && obj->get_type() == type;
                  });
