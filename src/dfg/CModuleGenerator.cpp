@@ -523,9 +523,9 @@ void CModuleGenerator::_generate_assign(void)
 
       for (auto i=1;
            i < elem->get_num_input();
-           i += 2) {
+           i += 2)
         this->_cout <<= ", " + elem->get_input_at(i)->get_verilog_name();
-      } // for : i
+
 
       this->_cout <<= ");\n\n";
 
@@ -773,10 +773,16 @@ void CModuleGenerator::_generate_always(void)
   this->_cout.indent_left(2);
   this->_cout << "end\n";
 
-  // ステートマシンの出力
+
   // DFG ---> list(接続タイミング)
   this->_cout.indent_right(4);
   CStateMachineGen sm_gen;
+
+  // スケジューリング
+  CDFG_Scheduler scheduler(this->_module);
+  scheduler.do_schedule();
+
+  // ステートマシンの出力
   for (auto & elem : this->_module->get_element_list()) {
     auto ope     = elem->get_operator();
     auto state   = elem->get_state();
@@ -839,14 +845,15 @@ void CModuleGenerator::_generate_always(void)
           (elem->get_input_at(0));
         auto out = elem->get_output_at(0);
 
-        // レジスタ参照の場合
-        if (in->is_reg_ref())
+        // レジスタおよびパラメータ参照の場合
+        if (in->is_reg_ref()
+            || in->is_param_ref()){
           process_str.append(this->_cout.output_indent()
                              + out->get_verilog_name()
                              + " <= "
                              + in->get_reference()->get_verilog_name()
                              + ";\n");
-
+        }
         // メモリ参照の場合
         else if (in->is_mem_ref()) {
           auto mem
@@ -865,7 +872,6 @@ void CModuleGenerator::_generate_always(void)
         sm_gen.add_state_process(state,
                                  step,
                                  process_str);
-
         break;
       }
 

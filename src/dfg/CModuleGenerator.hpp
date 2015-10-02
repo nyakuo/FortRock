@@ -22,9 +22,11 @@
 #include "CDFG_Addr.hpp"
 #include "CDFG_Array.hpp"
 #include "CDFG_Operator.hpp"
+#include "CDFG_Scheduler.hpp"
 #include "CStateMachineGen.hpp"
 #include "COutput.hpp"
 #include "CModule.hpp"
+
 
 /**
    @class CModuleGenerator
