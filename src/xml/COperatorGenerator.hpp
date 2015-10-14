@@ -25,6 +25,8 @@ public:
                      const unsigned & bit_width,
                      const CNode_data::ePortType & type,
                      const bool & is_signed);
+
+  // setter
   void set_type(const CDFG_Operator::eType & type);
   void set_latency(const unsigned & latency);
   void set_name(const std::string & name);

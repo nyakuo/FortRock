@@ -25,12 +25,14 @@ public:
   CInstancingOperator(void);
   ~CInstancingOperator(void);
 
-  void instancing_operators (std::shared_ptr<CModuleGenerator> & module_gen,
-                             const std::string & filename);
+  void instancing_operators
+  (std::shared_ptr<CModuleGenerator> & module_gen,
+   const std::string & filename);
 
 private:
-  void _parse_operator_info(xmlDocPtr & doc, xmlNodePtr & cur,
-                            std::shared_ptr<CModuleGenerator> & module_gen);
+  void _parse_operator_info
+  (xmlDocPtr & doc, xmlNodePtr & cur,
+   std::shared_ptr<CModuleGenerator> & module_gen);
 };
 
 #endif
