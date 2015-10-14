@@ -115,6 +115,7 @@ void CInstancingOperator::_parse_operator_info
         if (xmlStrcmp(mod_info->name, (const xmlChar*)"use_ip_core") == 0) {
           if (str.compare("false") == 0) { // false
             num_module = 0; // 以降の処理をスキップ
+            ope_gen->set_num_operator(0);
             break;
           }
         }
