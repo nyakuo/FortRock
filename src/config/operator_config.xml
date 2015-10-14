@@ -6,7 +6,7 @@
       <latency>      1      </latency>
       <module_name>  Add  </module_name>
       <instance_name> add    </instance_name>
-      <num_module>   1      </num_module>
+      <num_module>   3      </num_module>
 
       <io>
         <info>
