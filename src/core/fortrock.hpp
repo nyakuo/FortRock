@@ -110,6 +110,7 @@ private:
   void _add_xor_inst           (const Instruction * inst);
   void _add_trunc_inst         (const Instruction * inst);
   void _add_getelementptr_inst (const Instruction * inst);
+  void _add_zext_inst          (const Instruction * inst);
 }; // FortRock
 
 // static const data member の初期化

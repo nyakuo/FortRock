@@ -362,6 +362,8 @@ void FortRock::_parse_instructions
       this->_add_getelementptr_inst(inst);
       break;
 
+    case Instruction::ZExt:   this->_add_zext_inst(inst); break;
+
     default:
       throw std::string(std::string("ERROR (") + __func__ + " :"
                         + std::string(inst->getOpcodeName())
@@ -1640,6 +1642,44 @@ void FortRock::_add_getelementptr_inst
 } // _add_getelementptr_inst
 
 /**
+   zext命令をDFGに追加
+   @param[in] inst 命令の参照
+   @brief b <= a | 0
+*/
+void FortRock::_add_zext_inst
+(const Instruction * inst)
+{
+  auto elem = std::make_shared<CDFG_Element>
+    (CDFG_Operator::eType::ZEXT,
+     1, // num input
+     this->_state,
+     this->_step);
+
+  // 入力
+  auto a = this->_module_gen->get_node
+    (inst->getOperand(0)->getName(),
+     CDFG_Node::eNode::REG);
+
+  // 入力の定数対応
+  if (!inst->getOperand(0)->hasName())
+    a = this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(0)),
+       CDFG_Node::eNode::PARAM);
+
+  // 出力
+  auto b = this->_module_gen->get_node
+    (inst->getName(),
+     CDFG_Node::eNode::REG);
+
+  elem->set_input(a, 0);
+  elem->set_output(b, 0);
+
+  this->_module_gen->add_element(elem);
+
+  ++this->_step;
+} // _add_zext_isnt
+
+/**
    プログラムで使用するすべてのレジスタを取得し
    variablesに格納する
    Labelについても列挙し，格納する
@@ -1678,6 +1718,7 @@ void FortRock::_grub_variables
     case Instruction::Or:
     case Instruction::Xor:
     case Instruction::Select:
+    case Instruction::ZExt:
       {
         auto name = this->_get_value_name(&(*it));
         auto type = (*it).getType();
@@ -1734,6 +1775,7 @@ void FortRock::_grub_variables
       int getop = 1;
       switch(it->getOpcode()) {
       case Instruction::Trunc:
+      case Instruction::ZExt:
       case Instruction::Load: getop = 1;
         break;
 
@@ -1771,7 +1813,7 @@ void FortRock::_grub_variables
         continue;
       } // switch : it->getOpcode()
 
-      // Load命令
+      // Load命令のgetelementptr命令対応
       if (it->getOpcode() == Instruction::Load) {
         auto vv = dyn_cast<LoadInst>(&*it)->getPointerOperand();
 
@@ -1866,7 +1908,7 @@ void FortRock::_grub_variables
           }
         } // if : !value->hasName()
 
-        // 未定義のregの追加
+        // 未定義の定数の追加
         if (!this->_module_gen->find_node(node))
           this->_module_gen->add_node(node);
       } // for : i
@@ -1881,7 +1923,7 @@ void FortRock::_grub_variables
 
         case Instruction::Store:
           {
-            // 未定義のregの追加
+            // 未定義の定数の追加
             for(auto i=0; i<2; ++i) {
               value = it->getOperand(i);
               type = value->getType();
@@ -1927,12 +1969,14 @@ void FortRock::_grub_variables
           } // store
 
         default:
-          throw std::string(std::string("ERROR (") + __func__ + "):"
-                            + std::string(it->getOpcodeName())
-                            + " "
-                            + std::to_string(it->getOpcode())
-                            + " 未定義のオペランド\n");
-          break;
+          {
+            throw std::string(std::string("ERROR (") + __func__ + "):"
+                              + std::string(it->getOpcodeName())
+                              + " "
+                              + std::to_string(it->getOpcode())
+                              + " 未定義のオペランド\n");
+            break;
+          } // default
         } // switch
       } // try
       catch(std::string err) {

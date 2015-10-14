@@ -4,7 +4,7 @@
    コンストラクタ
    @brief テスト用の入力(DFG)を与えている
    @param[in] filename 出力ファイル名
- */
+*/
 CModuleGenerator::CModuleGenerator
 (const std::string & filename,
  const std::string & module_name)
@@ -46,7 +46,7 @@ CModuleGenerator::CModuleGenerator
 /**
    モジュールにノードを追加する
    @note FortRock 本体から呼び出すために使用
- */
+*/
 void CModuleGenerator::add_node
 (const std::shared_ptr<CDFG_Node> & node)
 {
@@ -55,7 +55,7 @@ void CModuleGenerator::add_node
 
 /**
    モジュールに演算器を追加する
- */
+*/
 void CModuleGenerator::add_operator
 (std::shared_ptr<CDFG_Operator> & ope)
 {
@@ -64,7 +64,7 @@ void CModuleGenerator::add_operator
 
 /**
    モジュールにElement(処理)を追加する
- */
+*/
 void CModuleGenerator::add_element
 (const std::shared_ptr<CDFG_Element> elem)
 {
@@ -100,7 +100,7 @@ bool CModuleGenerator::find_node
    @param[in] node_name ノードの名前
    @param[in] type ノードの種類
    @note FortRock 本体から呼び出すために使用
- */
+*/
 std::shared_ptr<CDFG_Node>
 CModuleGenerator::get_node
 (const std::string & node_name,
@@ -113,7 +113,7 @@ CModuleGenerator::get_node
    モジュール内のノードを取得
    @param[in] type ノードの種類
    @note FortRock 本体から呼び出すために使用
-         (stateなどの取得に使用)
+   (stateなどの取得に使用)
 */
 std::shared_ptr<CDFG_Node>
 CModuleGenerator::get_node
@@ -138,7 +138,7 @@ CModuleGenerator::get_node
    モジュール内のノードを取得
    @brief Parameterを取得するために使用
    @param[in] type ラベルの種類
- */
+*/
 std::shared_ptr<CDFG_Node>
 CModuleGenerator::get_node
 (const CDFG_Parameter::eParamType & type)
@@ -150,7 +150,7 @@ CModuleGenerator::get_node
    モジュール内のノードを取得
    @brief regを取得するために使用
    @param[in] type regの種類
- */
+*/
 std::shared_ptr<CDFG_Node>
 CModuleGenerator::get_node
 (const CDFG_Reg::eRegType & type)
@@ -162,7 +162,7 @@ CModuleGenerator::get_node
    モジュール内のノードを取得
    @brief wireを取得するために使用
    @param[in] type wireの種類
- */
+*/
 std::shared_ptr<CDFG_Node>
 CModuleGenerator::get_node
 (const CDFG_Wire::eWireType & type)
@@ -175,7 +175,7 @@ CModuleGenerator::get_node
    @note FortRock本体から取得するために使用
    @todo 取得する演算器の番号による指定など
    @attention 暫定版
- */
+*/
 std::shared_ptr<CDFG_Operator>
 CModuleGenerator::get_operator
 (const CDFG_Operator::eType & type)
@@ -193,19 +193,19 @@ CModuleGenerator::get_operator
 /**
    モジュールの最大ステップを取得
    @note step信号を定義する際にのビット幅を
-         調べるためにFortRockが使用
+   調べるためにFortRockが使用
    @return step信号に必要なビット幅
- */
+*/
 unsigned
 CModuleGenerator::get_max_step(void)
 {
   return this->_module->get_max_step();
- } // get_max_step
+} // get_max_step
 
 /**
    テストデータ(DFG)の生成
    @note テスト用
- */
+*/
 void CModuleGenerator::_generate_test_data(void)
 {
   // ノード確保
@@ -337,11 +337,11 @@ void CModuleGenerator::_generate_test_data(void)
   elem2->set_input(p_3, 1);
   elem2->set_output(out, 0);
   this->_module->add_element(elem2);
- } // _generate_test_data
+} // _generate_test_data
 
 /**
    ステートマシン回路をファイルへ出力
- */
+*/
 int CModuleGenerator::generate(void)
 {
   this->_generate_header();
@@ -478,7 +478,7 @@ void CModuleGenerator::_generate_define(void)
 
 /**
    配列の宣言部の出力
- */
+*/
 void CModuleGenerator::_generate_define_array(void)
 {
   for (auto & node : this->_module->get_node_list()) {
@@ -537,7 +537,7 @@ void CModuleGenerator::_generate_assign(void)
    module の function 文の定義
    @note PHI命令の実装に用いる
    @attention 少なくとも2つ以上の条件が存在すると仮定
- */
+*/
 void CModuleGenerator::_generate_function(void)
 {
   auto prev_state =
@@ -833,9 +833,9 @@ void CModuleGenerator::_generate_always(void)
                            + ope_node->get_verilog_name()
                            + ";\n");
 
-      sm_gen.add_state_process(state,
-                               step + latency + 1,
-                               process_str);
+        sm_gen.add_state_process(state,
+                                 step + latency + 1,
+                                 process_str);
         break;
       }
 
@@ -1079,45 +1079,45 @@ void CModuleGenerator::_generate_always(void)
         }
         break;
       }
-      case CDFG_Operator::eType::RET:
-        {
-          auto finish_state_label
-            = std::dynamic_pointer_cast
-            <CDFG_Label>(elem->get_input_at(0));
+    case CDFG_Operator::eType::RET:
+      {
+        auto finish_state_label
+          = std::dynamic_pointer_cast
+          <CDFG_Label>(elem->get_input_at(0));
 
-          // 終了状態への遷移
-          process_str.append
-            (this->_cout.output_indent()
-             + state_node->get_verilog_name()
-             + " <= "
-             + finish_state_label->get_verilog_name()
-             + ";\n"
-             + this->_cout.output_indent()
-             + step_node->get_verilog_name()
-             + " <= 0;\n");
+        // 終了状態への遷移
+        process_str.append
+          (this->_cout.output_indent()
+           + state_node->get_verilog_name()
+           + " <= "
+           + finish_state_label->get_verilog_name()
+           + ";\n"
+           + this->_cout.output_indent()
+           + step_node->get_verilog_name()
+           + " <= 0;\n");
 
-          sm_gen.add_state_process
-            (state, step, process_str);
+        sm_gen.add_state_process
+          (state, step, process_str);
 
-          // 終了状態
-          process_str.assign
-            (this->_cout.output_indent()
-             + fin_name
-             + " <= "
-             + true_node->get_verilog_name()
-             + ";\n"
-             + this->_cout.output_indent()
-             + state_node->get_verilog_name()
-             + " <= "
-             + zero_node->get_verilog_name()
-             + ";\n");
+        // 終了状態
+        process_str.assign
+          (this->_cout.output_indent()
+           + fin_name
+           + " <= "
+           + true_node->get_verilog_name()
+           + ";\n"
+           + this->_cout.output_indent()
+           + state_node->get_verilog_name()
+           + " <= "
+           + zero_node->get_verilog_name()
+           + ";\n");
 
-          sm_gen.add_state_process
-            (finish_state_label->get_state(),
-             0 /* step */,
-             process_str);
-          break;
-        }
+        sm_gen.add_state_process
+          (finish_state_label->get_state(),
+           0 /* step */,
+           process_str);
+        break;
+      }
 
     case CDFG_Operator::eType::PHI:
       {
@@ -1282,14 +1282,15 @@ void CModuleGenerator::_generate_always(void)
         auto a = trunc_elem->get_input_at(0);
         auto b = trunc_elem->get_output_at(0);
 
-        process_str.append(this->_cout.output_indent()
-                           + b->get_verilog_name()
-                           + " <= "
-                           + a->get_verilog_name()
-                           + "["
-                           + std::to_string
-                           (trunc_elem->get_dest_bit_width() - 1)
-                           + ":0];\n");
+        process_str.append
+          (this->_cout.output_indent()
+           + b->get_verilog_name()
+           + " <= "
+           + a->get_verilog_name()
+           + "["
+           + std::to_string
+           (trunc_elem->get_dest_bit_width() - 1)
+           + ":0];\n");
 
         sm_gen.add_state_process(state,
                                  step,
@@ -1297,6 +1298,20 @@ void CModuleGenerator::_generate_always(void)
         break;
       }
 
+    case CDFG_Operator::eType::ZEXT:
+      {
+        process_str.append
+          (this->_cout.output_indent()
+           + elem->get_output_at(0)->get_verilog_name()
+           + " <= "
+           + elem->get_input_at(0)->get_verilog_name()
+           + " | 0;\n");
+
+        sm_gen.add_state_process(state,
+                                 step,
+                                 process_str);
+        break;
+      }
       ///< @todo 未対応の命令に対応
 
     default:
