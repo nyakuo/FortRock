@@ -4,6 +4,7 @@
 #include <memory>
 #include <list>
 #include <algorithm>
+#include <map>
 
 #include "CModule.hpp"
 #include "CDFG_Element.hpp"
@@ -33,6 +34,10 @@ private:
   (const std::list<std::shared_ptr<CDFG_Element> > & list,
    const std::shared_ptr<CDFG_Operator> & ope,
    const unsigned & data_depend_step);
+
+  bool _can_use(const unsigned & step,
+                const std::shared_ptr<CDFG_Operator> & ope,
+                const std::list<std::shared_ptr<CDFG_Element> > & dfg);
 
   unsigned _get_last_step
   (const std::list<std::shared_ptr<CDFG_Element> > & list);

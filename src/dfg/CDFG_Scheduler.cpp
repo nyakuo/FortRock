@@ -7,8 +7,6 @@
    @return スケジューリング前後での演算器全体での
    レイテンシの変化
 */
-#include <iostream>
-
 unsigned
 CDFG_Scheduler::do_schedule
 (void) {
@@ -17,6 +15,9 @@ CDFG_Scheduler::do_schedule
             > dfg;
   std::list<std::shared_ptr<CDFG_Element> > tmp_dfg;
 
+  std::map<CDFG_Operator::eType,
+           std::list<std::shared_ptr<CDFG_Operator> > > ope_list;
+
   // DFGを各ステートで切り出す
   {
     auto state = 0;
@@ -24,45 +25,69 @@ CDFG_Scheduler::do_schedule
            : this->_module->get_element_list()) {
       // ステートが移動したか
       if (state != elem->get_state()) {
-        dfg.push_back(tmp_dfg);
+        dfg.emplace_back(tmp_dfg);
         tmp_dfg.clear();
         state = elem->get_state();
       }
-      tmp_dfg.push_back(elem);
+      tmp_dfg.emplace_back(elem);
     }
   }
 
-  unsigned ret_change_ltc = 0; // 演算器全体のレイテンシの変化
+  // 演算器の種類ごとの一覧の作成
+  for (auto & ope : this->_module->get_operator_list())
+    ope_list[ope->get_type()].emplace_back(ope);
+
+  auto ret_change_ltc = 0; // 演算器全体のレイテンシの変化
+
   // 各ステートに対してスケジューリング
   tmp_dfg.clear();
   for (auto & state_dfg : dfg) {
-
-    // 各Elementのデータ依存がない最小ステップを求める
     for (auto elem = state_dfg.cbegin();
          elem != state_dfg.cend();
          ++elem) {
       auto original_step = (*elem)->get_step();
+
+      // step(0)実行は依存が発生しない
       if ((*elem)->get_step() == 0) {
-        tmp_dfg.push_back(*elem);
+        tmp_dfg.emplace_back(*elem);
         continue;
       }
 
       // データ依存の判定
-      auto min_step
+      auto data_depend_step
         = this->_min_step_data(tmp_dfg, (*elem));
 
       // 演算器依存の判定
-      min_step
-        = this->_min_step_operator
-        (tmp_dfg, (*elem)->get_operator(),
-         min_step);
-      ret_change_ltc += original_step - min_step;
+      auto min_step = this->_get_last_step(state_dfg);
+      {
+        std::shared_ptr<CDFG_Operator> & min_ope = (*elem)->get_operator();
+        if (ope_list[min_ope->get_type()].size() > 0) {
+
+          for (auto & ope : ope_list[min_ope->get_type()]) {
+            auto new_min_step
+              = this->_min_step_operator(tmp_dfg,
+                                         ope,
+                                         data_depend_step);
+
+            if (new_min_step < min_step) {
+              // 実行演算器の変更
+              (*elem)->set_operator(ope);
+              min_step = new_min_step;
+            }
+          }
+
+        } // if : ope_list.size() > 0
+        else
+          min_step = data_depend_step;
+      }
 
       // 実行ステップの変更
       (*elem)->set_step(min_step);
 
+      ret_change_ltc += original_step - min_step;
+
       // DFGの再構築
-      tmp_dfg.push_back(*elem);
+      tmp_dfg.emplace_back(*elem);
       tmp_dfg.sort([](const std::shared_ptr<CDFG_Element> & obj1,
                       const std::shared_ptr<CDFG_Element> & obj2)
                    -> bool {
@@ -70,6 +95,7 @@ CDFG_Scheduler::do_schedule
                        && obj1->get_step() < obj2->get_step();
                    });
     } // for : elem
+
     // br命令をDFGの最後に移動
     for (auto & elem : tmp_dfg)
       if (elem->get_operator()->get_type()
@@ -77,7 +103,6 @@ CDFG_Scheduler::do_schedule
         elem->set_step(this->_get_last_step(tmp_dfg));
         break;
       }
-
 
     //    _show_list(tmp_dfg);
 
@@ -88,7 +113,7 @@ CDFG_Scheduler::do_schedule
   } // for : state_dfg
 
   return ret_change_ltc;
-}
+} // do_schedule
 
 /**
    指定された演算器が利用可能となる最小ステップの取得
@@ -210,63 +235,54 @@ CDFG_Scheduler::_min_step_operator
   std::list<std::shared_ptr<CDFG_Element> > target_elem;
   for (auto & elem : list)
     if (elem->get_operator() == ope)
-      target_elem.push_back(elem);
+      target_elem.emplace_back(elem);
 
-  // 他の演算器がDFG上に存在しない場合
+  // 他の演算が前に存在しない場合
   if (target_elem.empty())
     return data_depend_step;
 
   // データ依存と同じタイミングで実行できるか判定
-  {
-    bool min_ok = true;
-    for (auto & elem : target_elem) {
-      // データ依存+レイテンシの間に他の命令で演算器が使用されている
-      if (!(elem->get_step() + latency + 1 <= data_depend_step
-            && elem->get_step() >= data_depend_step + latency + 1))
-        min_ok = false;
-    }
+  if (this->_can_use(data_depend_step,
+                     ope,
+                     target_elem))
+    return data_depend_step;
 
-    if (min_ok)
-      return data_depend_step;
+  auto step = data_depend_step+1;
+  auto last_step = this->_get_last_step(target_elem);
+  for (;step < this->_get_last_step(target_elem);
+       ++step) {
+    if (this->_can_use(step, ope, target_elem))
+      return step;
   }
+  return last_step;
 
-  target_elem.sort
-    ([](const std::shared_ptr<CDFG_Element> & elem1,
-        const std::shared_ptr<CDFG_Element> & elem2)
-     -> bool
-     {
-       return elem1->get_step() <= elem2->get_step();
-     });
+} // _min_step_operator
 
-  // 全ての同一演算の終了タイミングから演算を実施し
-  // 他のどの同一演算ともタイミングが被らないかを検証
-  for (auto & start_elem : target_elem) {
-    bool can_use = true;
+/**
+   指定されたステップで演算器が使用可能か判定
+   @param[in] step 演算の実行開始ステップ
+   @param[in] ope 演算に使用する演算器
+   @param[in] list 演算前のdfg
+   @return 指定されたステップで演算器が使用可能か
+ */
+bool CDFG_Scheduler::_can_use
+(const unsigned & step,
+ const std::shared_ptr<CDFG_Operator> & ope,
+ const std::list<std::shared_ptr<CDFG_Element> > & dfg) {
+  auto latency = ope->get_latency();
 
-    if (start_elem->get_step() + latency
-        < data_depend_step)
+  for (auto & elem : dfg) {
+    if (elem->get_operator() != ope)
       continue;
 
-    for (auto & another_elem : target_elem) {
-      // start_elem よりも後に実行される another_elem
-      if (start_elem->get_step() + latency >
-          another_elem->get_step()
-          && another_elem->get_step() - start_elem->get_step()
-          < latency) {
-          // 実行不可能
-          can_use = false;
-          break;
-      }
-    } // for : another_elem
+    auto tmp_step = elem->get_step();
+    if (step < tmp_step + latency + 1
+        && step + latency + 1 > tmp_step)
+      return false;
+  }
 
-      // 新たなタイミングで実行可能な場合
-      if (can_use == true)
-        return start_elem->get_step() + latency + 1;
-  } // for : start_elem
-
-  return std::max(this->_get_last_step(target_elem),
-                  data_depend_step);
-} // _min_step_operator
+  return true;
+}
 
 /**
    最後に実行が完了する命令の実行終了ステップを取得する
@@ -286,12 +302,15 @@ CDFG_Scheduler::_get_last_step
          < elem2->get_step() + elem2->get_operator()->get_latency();
      });
 
+  // 演算器を使用する場合は +1
   return (*last_elem)->get_step()
     + (*last_elem)->get_operator()->get_latency()
     + (((*last_elem)->get_operator()->get_latency() == 0) ? 0 : 1);
-}
+} // get_last_step
 
-void // for debug
+// for debug
+#include <iostream>
+void
 CDFG_Scheduler::_show_list
 (const std::list<std::shared_ptr<CDFG_Element> > & list) {
   for (auto & elem : list)
