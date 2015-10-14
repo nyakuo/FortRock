@@ -38,7 +38,7 @@
     </add_int>
 
     <fadd>
-      <use_ip_core> true </use_ip_core>
+      <use_ip_core> false </use_ip_core>
       <latency> 11 </latency>
       <module_name> fadd5 </module_name>
       <instance_name> fadd </instance_name>
@@ -69,7 +69,7 @@
     </fadd>
 
     <sub_int>
-      <use_ip_core>  true  </use_ip_core>
+      <use_ip_core>  false  </use_ip_core>
       <latency>      1      </latency>
       <module_name>  Sub  </module_name>
       <instance_name> sub    </instance_name>
@@ -105,7 +105,7 @@
     </sub_int>
 
     <fsub>
-      <use_ip_core> true </use_ip_core>
+      <use_ip_core> false </use_ip_core>
       <latency> 12 </latency>
       <module_name> fsub </module_name>
       <instance_name> fsub </instance_name>
@@ -136,7 +136,7 @@
     </fsub>
 
     <mul>
-      <use_ip_core>  true       </use_ip_core>
+      <use_ip_core>  false      </use_ip_core>
       <latency>      1          </latency>
       <module_name>  multiplier </module_name>
       <instance_name> mul        </instance_name>
@@ -173,7 +173,7 @@
     </mul>
 
     <fmul>
-      <use_ip_core>   true </use_ip_core>
+      <use_ip_core>   false  </use_ip_core>
       <latency>       8    </latency>
       <module_name>   fmul </module_name>
       <instance_name> fmul </instance_name>
@@ -205,7 +205,7 @@
     </fmul>
 
     <s_div>
-      <use_ip_core>  true    </use_ip_core>
+      <use_ip_core>  false    </use_ip_core>
       <latency>      36      </latency>
       <module_name>  Divider </module_name>
       <instance_name> div     </instance_name>
@@ -245,7 +245,7 @@
     </s_div>
 
     <fdiv>
-      <use_ip_core>   true </use_ip_core>
+      <use_ip_core>   false </use_ip_core>
       <latency>       28   </latency>
       <module_name>   fdiv </module_name>
       <instance_name> fdiv </instance_name>
@@ -277,7 +277,7 @@
     </fdiv>
 
     <s_rem>
-      <use_ip_core>  true    </use_ip_core>
+      <use_ip_core> false    </use_ip_core>
       <latency>      36      </latency>
       <module_name>  Divider </module_name>
       <instance_name> divrem  </instance_name>
@@ -317,7 +317,7 @@
     </s_rem>
 
     <frem>
-      <use_ip_core>   true </use_ip_core>
+      <use_ip_core>   false </use_ip_core>
       <latency>       28   </latency>
       <module_name>   frem </module_name>
       <instance_name> frem </instance_name>
@@ -349,7 +349,7 @@
     </frem>
 
     <fcmp>
-      <use_ip_core>   true </use_ip_core>
+      <use_ip_core>  false </use_ip_core>
       <latency>       2   </latency>
       <module_name>   fcmp </module_name>
       <instance_name> fcmp </instance_name>
