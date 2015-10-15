@@ -11,21 +11,22 @@
 */
 CDFG_Array::CDFG_Array
 (const std::string & name,
- const CDFG_Array::eDataType & type,
+ const CDFG_Mem::eDataType & type,
  const unsigned & word_length,
  const unsigned & write_ports,
  const unsigned & read_ports,
  const std::vector<unsigned> & length)
-  : _data_type(type),
-    _length(length),
-    _is_initialized(false),
+  : _length(length),
     CDFG_Mem(name,
              std::accumulate(length.begin(),
                              length.end(), 0),
              word_length,
              write_ports,
              read_ports,
-             CDFG_Mem::eMemType::ARRAY) {}
+             CDFG_Mem::eMemType::ARRAY,
+             type,
+             false) {}
+
 /**
    コンストラクタ
    @param[in] name インスタンス名
@@ -37,22 +38,22 @@ CDFG_Array::CDFG_Array
 */
 CDFG_Array::CDFG_Array
 (const std::string & name,
- const CDFG_Array::eDataType & type,
+ const CDFG_Mem::eDataType & type,
  const unsigned & word_length,
  const unsigned & write_ports,
  const unsigned & read_ports,
  const std::vector<unsigned> & length,
  const std::vector<std::vector<int> > & initializer)
-  : _data_type(type),
-    _length(length),
-    _is_initialized(true),
+  : _length(length),
     CDFG_Mem(name,
              std::accumulate(length.begin(),
                              length.end(), 0),
              word_length,
              write_ports,
              read_ports,
-             CDFG_Mem::eMemType::ARRAY)
+             CDFG_Mem::eMemType::ARRAY,
+             type,
+             true)
 {
   // メモリの初期化
   //! @todo 多次元配列への対応

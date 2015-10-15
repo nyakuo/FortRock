@@ -20,15 +20,23 @@ public:
   /** メモリの種類を表す定数 */
   enum class eMemType : unsigned {
     ARRAY = 0, ///< 配列
+      RAM,     ///< RAM
       OTHER,   ///< その他
       };
+
+  enum class eDataType : unsigned {
+    INTEGER = 0, ///< 整数型
+      FLOAT,     ///< 浮動小数点型
+  };
 
   CDFG_Mem(const std::string & name,
            const unsigned & num_datas,
            const unsigned & word_length,
            const unsigned & write_ports,
            const unsigned & read_ports,
-           const eMemType & mem_type);
+           const eMemType & mem_type,
+           const eDataType & data_type,
+           const bool & is_initialized);
 
   virtual ~CDFG_Mem(void) {}
 
@@ -52,6 +60,8 @@ protected:
   const unsigned _write_ports; ///< 書き込みポート数 (同時書き込み数)
   const unsigned _read_ports;  ///< 読み込みポート数 (同時読み込み数)
   const eMemType _mem_type;    ///< メモリの種類
+  const bool _is_initialized;  ///< 初期化されるかどうか
+  const eDataType _data_type;  ///< 格納されるデータ型
 };
 
 #endif

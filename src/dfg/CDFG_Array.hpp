@@ -16,11 +16,6 @@
  */
 class CDFG_Array : public CDFG_Mem {
 public:
-  enum class eDataType : unsigned {
-    INTEGER = 0, ///< 整数型
-      FLOAT,     ///< 浮動小数点型
-  };
-
   /**
      コンストラクタ
      @param[in] name インスタンス名
@@ -31,7 +26,7 @@ public:
      @param[in] length 配列の長さ
   */
   CDFG_Array(const std::string & name,
-             const eDataType & type,
+             const CDFG_Mem::eDataType & type,
              const unsigned & word_length,
              const unsigned & write_ports,
              const unsigned & read_ports,
@@ -45,6 +40,7 @@ public:
      @param[in] read_ports 読み込みポート数 (同時読み込み数)
      @param[in] length 配列の長さ
      @param[in] initializer 初期化子
+     @todo 浮動小数点対応
   */
   CDFG_Array(const std::string & name,
              const eDataType & type,
@@ -71,8 +67,6 @@ public:
   unsigned get_dimension(void) { return this->_length.size(); }
 
 private:
-  const bool _is_initialized;           ///< 初期化されるかどうか
-  const eDataType _data_type;           ///< 格納されるデータ型
   const std::vector<unsigned> _length;  ///< 配列の各次元での長さ
   std::vector<std::vector<int> > _int_data; ///< 整数型データ格納場所
 };

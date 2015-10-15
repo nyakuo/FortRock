@@ -15,12 +15,16 @@ CDFG_Mem::CDFG_Mem
  const unsigned & word_length,
  const unsigned & write_ports,
  const unsigned & read_ports,
- const eMemType & mem_type)
+ const eMemType & mem_type,
+ const eDataType & data_type,
+ const bool & is_initialized)
   : _num_datas(num_datas),
     _word_length(word_length),
     _write_ports(write_ports),
     _read_ports(read_ports),
     _mem_type(mem_type),
+    _is_initialized(is_initialized),
+    _data_type(data_type),
     CDFG_Node(name,
               word_length,
               false, // is_signed
