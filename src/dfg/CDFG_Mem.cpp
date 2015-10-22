@@ -13,15 +13,11 @@ CDFG_Mem::CDFG_Mem
 (const std::string & name,
  const unsigned & num_datas,
  const unsigned & word_length,
- const unsigned & write_ports,
- const unsigned & read_ports,
  const eMemType & mem_type,
  const eDataType & data_type,
  const bool & is_initialized)
   : _num_datas(num_datas),
     _word_length(word_length),
-    _write_ports(write_ports),
-    _read_ports(read_ports),
     _mem_type(mem_type),
     _is_initialized(is_initialized),
     _data_type(data_type),
@@ -31,3 +27,28 @@ CDFG_Mem::CDFG_Mem
               CDFG_Node::eNode::MEM,
               "m_")
 {}
+
+
+/**
+   メモリの種類の取得
+   @return メモリの種類
+ */
+CDFG_Mem::eMemType
+CDFG_Mem::get_mem_type(void)
+{ return this->_mem_type; }
+
+/**
+   書き込みポート数の取得
+   @return 書き込みポート数
+ */
+unsigned
+CDFG_Mem::get_num_w_port(void)
+{ return this->_write_ports.size(); }
+
+/**
+   読み込みポート数の取得
+   @return 読み込みポート数
+ */
+unsigned
+CDFG_Mem::get_num_r_port(void)
+{ return this->_read_ports.size(); }

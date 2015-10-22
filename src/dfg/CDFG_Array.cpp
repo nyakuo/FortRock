@@ -21,8 +21,6 @@ CDFG_Array::CDFG_Array
              std::accumulate(length.begin(),
                              length.end(), 0),
              word_length,
-             write_ports,
-             read_ports,
              CDFG_Mem::eMemType::ARRAY,
              type,
              false) {}
@@ -49,8 +47,6 @@ CDFG_Array::CDFG_Array
              std::accumulate(length.begin(),
                              length.end(), 0),
              word_length,
-             write_ports,
-             read_ports,
              CDFG_Mem::eMemType::ARRAY,
              type,
              true)
@@ -68,7 +64,9 @@ CDFG_Array::CDFG_Array
 
 /**
    配列の初期化部の文字列を出力する
+   @param[in] indent 現在のインデント
    @todo すべて0で初期化する場合などはforループで実装する
+   @todo 浮動小数点対応
 */
 std::string
 CDFG_Array::init_string
@@ -77,7 +75,7 @@ CDFG_Array::init_string
 
   if (this->_is_initialized) {
     if (this->_data_type
-        == CDFG_Array::eDataType::INTEGER) {
+        == CDFG_Mem::eDataType::INTEGER) {
       for (auto i=0; i<this->_length[0]; ++i)
         ret_str.append(indent
                        + this->_verilog_name
@@ -88,6 +86,7 @@ CDFG_Array::init_string
                        + ";\n");
     } // if : this->_data_type
   } // if : this->_is_initialized
+
   return ret_str;
 }
 
@@ -104,13 +103,14 @@ CDFG_Array::define_string
   for (auto dim=0;
        dim < 1;
        ++dim) {
-    ret_str.append("reg ["
-                   + std::to_string(this->_word_length - 1)
-                   + ":0] "
-                   + this->_verilog_name
-                   + "[0:"
-                   + std::to_string(this->_length[dim] - 1)
-                   + "];\n");
+    ret_str.append
+      ("reg ["
+       + std::to_string(this->_word_length - 1)
+       + ":0] "
+       + this->_verilog_name
+       + "[0:"
+       + std::to_string(this->_length[dim] - 1)
+       + "];\n");
   } // for : dim
 
   return ret_str;

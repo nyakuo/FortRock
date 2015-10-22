@@ -2,8 +2,9 @@
 #define _CDFG_MEM_H
 
 #include <string>
-#include <vector>
+#include <list>
 #include <memory>
+
 #include "CDFG_Node.hpp"
 #include "CDFG_Addr.hpp"
 
@@ -32,8 +33,6 @@ public:
   CDFG_Mem(const std::string & name,
            const unsigned & num_datas,
            const unsigned & word_length,
-           const unsigned & write_ports,
-           const unsigned & read_ports,
            const eMemType & mem_type,
            const eDataType & data_type,
            const bool & is_initialized);
@@ -48,7 +47,9 @@ public:
   (const std::shared_ptr<CDFG_Addr> & addr) = 0; ///< アクセス部(制御部も含む)の出力
 
   // getter
-  eMemType get_mem_type(void) { return this->_mem_type; }
+  eMemType get_mem_type(void);
+  unsigned get_num_w_port(void);
+  unsigned get_num_r_port(void);
 
   // overrides
   virtual bool is_input(void) override final { return false; }
@@ -57,8 +58,8 @@ public:
 protected:
   const unsigned _num_datas;   ///< メモリ上のデータ数
   const unsigned _word_length; ///< ワード長
-  const unsigned _write_ports; ///< 書き込みポート数 (同時書き込み数)
-  const unsigned _read_ports;  ///< 読み込みポート数 (同時読み込み数)
+  std::list<std::shared_ptr<CDFG_Node> > _write_ports; ///< 書き込みポート
+  std::list<std::shared_ptr<CDFG_Node> > _read_ports;  ///< 読み込みポート
   const eMemType _mem_type;    ///< メモリの種類
   const bool _is_initialized;  ///< 初期化されるかどうか
   const eDataType _data_type;  ///< 格納されるデータ型
