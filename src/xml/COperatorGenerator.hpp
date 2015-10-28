@@ -11,6 +11,8 @@
 #include "../dfg/CDFG_Wire.hpp"
 #include "../dfg/CModuleGenerator.hpp"
 
+class CModuleGenerator;
+
 /**
    @class COperatorGenerator
    @brief 演算器をxmlからインスタンス化するためのクラス
