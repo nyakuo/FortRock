@@ -15,6 +15,8 @@
 #include "../dfg/CDFG_Operator.hpp"
 #include "../dfg/CDFG_Node.hpp"
 
+class CModuleGenerator;
+
 /**
    @class CInstancingOperator
    @breif XMlをパースするクラス
