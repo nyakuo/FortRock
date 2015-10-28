@@ -3,6 +3,8 @@
 
 #include <string>
 #include <memory>
+#include <vector>
+
 #include "CDFG_Node.hpp"
 #include "CDFG_Mem.hpp"
 
