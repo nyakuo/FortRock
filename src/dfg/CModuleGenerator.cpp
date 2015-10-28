@@ -488,10 +488,25 @@ void CModuleGenerator::_generate_define_array(void)
     auto type = std::dynamic_pointer_cast<CDFG_Mem>
       (node)->get_mem_type();
 
-    if (type == CDFG_Mem::eMemType::ARRAY) { // 配列の場合
-      auto array = std::dynamic_pointer_cast<CDFG_Array>(node);
-      this->_cout << array->define_string() << std::endl;
-    } // if : type == ARRAY
+    switch (type) {
+    case CDFG_Mem::eMemType::ARRAY:
+      {
+        auto array = std::dynamic_pointer_cast<CDFG_Array>(node);
+        this->_cout << array->define_string() << std::endl;
+        break;
+      }
+
+    case CDFG_Mem::eMemType::RAM:
+      {
+        auto ram = std::dynamic_pointer_cast<CDFG_Ram>(node);
+        this->_cout << ram->define_string() << std::endl;
+        break;
+      }
+
+    case CDFG_Mem::eMemType::OTHER:
+    default:
+        break;
+    }
   } // for : node
 } // _generate_define_array
 
@@ -526,9 +541,7 @@ void CModuleGenerator::_generate_assign(void)
            i += 2)
         this->_cout <<= ", " + elem->get_input_at(i)->get_verilog_name();
 
-
       this->_cout <<= ");\n\n";
-
     } // if : PHI
   } // for : elem
 } // _generate_assign
@@ -895,15 +908,29 @@ void CModuleGenerator::_generate_always(void)
             std::dynamic_pointer_cast<CDFG_Mem>
             (out->get_reference());
 
-          // 配列参照の場合
-          //! @todo 配列参照以外への対応
-          if (mem->get_mem_type()
-              == CDFG_Mem::eMemType::ARRAY)
-            process_str.append(this->_cout.output_indent()
-                               + mem->access_string(out)
-                               + " <= "
-                               + in->get_verilog_name()
-                               + ";\n");
+          switch (mem->get_mem_type()) {
+          case CDFG_Mem::eMemType::ARRAY:
+            process_str.append
+              (this->_cout.output_indent()
+               + mem->access_string(out)
+               + " <= "
+               + in->get_verilog_name()
+               + ";\n");
+              break;
+
+          case CDFG_Mem::eMemType::RAM:
+            process_str.append
+              (this->_cout.output_indent()
+               + mem->access_string(out)
+               + " <= "
+               + in->get_verilog_name()
+               + ";\n");
+            break;
+
+          case CDFG_Mem::eMemType::OTHER:
+          default:
+            break;
+          } // switch
         } // if : is_mem_ref()
         sm_gen.add_state_process(state,
                                  step,
