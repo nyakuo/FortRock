@@ -1,5 +1,21 @@
 #include "fortrock.hpp"
 
+// static const data member の初期化
+const std::string
+FortRock::_PREV_STATE_NAME = "prev_state";
+
+const std::string
+FortRock::_CUR_STATE_NAME = "current_state";
+
+const std::string
+FortRock::_FINISH_STATE_NAME = "finish_state";
+
+const std::string
+FortRock::_STEP_NAME = "step";
+
+const std::string
+FortRock::_OPERATOR_CONFIG_FILENAME = "./config/operator_config.xml";
+
 /**
    入力された数を表すために必要なビット幅を計算する
    @param[in] num 表現したい種類の数
@@ -272,7 +288,7 @@ bool FortRock::runOnModule
   this->_grub_labels(it);
   this->_grub_variables(it);
 
-  CDebug::output_node_info(this->_module_gen->get_node_list());
+  //  CDebug::output_node_info(this->_module_gen->get_node_list());
 
   // 演算器のインスタンス化
   CInstancingOperator cinst;
@@ -1793,7 +1809,6 @@ void FortRock::_grub_variables
       case Instruction::Shl:
       case Instruction::LShr:
       case Instruction::AShr:
-      case Instruction::PHI:
       case Instruction::And:
       case Instruction::Or:
       case Instruction::Xor: getop = 2;
@@ -1802,6 +1817,15 @@ void FortRock::_grub_variables
       case Instruction::GetElementPtr:
       case Instruction::Select: getop = 3;
         break;
+
+      case Instruction::PHI:
+        { // PHI命令の引数は可変
+          getop =
+            dynamic_cast<PHINode*>
+            (const_cast<Instruction*>(&*it))
+            ->getNumIncomingValues();
+          break;
+        }
 
       default:
         errs() << "ERROR ("
@@ -2010,36 +2034,45 @@ void FortRock::_grub_global_variables
       auto array      = dyn_cast<ArrayType>(type);
       auto elem_type  = array->getTypeAtIndex((unsigned)0);
 
-      // 初期化子の取得
       //! @todo Integer以外の初期化子への対応
       if (elem_type->isIntegerTy()) {
-        //! @todo 1次元配列以外への対応
         std::vector<std::vector<int> > initializer;
         initializer.resize(1);
         initializer[0].reserve(array->getNumElements());
 
-        for (auto i=0;
-             i<array->getNumElements();
-             ++i) {
-          auto val = init->getAggregateElement(i);
-          auto type = val->getType();
-          auto int_value = dyn_cast<ConstantInt>(val);
-          initializer[0].push_back(int_value->getLimitedValue());
-        } // for : i
+        // 初期化子の取得
+        //! @todo 1次元配列以外への対応
+        // for (auto i=0;
+        //      i<array->getNumElements();
+        //      ++i) {
+        //   auto val = init->getAggregateElement(i);
+        //   auto type = val->getType();
+        //   auto int_value = dyn_cast<ConstantInt>(val);
+        //   initializer[0].push_back(int_value->getLimitedValue());
+        // } // for : i
 
         // 初期化子を用いたメモリの確保
-        std::vector<unsigned> length;
-        length.reserve(1);
-        length.push_back(array->getNumElements());
+        // std::vector<unsigned> length;
+        // length.reserve(1);
+        // length.push_back(array->getNumElements());
 
-        auto mem = std::make_shared<CDFG_Array>
+        // auto mem = std::make_shared<CDFG_Array>
+        //   (name,
+        //    CDFG_Mem::eDataType::INTEGER,
+        //    elem_type->getPrimitiveSizeInBits(),
+        //    1, // write_ports
+        //    1, // read_ports
+        //    length,
+        //    initializer);
+
+        auto mem = std::make_shared<CDFG_Ram>
           (name,
-           CDFG_Array::eDataType::INTEGER,
+           array->getNumElements(),
            elem_type->getPrimitiveSizeInBits(),
-           1, // write_ports
-           1, // read_ports
-           length,
-           initializer);
+           16,
+           CDFG_Mem::eDataType::INTEGER,
+           true,
+           1);
 
         this->_module_gen->add_node(mem);
       }
