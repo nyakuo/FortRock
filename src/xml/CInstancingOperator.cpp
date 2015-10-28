@@ -22,7 +22,7 @@ void CInstancingOperator::instancing_operators
   auto doc = xmlParseFile(filename.c_str());
   try {
     if (doc == NULL)
-      throw std::string ("ERROR: can not open xml file");
+      throw std::string ("ERROR: can not open config file");
   }
   catch (std::string e) {
     std::cerr << e << std::endl;
@@ -40,12 +40,12 @@ void CInstancingOperator::instancing_operators
     return;
   }
 
-  // IPCoreの項目までパース
+  // IPコアの項目までパース
   cur = cur->xmlChildrenNode;
   while (xmlStrcmp(cur->name, (const xmlChar*)"ip_core"))
     cur = cur->next;
 
-  // 演算器の情報をパースする
+  // 演算器の情報をパース
   this->_parse_operator_info(doc, cur, module_gen);
 }
 
