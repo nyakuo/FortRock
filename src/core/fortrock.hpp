@@ -24,6 +24,7 @@
 #include "../dfg/CDFG_Addr.hpp"
 #include "../dfg/CDFG_Mem.hpp"
 #include "../dfg/CDFG_Array.hpp"
+#include "../dfg/CDFG_Ram.hpp"
 #include "../dfg/CDFG_Element.hpp"
 #include "../dfg/CDFG_IcmpElem.hpp"
 #include "../dfg/CDFG_FcmpElem.hpp"
@@ -32,6 +33,8 @@
 #include "../xml/CInstancingOperator.hpp"
 #include "CDebug.hpp"
 using namespace llvm;
+
+class CModuleGenerator;
 
 /**
  * @class FortRock
@@ -51,6 +54,9 @@ public:
   virtual const char *getPassName(void) const
   { return "FortRock: Fortran to Verilog backend"; }
 
+  //! 演算器の設定ファイル名
+  static const std::string _OPERATOR_CONFIG_FILENAME;
+
 private:
   std::shared_ptr<CModuleGenerator> _module_gen;
   unsigned _step;  //! 現在処理中の命令の実行ステップ番号
@@ -67,9 +73,6 @@ private:
 
   //! ステートマシンのステップ信号名
   static const std::string _STEP_NAME;
-
-  //! 演算器の設定ファイル名
-  static const std::string _OPERATOR_CONFIG_FILENAME;
 
   // 補助関数
   std::string _get_module_name(const Module & M);
@@ -112,21 +115,5 @@ private:
   void _add_getelementptr_inst (const Instruction * inst);
   void _add_zext_inst          (const Instruction * inst);
 }; // FortRock
-
-// static const data member の初期化
-const std::string
-FortRock::_PREV_STATE_NAME = "prev_state";
-
-const std::string
-FortRock::_CUR_STATE_NAME = "current_state";
-
-const std::string
-FortRock::_FINISH_STATE_NAME = "finish_state";
-
-const std::string
-FortRock::_STEP_NAME = "step";
-
-const std::string
-FortRock::_OPERATOR_CONFIG_FILENAME = "./config/operator_config.xml";
 
 #endif
