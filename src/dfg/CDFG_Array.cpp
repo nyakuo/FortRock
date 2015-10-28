@@ -21,9 +21,12 @@ CDFG_Array::CDFG_Array
              std::accumulate(length.begin(),
                              length.end(), 0),
              word_length,
+             write_ports,
+             read_ports,
              CDFG_Mem::eMemType::ARRAY,
              type,
-             false) {}
+             false,
+             0) {}
 
 /**
    コンストラクタ
@@ -47,9 +50,12 @@ CDFG_Array::CDFG_Array
              std::accumulate(length.begin(),
                              length.end(), 0),
              word_length,
+             write_ports,
+             read_ports,
              CDFG_Mem::eMemType::ARRAY,
              type,
-             true)
+             true,
+             0)
 {
   // メモリの初期化
   //! @todo 多次元配列への対応

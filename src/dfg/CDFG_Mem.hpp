@@ -2,10 +2,12 @@
 #define _CDFG_MEM_H
 
 #include <string>
-#include <list>
+#include <vector>
 #include <memory>
 
 #include "CDFG_Node.hpp"
+#include "CDFG_Reg.hpp"
+#include "CDFG_Wire.hpp"
 #include "CDFG_Addr.hpp"
 
 class CDFG_Addr; // 循環参照によるクラスの重複定義対応
@@ -33,9 +35,12 @@ public:
   CDFG_Mem(const std::string & name,
            const unsigned & num_datas,
            const unsigned & word_length,
+           const unsigned & num_w_port,
+           const unsigned & num_r_port,
            const eMemType & mem_type,
            const eDataType & data_type,
-           const bool & is_initialized);
+           const bool & is_initialized,
+           const unsigned & latency);
 
   virtual ~CDFG_Mem(void) {}
 
@@ -50,19 +55,22 @@ public:
   eMemType get_mem_type(void);
   unsigned get_num_w_port(void);
   unsigned get_num_r_port(void);
+  std::shared_ptr<CDFG_Node> get_read_port(const unsigned & port_num);
+  std::shared_ptr<CDFG_Node> get_write_port(const unsigned & port_num);
 
   // overrides
   virtual bool is_input(void) override final { return false; }
   virtual bool is_output(void) override final { return false; }
 
 protected:
-  const unsigned _num_datas;   ///< メモリ上のデータ数
-  const unsigned _word_length; ///< ワード長
-  std::list<std::shared_ptr<CDFG_Node> > _write_ports; ///< 書き込みポート
-  std::list<std::shared_ptr<CDFG_Node> > _read_ports;  ///< 読み込みポート
+  unsigned _num_datas;   ///< メモリ上のデータ数
+  unsigned _word_length; ///< ワード長
+  std::vector<std::shared_ptr<CDFG_Reg> > _write_ports; ///< 書き込みポート
+  std::vector<std::shared_ptr<CDFG_Wire> > _read_ports; ///< 読み込みポート
   const eMemType _mem_type;    ///< メモリの種類
   const bool _is_initialized;  ///< 初期化されるかどうか
   const eDataType _data_type;  ///< 格納されるデータ型
+  const unsigned _latency;     ///< アクセスにかかるレイテンシ
 };
 
 #endif
