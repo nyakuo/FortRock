@@ -1813,6 +1813,9 @@ void FortRock::_grub_variables
       case Instruction::Or:
       case Instruction::Xor: getop = 2;
         break;
+      
+      case Instruction::PHI: getop = (int)dyn_cast<PHINode>(&*it)->getNumIncomingValues();
+        break;
 
       case Instruction::GetElementPtr:
       case Instruction::Select: getop = 3;
