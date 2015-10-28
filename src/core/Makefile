@@ -10,9 +10,10 @@ EXTRA_OBJS := \
 	../dfg/CDFG_Label.o \
 	../dfg/CDFG_Wire.o \
 	../dfg/CDFG_Reg.o \
-	../dfg/CDFG_Array.o \
-	../dfg/CDFG_Addr.o \
 	../dfg/CDFG_Mem.o \
+	../dfg/CDFG_Array.o \
+	../dfg/CDFG_Ram.o \
+	../dfg/CDFG_Addr.o \
 	../dfg/CDFG_Element.o \
 	../dfg/CDFG_FcmpElem.o \
 	../dfg/CDFG_Operator.o \

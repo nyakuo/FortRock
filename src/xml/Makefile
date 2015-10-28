@@ -16,6 +16,7 @@ EXTRA_OBJS := \
 	../dfg/CDFG_Reg.o \
 	../dfg/CDFG_Mem.o \
 	../dfg/CDFG_Addr.o \
+	../dfg/CDFG_Ram.o \
 	../dfg/CDFG_Array.o \
 	../dfg/CDFG_Scheduler.o \
 	../dfg/CModule.o \
