@@ -8,6 +8,7 @@ OBJS := \
 	CDFG_Reg.o \
 	CDFG_Mem.o \
 	CDFG_Ram.o \
+	CDFG_StoreElem.o \
 	CDFG_Array.o \
 	CDFG_Addr.o \
 	CDFG_Element.o \
@@ -40,6 +41,7 @@ CDFG_Ram.o: CDFG_Ram.hpp CDFG_Ram.cpp
 CDFG_Array.o: CDFG_Array.hpp CDFG_Array.cpp
 CDFG_Element.o: CDFG_Element.cpp CDFG_Element.hpp
 CDFG_FcmpElem.o: CDFG_FcmpElem.cpp CDFG_FcmpElem.hpp
+CDFG_StoreElem.o: CDFG_StoreElem.cpp CDFG_StoreElem.hpp
 CDFG_Operator.o: CDFG_Operator.cpp CDFG_Operator.hpp
 CDFG_Scheduler.o: CDFG_Scheduler.cpp CDFG_Scheduler.hpp
 CStateMachineGen.o: CStateMachineGen.cpp CStateMachineGen.hpp
