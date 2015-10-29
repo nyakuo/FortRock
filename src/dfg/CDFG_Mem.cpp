@@ -64,9 +64,9 @@ CDFG_Mem::CDFG_Mem
    メモリの種類の取得
    @return メモリの種類
  */
-CDFG_Mem::eMemType
+const CDFG_Mem::eMemType &
 CDFG_Mem::get_mem_type(void)
-{ return this->_mem_type; }
+{ return this->_mem_type; } // get_mem_type
 
 /**
    書き込みポート数の取得
@@ -74,7 +74,7 @@ CDFG_Mem::get_mem_type(void)
  */
 unsigned
 CDFG_Mem::get_num_w_port(void)
-{ return this->_write_ports.size(); }
+{ return this->_write_ports.size(); } // get_num_w_port
 
 /**
    読み込みポート数の取得
@@ -82,24 +82,35 @@ CDFG_Mem::get_num_w_port(void)
  */
 unsigned
 CDFG_Mem::get_num_r_port(void)
-{ return this->_read_ports.size(); }
+{ return this->_read_ports.size(); } // get_num_r_port
 
 /**
-   読み込みポートの取得
+   読み出しポートの取得
    @param[in] port_num 取得するポートのvector内での位置
+   @return 読み出しポートの参照
  */
 std::shared_ptr<CDFG_Node>
 CDFG_Mem::get_read_port
 (const unsigned & port_num) {
   return this->_read_ports.at(port_num);
-}
+} // get_read_port
 
 /**
    書き込みポートの取得
    @param[in] port_num 取得するポートのvector内での位置
+   @return 書き込みポートの参照
  */
 std::shared_ptr<CDFG_Node>
 CDFG_Mem::get_write_port
 (const unsigned & port_num) {
   return this->_write_ports.at(port_num);
-}
+} // get_write_port
+
+/**
+   メモリのアクセスレイテンシの取得
+   @return メモリのアクセスレイテンシ
+ */
+const unsigned &
+CDFG_Mem::get_latency(void) {
+  return this->_latency;
+} // get_latency
