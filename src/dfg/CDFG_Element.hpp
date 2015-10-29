@@ -20,7 +20,8 @@ public:
   CDFG_Element(const CDFG_Operator::eType & type,
                const unsigned & num_input,
                const unsigned & state,
-               const unsigned & step);
+               const unsigned & step,
+               const unsigned & latency = 0);
 
   CDFG_Element(const std::shared_ptr<CDFG_Operator> & ope,
                const unsigned & state,

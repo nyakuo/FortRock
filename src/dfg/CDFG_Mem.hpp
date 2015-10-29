@@ -52,9 +52,10 @@ public:
   (const std::shared_ptr<CDFG_Addr> & addr) = 0; ///< アクセス部(制御部も含む)の出力
 
   // getter
-  eMemType get_mem_type(void);
   unsigned get_num_w_port(void);
   unsigned get_num_r_port(void);
+  const eMemType & get_mem_type(void);
+  const unsigned & get_latency(void);
   std::shared_ptr<CDFG_Node> get_read_port(const unsigned & port_num);
   std::shared_ptr<CDFG_Node> get_write_port(const unsigned & port_num);
 

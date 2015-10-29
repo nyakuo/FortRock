@@ -12,14 +12,15 @@ CDFG_Element::CDFG_Element
 (const CDFG_Operator::eType & type,
  const unsigned & num_input,
  const unsigned & state,
- const unsigned & step)
+ const unsigned & step,
+ const unsigned & latency)
   : _state(state),
       _step(step)
 {
   auto phony_ope = std::make_shared<CDFG_Operator>
     ("phony",
      "phony_mod",
-     0, /* latency */
+     latency,
      type);
   this->_input_list.resize(num_input);
   this->_output_list.resize(1);
