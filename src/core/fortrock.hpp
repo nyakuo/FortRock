@@ -30,6 +30,7 @@
 #include "../dfg/CDFG_FcmpElem.hpp"
 #include "../dfg/CDFG_TruncElem.hpp"
 #include "../dfg/CDFG_LoadElem.hpp"
+#include "../dfg/CDFG_StoreElem.hpp"
 #include "../xml/CInstancingOperator.hpp"
 #include "CDebug.hpp"
 using namespace llvm;

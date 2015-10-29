@@ -472,12 +472,6 @@ void FortRock::_add_load_inst
 void FortRock::_add_store_inst
 (const Instruction * inst)
 {
-  auto elem = std::make_shared<CDFG_Element>
-    (CDFG_Operator::eType::STORE,
-     1, // Number of operator input
-     this->_state,
-     this->_step);
-
   // 入力
   auto a = this->_module_gen->get_node
     (this->_get_value_name(inst->getOperand(0)),
@@ -493,6 +487,30 @@ void FortRock::_add_store_inst
   auto b = this->_module_gen->get_node
     (this->_get_value_name(inst->getOperand(1)),
      CDFG_Node::eNode::ADDR);
+
+  auto latency = 0;
+
+  // BRAMの場合
+  auto refer
+    = std::dynamic_pointer_cast<CDFG_Addr>
+    (b)->get_reference();
+
+  if (refer->get_type()
+      == CDFG_Node::eNode::MEM) {
+    auto mem = std::dynamic_pointer_cast<CDFG_Mem>(refer);
+
+    // 書き込みレイテンシの設定
+    latency = mem->get_latency();
+
+    // 書き込みポートの設定
+    std::dynamic_pointer_cast<CDFG_Addr>
+      (b)->add_addr(mem->get_write_port(0));
+  }
+
+  auto elem = std::make_shared<CDFG_StoreElem>
+    (this->_state,
+     this->_step,
+     latency);
 
   elem->set_input(a, 0);
   elem->set_output(b, 0);
@@ -1812,9 +1830,6 @@ void FortRock::_grub_variables
       case Instruction::And:
       case Instruction::Or:
       case Instruction::Xor: getop = 2;
-        break;
-      
-      case Instruction::PHI: getop = (int)dyn_cast<PHINode>(&*it)->getNumIncomingValues();
         break;
 
       case Instruction::GetElementPtr:
