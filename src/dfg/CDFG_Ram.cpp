@@ -66,6 +66,7 @@ CDFG_Ram::CDFG_Ram
   }
 
 #if 0
+  {
   // xmlファイルを用いて入出力ポートのインスタンス化
   auto doc = xmlParseFile(FortRock::_OPERATOR_CONFIG_FILENAME.c_str());
   try {
@@ -140,6 +141,7 @@ CDFG_Ram::CDFG_Ram
       } // while : mod_info
     } // while : cur
   } // RAMの情報をパース
+  }
 #endif
 } // CDFG_Ram
 
@@ -153,7 +155,7 @@ std::string
 CDFG_Ram::init_string
 (const std::string & indent) {
   std::string ret_str("");
-
+  return "";
   if (this->_is_initialized) {
     if (this->_data_type
         == CDFG_Mem::eDataType::INTEGER) {
@@ -173,6 +175,7 @@ CDFG_Ram::define_string
 (void) {
   std::string ret_str("");
 
+  // Ram モジュールのインスタンス化
   ret_str.append
     (_RAM_MODULE_NAME
      + " "
@@ -207,16 +210,59 @@ CDFG_Ram::define_string
        + this->get_rw_port(i)->get_verilog_name()
        + "),\n");
 
-  ret_str.append(".clk(clk));\n");
+  ret_str.append(".clk(clk));\n\n");
+
+  // ポートのインスタンス化
+  {
+    for (auto & w_port : this->_write_ports)
+      ret_str.append
+        ("reg ["
+         + std::to_string(w_port->get_bit_width() - 1)
+         + ":0] "
+         + w_port->get_verilog_name()
+         + ";\n");
+
+    for (auto & r_port : this->_read_ports)
+      ret_str.append
+        ("wire ["
+         + std::to_string(r_port->get_bit_width() - 1)
+         + ":0] "
+         + r_port->get_verilog_name()
+         + ";\n");
+
+    for (auto & addr : this->_address_ports)
+      ret_str.append
+        ("reg ["
+         + std::to_string(addr->get_bit_width() - 1)
+         + ":0] "
+         + addr->get_verilog_name()
+         + ";\n");
+
+    for (auto & rw : this->_rw_ports)
+      ret_str.append
+        ("reg ["
+         + std::to_string(rw->get_bit_width() - 1)
+         + ":0] "
+         + rw->get_verilog_name()
+         + ";\n");
+  }
 
   return ret_str;
 } // define_string
 
+/**
+   ポートにアクセスする
+   @param[in] addr アクセスするポートへの参照
+ */
 std::string
 CDFG_Ram::access_string
 (const std::shared_ptr<CDFG_Addr> & addr)
 {
-  std::string ret_str("access string");
+  std::string ret_str("");
+
+  ret_str
+    += addr->get_address(1)->get_verilog_name();
+
   return ret_str;
 } // access_string
 
