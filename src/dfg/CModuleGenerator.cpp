@@ -916,16 +916,38 @@ void CModuleGenerator::_generate_always(void)
                + " <= "
                + in->get_verilog_name()
                + ";\n");
-              break;
+            break;
 
           case CDFG_Mem::eMemType::RAM:
-            process_str.append
-              (this->_cout.output_indent()
-               + mem->access_string(out)
-               + " <= "
-               + in->get_verilog_name()
-               + ";\n");
-            break;
+            {
+              auto ram =
+                std::dynamic_pointer_cast<CDFG_Ram>
+                (mem);
+
+              auto port_num = 0;
+              auto addr
+                = std::dynamic_pointer_cast<CDFG_Addr>(out);
+
+              process_str.append
+                (this->_cout.output_indent()
+                 + ram->access_string(out)
+                 + " <= "
+                 + in->get_verilog_name()
+                 + ";\n");
+
+              process_str.append
+                (this->_cout.output_indent()
+                 + ram->get_rw_port(port_num)->get_verilog_name()
+                 + " <= 1;\n");
+
+              process_str.append
+                (this->_cout.output_indent()
+                 + ram->get_address_port(port_num)->get_verilog_name()
+                 + " <= "
+                 + addr->get_address(0)->get_verilog_name()
+                 + ";\n");
+              break;
+            }
 
           case CDFG_Mem::eMemType::OTHER:
           default:
