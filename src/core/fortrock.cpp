@@ -408,7 +408,6 @@ void FortRock::_add_load_inst
 
   // 入力
   // getelementptr の場合
-  is_gepope = false;
   if (is_gepope) {
     auto gepope = dyn_cast<GEPOperator>(ope);
     auto ptr = gepope->getPointerOperand();
