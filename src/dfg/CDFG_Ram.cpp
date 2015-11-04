@@ -210,13 +210,13 @@ CDFG_Ram::define_string
        + this->get_rw_port(i)->get_verilog_name()
        + "),\n");
 
-  ret_str.append(".clk(clk));\n\n");
+  ret_str.append("  .clk(i_w_clk));\n\n");
 
   // ポートのインスタンス化
   {
     for (auto & w_port : this->_write_ports)
       ret_str.append
-        ("reg ["
+        ("  reg ["
          + std::to_string(w_port->get_bit_width() - 1)
          + ":0] "
          + w_port->get_verilog_name()
@@ -224,7 +224,7 @@ CDFG_Ram::define_string
 
     for (auto & r_port : this->_read_ports)
       ret_str.append
-        ("wire ["
+        ("  wire ["
          + std::to_string(r_port->get_bit_width() - 1)
          + ":0] "
          + r_port->get_verilog_name()
@@ -232,7 +232,7 @@ CDFG_Ram::define_string
 
     for (auto & addr : this->_address_ports)
       ret_str.append
-        ("reg ["
+        ("  reg ["
          + std::to_string(addr->get_bit_width() - 1)
          + ":0] "
          + addr->get_verilog_name()
@@ -240,7 +240,7 @@ CDFG_Ram::define_string
 
     for (auto & rw : this->_rw_ports)
       ret_str.append
-        ("reg ["
+        ("  reg ["
          + std::to_string(rw->get_bit_width() - 1)
          + ":0] "
          + rw->get_verilog_name()
