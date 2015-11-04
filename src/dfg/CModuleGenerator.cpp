@@ -873,20 +873,61 @@ void CModuleGenerator::_generate_always(void)
             = std::dynamic_pointer_cast<CDFG_Mem>
             (in->get_reference());
 
-          //! @todo 配列参照以外への対応
-          if (mem->get_mem_type()
-              == CDFG_Mem::eMemType::ARRAY)
+          switch (mem->get_mem_type()) {
+          case CDFG_Mem::eMemType::ARRAY:
             process_str.append(this->_cout.output_indent()
                                + out->get_verilog_name()
                                + " <= "
                                + mem->access_string(in)
                                + ";\n");
+            break;
+
+          case CDFG_Mem::eMemType::RAM:
+            {
+              auto ram
+                = std::dynamic_pointer_cast<CDFG_Ram>(mem);
+              auto port_num = 0;
+              auto addr
+                = std::dynamic_pointer_cast<CDFG_Addr>(in);
+
+              // rw の値を read mode(0) に
+              process_str.append
+                (this->_cout.output_indent()
+                 + ram->get_rw_port(port_num)->get_verilog_name()
+                 + " <= 0;\n");
+
+              // アドレスポートに読み出すアドレスを指定
+              process_str.append
+                (this->_cout.output_indent()
+                 + ram->get_address_port(port_num)->get_verilog_name()
+                 + " <= "
+                 + addr->get_address(0)->get_verilog_name()
+                 + ";\n");
+
+              // latency 後にRAMから出力されたデータを受けとる
+              auto read
+                = std::string
+                (this->_cout.output_indent()
+                 + out->get_verilog_name()
+                 + " <= "
+                 + ram->access_string(in)
+                 + ";\n");
+
+              sm_gen.add_state_process
+                (state, step + ram->get_latency(),
+                 read);
+              break;
+            }
+
+          case CDFG_Mem::eMemType::OTHER:
+          default:
+            break;
+          } // switch
         } // if : is_mem_ref()
-        sm_gen.add_state_process(state,
-                                 step,
-                                 process_str);
+        sm_gen.add_state_process
+          (state, step, process_str);
         break;
-      }
+      } // LOAD
 
     case CDFG_Operator::eType::STORE:
       {
@@ -920,14 +961,27 @@ void CModuleGenerator::_generate_always(void)
 
           case CDFG_Mem::eMemType::RAM:
             {
-              auto ram =
-                std::dynamic_pointer_cast<CDFG_Ram>
-                (mem);
-
+              auto ram
+                = std::dynamic_pointer_cast<CDFG_Ram>(mem);
               auto port_num = 0;
               auto addr
                 = std::dynamic_pointer_cast<CDFG_Addr>(out);
 
+              // rw の値を write mode(1) に
+              process_str.append
+                (this->_cout.output_indent()
+                 + ram->get_rw_port(port_num)->get_verilog_name()
+                 + " <= 1;\n");
+
+                // アドレスポートに書き込むアドレスを指定
+              process_str.append
+                (this->_cout.output_indent()
+                 + ram->get_address_port(port_num)->get_verilog_name()
+                 + " <= "
+                 + addr->get_address(0)->get_verilog_name()
+                 + ";\n");
+
+              // 書き込む値を書き込みポートにセット
               process_str.append
                 (this->_cout.output_indent()
                  + ram->access_string(out)
@@ -935,17 +989,6 @@ void CModuleGenerator::_generate_always(void)
                  + in->get_verilog_name()
                  + ";\n");
 
-              process_str.append
-                (this->_cout.output_indent()
-                 + ram->get_rw_port(port_num)->get_verilog_name()
-                 + " <= 1;\n");
-
-              process_str.append
-                (this->_cout.output_indent()
-                 + ram->get_address_port(port_num)->get_verilog_name()
-                 + " <= "
-                 + addr->get_address(0)->get_verilog_name()
-                 + ";\n");
               break;
             }
 
