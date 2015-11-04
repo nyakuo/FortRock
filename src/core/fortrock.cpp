@@ -265,8 +265,15 @@ void FortRock::_set_IO
 bool FortRock::runOnModule
 (Module &M)
 {
-  this->_module_gen = std::make_shared<CModuleGenerator>
+  this->_module_gen
+    = std::make_shared<CModuleGenerator>
     ("output.v", this->_get_module_name(M));
+
+  // 演算器のインスタンス化
+  CInstancingOperator cinst;
+  cinst.instancing_operators
+    (this->_module_gen,
+     this->_OPERATOR_CONFIG_FILENAME);
 
   this->_grub_global_variables(M);
 
@@ -289,11 +296,6 @@ bool FortRock::runOnModule
   this->_grub_variables(it);
 
   //  CDebug::output_node_info(this->_module_gen->get_node_list());
-
-  // 演算器のインスタンス化
-  CInstancingOperator cinst;
-  cinst.instancing_operators(this->_module_gen,
-                             this->_OPERATOR_CONFIG_FILENAME);
 
   // 処理のDFG化
   for (auto bb_it = it->begin(); // Basic Block
