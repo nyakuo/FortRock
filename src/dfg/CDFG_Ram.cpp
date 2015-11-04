@@ -64,87 +64,7 @@ CDFG_Ram::CDFG_Ram
 
     this->_rw_ports.emplace_back(rw_port);
   }
-
-#if 0
-  {
-  // xmlファイルを用いて入出力ポートのインスタンス化
-  auto doc = xmlParseFile(FortRock::_OPERATOR_CONFIG_FILENAME.c_str());
-  try {
-    if (doc == NULL)
-      throw std::string ("ERROR: can not open config file");
-  }
-  catch(std::string e) {
-    std::cerr << e << std::endl;
-    return;
-  }
-
-  auto cur = xmlDocGetRootElement(doc);
-  try {
-    if (cur == NULL)
-      throw std::string ("ERROR: config file is empty");
-  }
-  catch (std::string e) {
-    xmlFreeDoc(doc);
-    std::cerr << e << std::endl;
-    return;
-  }
-
-  // RAMの情報をパース
-  unsigned num_read_port, num_write_port;
-  {
-    // IPコアの項目までパース
-    cur = cur->xmlChildrenNode;
-    while (xmlStrcmp(cur->name, (const xmlChar*)"ip_core"))
-      cur = cur->next;
-
-    while (cur != NULL) {
-      // RAM以外
-      if (xmlStrcmp(cur->name, (const xmlChar*)"ram") != 0) {
-        cur = cur->next;
-        continue;
-      }
-      auto mod_info = cur->xmlChildrenNode;
-      while (mod_info != NULL) {
-        auto key = xmlNodeListGetString(doc, mod_info->xmlChildrenNode, 1);
-        std::stringstream ss;
-        ss << key;
-        auto str = ss.str();
-        str.erase(std::remove(str.begin(),
-                              str.end(),
-                              ' '),
-                  str.end());
-
-        if (xmlStrcmp(mod_info->name, (const xmlChar*)"module_name") == 0) {
-          this->_asm_name = str;
-          this->_verilog_name = str;
-        }
-
-        else if (xmlStrcmp(mod_info->name, (const xmlChar*)"num_read_port") == 0)
-          num_read_port = std::stoul(str);
-
-        else if (xmlStrcmp(mod_info->name, (const xmlChar*)"num_write_port") == 0)
-          num_write_port = std::stoul(str);
-
-        else if (xmlStrcmp(mod_info->name, (const xmlChar*)"word_length") == 0)
-          this->_word_length = std::stoul(str);
-
-        else if (xmlStrcmp(mod_info->name, (const xmlChar*)"address_width") == 0)
-          this->_address_width = std::stoul(str);
-
-        else if (xmlStrcmp(mod_info->name, (const xmlChar*)"num_datas") == 0)
-          this->_num_datas = std::stoul(str);
-
-        else {
-          mod_info = mod_info->next;
-          continue;
-        }
-      } // while : mod_info
-    } // while : cur
-  } // RAMの情報をパース
-  }
-#endif
 } // CDFG_Ram
-
 
 /**
    メモリの初期化部を出力する
@@ -153,7 +73,8 @@ CDFG_Ram::CDFG_Ram
 */
 std::string
 CDFG_Ram::init_string
-(const std::string & indent) {
+(const std::string & indent)
+{
   std::string ret_str("");
   return "";
   if (this->_is_initialized) {
@@ -273,7 +194,8 @@ CDFG_Ram::access_string
  */
 void CDFG_Ram::set_num_port
 (const unsigned & num_r_port,
- const unsigned & num_w_port) {
+ const unsigned & num_w_port)
+{
   _NUM_R_PORT = num_r_port;
   _NUM_W_PORT = num_w_port;
 } // set_num_port
