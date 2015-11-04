@@ -47,15 +47,27 @@ void CInstancingOperator::instancing_operators
 
   // 演算器の情報をパース
   this->_parse_operator_info(doc, cur, module_gen);
+
+  // ramの項目までパース
+  while (xmlStrcmp(cur->name, (const xmlChar*)"ram"))
+    cur = cur->next;
+
+  this->_parse_ram_info(doc, cur);
 }
 
 /**
    演算器の情報をパースし，演算器をインスタンス化する
+   @param[in] doc ドキュメントツリーの参照
+   @param[in] node 現在のノードの参照
+   @param[in] module_gen モジュール生成クラスの参照
 */
-void CInstancingOperator::_parse_operator_info
-(xmlDocPtr & doc, xmlNodePtr & cur,
- std::shared_ptr<CModuleGenerator> & module_gen) {
-  cur = cur->xmlChildrenNode;
+void
+CInstancingOperator::_parse_operator_info
+(const xmlDocPtr & doc,
+ const xmlNodePtr & node,
+ std::shared_ptr<CModuleGenerator> & module_gen)
+{
+  auto cur = node->xmlChildrenNode;
   unsigned num_module;
   CDFG_Operator::eType type;
 
@@ -103,7 +115,10 @@ void CInstancingOperator::_parse_operator_info
     auto mod_info = cur->xmlChildrenNode;
     while (mod_info != NULL) {
       if (xmlStrcmp(mod_info->name, (const xmlChar*)"text") != 0) {
-        auto key = xmlNodeListGetString(doc, mod_info->xmlChildrenNode, 1);
+        auto key
+          = xmlNodeListGetString(doc,
+                                 mod_info->xmlChildrenNode,
+                                 1);
         std::stringstream ss;
         ss << key;
         auto str = ss.str();
@@ -200,4 +215,50 @@ void CInstancingOperator::_parse_operator_info
     cur = cur->next;
   } // while : cur
   //! @todo FUNC (独自関数)への対応
+}
+
+/**
+   RAMの情報をパースし，RAMの入出力ポート数(共通)を設定する
+   @param[in] doc ドキュメントツリーの参照
+   @param[in] node 現在のノードの参照
+*/
+void
+CInstancingOperator::_parse_ram_info
+(const xmlDocPtr & doc,
+ const xmlNodePtr & node)
+{
+  auto cur = node->xmlChildrenNode;
+
+  std::string name("");
+  auto num_r_port = 0;
+  auto num_w_port = 0;
+
+  while(cur != NULL) {
+    auto key
+      = xmlNodeListGetString(doc,
+                             cur->xmlChildrenNode,
+                             1);
+    std::stringstream ss;
+    ss << key;
+    auto str = ss.str();
+    str.erase(std::remove(str.begin(),
+                          str.end(),
+                          ' '),
+              str.end());
+
+    if (xmlStrcmp(cur->name, (const xmlChar*)"module_name") == 0)
+      name = str;
+
+    else if (xmlStrcmp(cur->name, (const xmlChar*)"num_read_port") == 0)
+      num_r_port = std::stoul(str);
+
+    else if (xmlStrcmp(cur->name, (const xmlChar*)"num_write_port") == 0)
+      num_w_port = std::stoul(str);
+
+    cur = cur->next;
+  }
+
+  // RAMに使用する入出力ポート数の設定 (共通)
+  CDFG_Ram::set_num_port(num_r_port,
+                         num_w_port);
 }

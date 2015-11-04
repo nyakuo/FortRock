@@ -14,6 +14,7 @@
 #include "../dfg/CModuleGenerator.hpp"
 #include "../dfg/CDFG_Operator.hpp"
 #include "../dfg/CDFG_Node.hpp"
+#include "../dfg/CDFG_Ram.hpp"
 
 class CModuleGenerator;
 
@@ -33,8 +34,13 @@ public:
 
 private:
   void _parse_operator_info
-  (xmlDocPtr & doc, xmlNodePtr & cur,
+  (const xmlDocPtr & doc,
+   const xmlNodePtr & node,
    std::shared_ptr<CModuleGenerator> & module_gen);
+
+  void _parse_ram_info
+  (const xmlDocPtr & doc,
+   const xmlNodePtr & node);
 };
 
 #endif
