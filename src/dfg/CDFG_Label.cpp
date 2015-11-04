@@ -6,7 +6,9 @@
    例) 8'h12ab
  */
 std::string
-CDFG_Label::to_string(void) {
+CDFG_Label::to_string
+(void)
+{
   std::string ret ("");
   char buf[64];
 

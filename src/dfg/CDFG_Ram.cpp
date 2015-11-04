@@ -42,28 +42,30 @@ CDFG_Ram::CDFG_Ram
   ++CDFG_Ram::_NUM_INSTANCE;
 
   // アドレスポートのインスタンス化
-  for (auto i=0; i<_NUM_W_PORT; ++i) {
-    auto a_port =
-      std::make_shared<CDFG_Reg>
-      (name + "_addr_" + std::to_string(i),
-       word_length,
-       false,
-       CDFG_Reg::eRegType::REG);
+  for (auto i=0; i<_NUM_W_PORT; ++i)
+    {
+      auto a_port =
+        std::make_shared<CDFG_Reg>
+        (name + "_addr_" + std::to_string(i),
+         word_length,
+         false,
+         CDFG_Reg::eRegType::REG);
 
-    this->_address_ports.emplace_back(a_port);
-  }
+      this->_address_ports.emplace_back(a_port);
+    }
 
   // r/wポートのインスタンス化
-  for (auto i=0; i<_NUM_W_PORT; ++i) {
-    auto rw_port =
-      std::make_shared<CDFG_Reg>
-      (name + "_rw_" + std::to_string(i),
-       1,
-       false,
-       CDFG_Reg::eRegType::REG);
+  for (auto i=0; i<_NUM_W_PORT; ++i)
+    {
+      auto rw_port =
+        std::make_shared<CDFG_Reg>
+        (name + "_rw_" + std::to_string(i),
+         1,
+         false,
+         CDFG_Reg::eRegType::REG);
 
-    this->_rw_ports.emplace_back(rw_port);
-  }
+      this->_rw_ports.emplace_back(rw_port);
+    }
 } // CDFG_Ram
 
 /**
@@ -77,12 +79,11 @@ CDFG_Ram::init_string
 {
   std::string ret_str("");
   return "";
-  if (this->_is_initialized) {
+
+  if (this->_is_initialized)
     if (this->_data_type
-        == CDFG_Mem::eDataType::INTEGER) {
-      ret_str.append(indent); // todo
-    } // if : this->_data_type
-  } // if : this->_initialized
+        == CDFG_Mem::eDataType::INTEGER)
+      ret_str.append(indent); ///< @todo
 
   return ret_str;
 } // init_string

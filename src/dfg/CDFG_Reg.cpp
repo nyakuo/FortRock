@@ -7,24 +7,24 @@
 bool
 CDFG_Reg::is_input(void) {
   return false;
-}
+} // is_input
 
 /**
    出力信号かどうかを取得
    @return FIN, OUTの場合のみ true
  */
 bool
-CDFG_Reg::is_output(void) {
-  switch (this->_type)
-    {
-    case eRegType::FIN:
-    case eRegType::OUT:
-      return true;
+CDFG_Reg::is_output(void)
+{
+  switch (this->_type) {
+  case eRegType::FIN:
+  case eRegType::OUT:
+    return true;
 
-    default:
-      return false;
-    }
-}
+  default:
+    return false;
+  }
+} // is_output
 
 /**
    信号名の接頭辞を取得
@@ -32,7 +32,8 @@ CDFG_Reg::is_output(void) {
  */
 std::string
 CDFG_Reg::_get_prefix
-(const CDFG_Reg::eRegType & type) {
+(const CDFG_Reg::eRegType & type)
+{
   switch (type) {
   case eRegType::IN_COPY:
   case eRegType::REG:
@@ -47,4 +48,4 @@ CDFG_Reg::_get_prefix
   case eRegType::STEP:
     return "r_sys_";
   }
-}
+} // _get_prefix

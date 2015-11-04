@@ -48,7 +48,6 @@ public:
       ZEXT,
       };
 
-  ///< @todo 入出力Nodeを自動的に作成する機能
   ///< @todo 演算器の入力ポートの名前などを外部の入力ファイルを用いて指定する機能
 
   CDFG_Operator(const std::string & name,

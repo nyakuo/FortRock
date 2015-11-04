@@ -79,7 +79,7 @@ CDFG_Parameter::CDFG_Parameter
               "pb_")
 {
   this->_data.param = (long)parameter;
-}
+} // CDFG_Parameter
 
 /**
    定数型(true, false, zero)のコンストラクタ
@@ -120,8 +120,8 @@ CDFG_Parameter::CDFG_Parameter
               << __FILE__
               << "): コンストラクタの呼び出しが無効です"
               << std::endl;
-  }
-}
+  } // switch
+} // CDFG_Parameter
 
 /**
    ノードに設定された定数を整数型で取得する
@@ -176,7 +176,8 @@ CDFG_Parameter::to_string(void){
   case eParamType::FALSE:
   case eParamType::BOOL:
   case eParamType::ZERO:
-    snprintf(buf, sizeof(buf), "%lx", std::abs(this->_data.param));
+    snprintf(buf, sizeof(buf), "%lx"
+             , std::abs(this->_data.param));
     ret += buf;
     break;
 
@@ -184,10 +185,12 @@ CDFG_Parameter::to_string(void){
   case eParamType::DOUBLE:
     for (int i=this->_bit_width / 8 - 1 * ((this->_bit_width % 8) == 0);
          i >= 0;
-         --i) {
-      snprintf(buf, sizeof(buf), "%02x", this->_data.c[i]);
-      ret += buf;
-    }
+         --i)
+      {
+        snprintf(buf, sizeof(buf)
+                 , "%02x", this->_data.c[i]);
+        ret += buf;
+      }
     break;
 
   default:;

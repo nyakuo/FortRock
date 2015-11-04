@@ -36,28 +36,30 @@ CDFG_Mem::CDFG_Mem
               "m_")
 {
   // 書き込みポートのインスタンス化
-  for (auto i=0; i<num_w_port; ++i) {
-    auto w_port =
-      std::make_shared<CDFG_Reg>
-      (name + "_" + std::to_string(i),
-       word_length,
-       true,
-       CDFG_Reg::eRegType::REG);
+  for (auto i=0; i<num_w_port; ++i)
+    {
+      auto w_port =
+        std::make_shared<CDFG_Reg>
+        (name + "_" + std::to_string(i),
+         word_length,
+         true,
+         CDFG_Reg::eRegType::REG);
 
-    this->_write_ports.emplace_back(w_port);
-  }
+      this->_write_ports.emplace_back(w_port);
+    }
 
   // 読み出しポートのインスタンス化
-  for (auto i=0; i<num_w_port; ++i) {
-    auto r_port =
-      std::make_shared<CDFG_Wire>
-      (name + "_" + std::to_string(i),
-       word_length,
-       true,
-       CDFG_Wire::eWireType::WIRE);
+  for (auto i=0; i<num_w_port; ++i)
+    {
+      auto r_port =
+        std::make_shared<CDFG_Wire>
+        (name + "_" + std::to_string(i),
+         word_length,
+         true,
+         CDFG_Wire::eWireType::WIRE);
 
-    this->_read_ports.emplace_back(r_port);
-  }
+      this->_read_ports.emplace_back(r_port);
+    }
 } // CDFG_Mem
 
 /**

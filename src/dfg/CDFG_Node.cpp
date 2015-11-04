@@ -35,6 +35,7 @@ CDFG_Node::get_safe_name(void) {
   auto safe_name = this->_asm_name;
 
   int at;
+
   while((at = safe_name.find('.', 0)) != std::string::npos)
     safe_name.replace(at, 1, "_");
 

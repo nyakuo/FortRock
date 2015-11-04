@@ -26,7 +26,8 @@ CDFG_Array::CDFG_Array
              CDFG_Mem::eMemType::ARRAY,
              type,
              false,
-             0) {}
+             0)
+{}
 
 /**
    コンストラクタ
@@ -61,11 +62,12 @@ CDFG_Array::CDFG_Array
   //! @todo 多次元配列への対応
   this->_int_data.resize(initializer.size());
 
-  for (auto & vec : initializer) {
-    this->_int_data.reserve(vec.size());
-    for (auto & val : vec)
-      this->_int_data[0].push_back(val);
-  } // for : vec
+  for (auto & vec : initializer)
+    {
+      this->_int_data.reserve(vec.size());
+      for (auto & val : vec)
+        this->_int_data[0].push_back(val);
+    } // for : vec
 }
 
 /**
@@ -76,22 +78,25 @@ CDFG_Array::CDFG_Array
 */
 std::string
 CDFG_Array::init_string
-(const std::string & indent) {
+(const std::string & indent)
+{
   std::string ret_str("");
 
-  if (this->_is_initialized) {
-    if (this->_data_type
-        == CDFG_Mem::eDataType::INTEGER) {
-      for (auto i=0; i<this->_length[0]; ++i)
-        ret_str.append(indent
-                       + this->_verilog_name
-                       + "["
-                       + std::to_string(i)
-                       + "] <= "
-                       + std::to_string(this->_int_data[0][i])
-                       + ";\n");
-    } // if : this->_data_type
-  } // if : this->_is_initialized
+  if (this->_is_initialized)
+    {
+      if (this->_data_type
+          == CDFG_Mem::eDataType::INTEGER)
+        {
+          for (auto i=0; i<this->_length[0]; ++i)
+            ret_str.append(indent
+                           + this->_verilog_name
+                           + "["
+                           + std::to_string(i)
+                           + "] <= "
+                           + std::to_string(this->_int_data[0][i])
+                           + ";\n");
+        } // if : this->_data_type
+    } // if : this->_is_initialized
 
   return ret_str;
 }
@@ -103,12 +108,11 @@ CDFG_Array::init_string
  */
 std::string
 CDFG_Array::define_string
-(void) {
+(void)
+{
   std::string ret_str ("");
 
-  for (auto dim=0;
-       dim < 1;
-       ++dim) {
+  for (auto dim=0; dim < 1; ++dim)
     ret_str.append
       ("reg ["
        + std::to_string(this->_word_length - 1)
@@ -117,7 +121,6 @@ CDFG_Array::define_string
        + "[0:"
        + std::to_string(this->_length[dim] - 1)
        + "];\n");
-  } // for : dim
 
   return ret_str;
 }
@@ -134,24 +137,29 @@ CDFG_Array::access_string
   std::string ret_str(this->get_verilog_name());
 
   for (auto i=0; i<addr->get_addr_dim();
-       ++i) {
-    auto address = addr->get_address(i);
-    if (address->get_type()
-        == CDFG_Node::eNode::REG)
-      ret_str.append("["
-                     + address->get_verilog_name()
-                     + "]");
+       ++i)
+    {
+      auto address = addr->get_address(i);
 
-    else if (address->get_type()
-             == CDFG_Node::eNode::PARAM) {
-      auto param
-        = std::dynamic_pointer_cast
-        <CDFG_Parameter>(address);
-      ret_str.append("["
-                     + std::to_string(param->get_parameter())
-                     + "]");
-    }
-  } // for
+      if (address->get_type()
+          == CDFG_Node::eNode::REG)
+        ret_str.append("["
+                       + address->get_verilog_name()
+                       + "]");
+
+      else if (address->get_type()
+               == CDFG_Node::eNode::PARAM)
+        {
+          auto param
+            = std::dynamic_pointer_cast
+            <CDFG_Parameter>(address);
+
+          ret_str.append("["
+                         + std::to_string(param->get_parameter())
+                         + "]");
+        }
+
+    } // for
 
   return ret_str;
 }

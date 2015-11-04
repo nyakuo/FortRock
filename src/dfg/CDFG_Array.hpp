@@ -67,7 +67,7 @@ public:
   unsigned get_dimension(void) { return this->_length.size(); }
 
 private:
-  const std::vector<unsigned> _length;  ///< 配列の各次元での長さ
+  const std::vector<unsigned>    _length;   ///< 配列の各次元での長さ
   std::vector<std::vector<int> > _int_data; ///< 整数型データ格納場所
 };
 
