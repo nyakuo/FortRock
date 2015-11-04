@@ -403,13 +403,13 @@ void FortRock::_add_load_inst
 (const Instruction * inst)
 {
   std::shared_ptr<CDFG_Addr> a;
-  auto ope = dyn_cast<LoadInst>(inst)->getPointerOperand();
-  bool is_gepope = isa<GEPOperator>(ope);
+  bool is_gepope = dyn_cast<LoadInst>(inst)->isVolatile();
 
   // 入力
   // getelementptr の場合
   if (is_gepope) {
-    auto gepope = dyn_cast<GEPOperator>(ope);
+    auto gepope = dyn_cast<GEPOperator>
+      (dyn_cast<LoadInst>(inst)->getPointerOperand());
     auto ptr = gepope->getPointerOperand();
     auto array
       = this->_module_gen->get_node
@@ -447,13 +447,35 @@ void FortRock::_add_load_inst
         CDFG_Node::eNode::ADDR));
   }
 
+  // BRAMの場合
+  auto latency = 0;
+  auto refer
+    = std::dynamic_pointer_cast<CDFG_Addr>
+    (a)->get_reference();
+
+  if (refer->get_type()
+      == CDFG_Node::eNode::MEM) {
+    auto mem
+      = std::dynamic_pointer_cast<CDFG_Mem>(refer);
+
+    // 読み込みレイテンシの設定
+    latency = mem->get_latency();
+
+    // 読み込みポートの設定
+    std::dynamic_pointer_cast<CDFG_Addr>
+      (a)->add_addr(mem->get_read_port(0));
+  }
+
   // 出力
   auto b = this->_module_gen
     ->get_node(inst->getName().str(),
                CDFG_Node::eNode::REG);
 
   auto elem = std::make_shared<CDFG_LoadElem>
-    (is_gepope, this->_state, this->_step);
+    (is_gepope,
+     this->_state,
+     this->_step,
+     latency);
 
   elem->set_input(a, 0);
   elem->set_output(b, 0);
@@ -487,9 +509,8 @@ void FortRock::_add_store_inst
     (this->_get_value_name(inst->getOperand(1)),
      CDFG_Node::eNode::ADDR);
 
-  auto latency = 0;
-
   // BRAMの場合
+  auto latency = 0;
   auto refer
     = std::dynamic_pointer_cast<CDFG_Addr>
     (b)->get_reference();
@@ -2089,7 +2110,7 @@ void FortRock::_grub_global_variables
            16,
            CDFG_Mem::eDataType::INTEGER,
            true,
-           1);
+           2);
 
         this->_module_gen->add_node(mem);
       }
