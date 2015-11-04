@@ -81,9 +81,9 @@ private:
 
   // モジュール定義
   void _set_IO(const Module::FunctionListType::iterator & funct);
-  void _grub_variables(const Module::FunctionListType::iterator &funct);
+  void _grub_variables(const Module::FunctionListType::iterator & funct);
   void _grub_global_variables(const Module & M);
-  void _grub_labels(const Module::FunctionListType::iterator &funct);
+  void _grub_labels(const Module::FunctionListType::iterator & funct);
 
   // 命令パース
   void _parse_instructions     (const Instruction * inst);
