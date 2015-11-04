@@ -2064,7 +2064,7 @@ void FortRock::_grub_global_variables
     if (type->isPointerTy())
       type = type->getPointerElementType();
 
-    //! @todo 他の型への対応
+    // 初期化子の取得
     // 配列の場合
     if (type->isArrayTy()) {
       //! @todo zeroinitializerへの対応
@@ -2072,11 +2072,11 @@ void FortRock::_grub_global_variables
       auto array      = dyn_cast<ArrayType>(type);
       auto elem_type  = array->getTypeAtIndex((unsigned)0);
 
-      //! @todo Integer以外の初期化子への対応
+      //! @todo INTEGER以外のデータ型への対応
       if (elem_type->isIntegerTy()) {
-        std::vector<std::vector<int> > initializer;
-        initializer.resize(1);
-        initializer[0].reserve(array->getNumElements());
+        // std::vector<std::vector<int> > initializer;
+        // initializer.resize(1);
+        // initializer[0].reserve(array->getNumElements());
 
         // 初期化子の取得
         //! @todo 1次元配列以外への対応
@@ -2102,20 +2102,22 @@ void FortRock::_grub_global_variables
         //    1, // read_ports
         //    length,
         //    initializer);
-
-        auto mem = std::make_shared<CDFG_Ram>
-          (name,
-           array->getNumElements(),
-           elem_type->getPrimitiveSizeInBits(),
-           16,
-           CDFG_Mem::eDataType::INTEGER,
-           true,
-           2);
-
-        this->_module_gen->add_node(mem);
       }
+
+      auto mem = std::make_shared<CDFG_Ram>
+        (name,
+         array->getNumElements(),
+         elem_type->getPrimitiveSizeInBits(), // word length
+         this->_get_required_bit_width
+         (array->getNumElements()), // address width
+         CDFG_Mem::eDataType::INTEGER,
+         true,
+         2); // latency
+
+      this->_module_gen->add_node(mem);
     } // type : isArrayTy
-    if (type->isIntegerTy()) {
+    // 整数の場合
+    else if (type->isIntegerTy()) {
       auto int_value
         = dyn_cast<ConstantInt>(init);
 
@@ -2132,6 +2134,24 @@ void FortRock::_grub_global_variables
       this->_module_gen->add_node(param);
       this->_module_gen->add_node(addr);
     } // type : isIntegerTy
+    // 浮動少数の場合
+    else if (type->isFloatTy()) {
+      auto fp_value
+        = dyn_cast<ConstantFP>(init);
+
+      auto param = std::make_shared<CDFG_Parameter>
+        (this->_get_value_name(fp_value),
+         type->getPrimitiveSizeInBits(),
+         fp_value->getValueAPF().convertToFloat());
+
+      auto addr = std::make_shared<CDFG_Addr>
+        (name,
+         type->getPrimitiveSizeInBits(),
+         param);
+
+      this->_module_gen->add_node(param);
+      this->_module_gen->add_node(addr);
+    } // type : isFloatTy
   } // for : ite
 } // _grub_global_variables
 
