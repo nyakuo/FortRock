@@ -6,7 +6,7 @@
       <latency>      1      </latency>
       <module_name>  Add  </module_name>
       <instance_name> add    </instance_name>
-      <num_module>   3      </num_module>
+      <num_module>   2      </num_module>
 
       <io>
         <info>
@@ -379,6 +379,13 @@
         </info>
       </io>
     </fcmp>
-
   </ip_core>
+
+  <!-- RAMの情報 -->
+  <ram>
+    <module_name>   ram </module_name>
+    <num_read_port>  2  </num_read_port>
+    <num_write_port> 2  </num_write_port>
+  </ram>
+
 </config>
