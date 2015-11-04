@@ -2,7 +2,6 @@
 
 OBJS := \
 	CInstancingOperator.o \
-	instance_test.o \
 	COperatorGenerator.o \
 
 EXTRA_OBJS := \
@@ -24,8 +23,6 @@ EXTRA_OBJS := \
 	../dfg/CDFG_FcmpElem.o \
 	../dfg/CStateMachineGen.o \
 
-
-TARGET := xml_test
 TARGETS := $(TARGET)
 
 include ../Makefile.in
@@ -33,6 +30,5 @@ include ../Makefile.in
 $(TARGET): $(OBJS) $(EXTRA_OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $(OBJS) $(EXTRA_OBJS) $(LIBS) $(LDFLAGS)
 
-instance_test.o: instance_test.cpp
 CInstancingOperator.o: CInstancingOperator.cpp CInstancingOperator.hpp
 COperatorGenerator.o: COperatorGenerator.cpp COperatorGenerator.hpp
