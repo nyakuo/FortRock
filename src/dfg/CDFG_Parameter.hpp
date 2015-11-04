@@ -1,9 +1,9 @@
 #ifndef _CDFG_PARAMETER_H
 #define _CDFG_PARAMETER_H
 
+#include <iostream> // for error message
 #include <string>
 #include <sstream>
-#include <iostream>
 
 #include "CDFG_Node.hpp"
 

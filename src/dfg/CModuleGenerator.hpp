@@ -1,7 +1,6 @@
 #ifndef _CMODULE_GENERATOR_H
 #define _CMODULE_GENERATOR_H
 
-#include <iostream>
 #include <iomanip>
 #include <fstream>
 #include <sstream>

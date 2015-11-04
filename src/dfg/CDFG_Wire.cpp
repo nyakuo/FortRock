@@ -1,5 +1,5 @@
 #include "CDFG_Wire.hpp"
-#include <iostream>
+
 /**
    入力信号かどうかを取得
    @return WIRE以外基本的にtrue

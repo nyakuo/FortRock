@@ -1,7 +1,6 @@
 #ifndef _CDFG_ELEMENT_H
 #define _CDFG_ELEMENT_H
 
-#include <iostream>
 #include <memory>
 #include <vector>
 #include "CDFG_Node.hpp"

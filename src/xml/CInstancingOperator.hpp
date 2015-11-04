@@ -1,7 +1,6 @@
 #ifndef _CINSTANCING_OPERATOR_H
 #define _CINSTANCING_OPERATOR_H
 
-#include <iostream>
 #include <string>
 #include <sstream>
 #include <algorithm>

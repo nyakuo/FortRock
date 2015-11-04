@@ -1,5 +1,5 @@
 #include "CDFG_Ram.hpp"
-#include <iostream> // for debug
+
 // static
 const std::string CDFG_Ram::_RAM_MODULE_NAME = "ram";
 unsigned CDFG_Ram::_NUM_INSTANCE = 0;
