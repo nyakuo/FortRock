@@ -19,7 +19,6 @@ OBJS := \
 	COutput.o \
 	CModuleGenerator.o \
 	CModule.o \
-	verilog_generator.o \
 
 TARGET := generator
 TARGETS := $(TARGET)
@@ -29,7 +28,6 @@ include ../Makefile.in
 $(TARGET): $(OBJS)
 	$(CXX) -o $@ $(OBJS)
 
-verilog_generator.o: verilog_generator.cpp
 CDFG_Node.o: CDFG_Node.cpp CDFG_Node.hpp
 CDFG_Parameter.o: CDFG_Parameter.hpp CDFG_Parameter.cpp
 CDFG_Label.o: CDFG_Label.hpp CDFG_Label.cpp

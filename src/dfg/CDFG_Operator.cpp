@@ -1,9 +1,16 @@
 #include "CDFG_Operator.hpp"
 
-CDFG_Operator::CDFG_Operator(const std::string & name,
-                             const std::string & mod_name,
-                             const unsigned & latency,
-                             const CDFG_Operator::eType & type)
+/**
+   @param[in] name 演算器のインスタンス名
+   @param[in] mod_name 演算器の名前
+   @param[in] latency 演算レイテンシ
+   @param[in] type 演算器の種類
+ */
+CDFG_Operator::CDFG_Operator
+(const std::string & name,
+ const std::string & mod_name,
+ const unsigned & latency,
+ const CDFG_Operator::eType & type)
   : _name(name),
     _mod_name(mod_name),
     _latency(latency),
@@ -17,7 +24,9 @@ CDFG_Operator::~CDFG_Operator(void) {}
    @return moduleのインスタンス名
  */
 std::string
-CDFG_Operator::get_name(void) const {
+CDFG_Operator::get_name
+(void) const
+{
   return this->_name;
 }
 
@@ -26,7 +35,9 @@ CDFG_Operator::get_name(void) const {
    @return modulemのモジュール名
  */
 std::string
-CDFG_Operator::get_mod_name(void) const {
+CDFG_Operator::get_mod_name
+(void) const
+{
   return this->_mod_name;
 }
 
@@ -35,7 +46,9 @@ CDFG_Operator::get_mod_name(void) const {
    @return moduleのレイテンシ
 */
 unsigned
-CDFG_Operator::get_latency(void) const {
+CDFG_Operator::get_latency
+(void) const
+{
   return this->_latency;
 }
 
@@ -44,7 +57,9 @@ CDFG_Operator::get_latency(void) const {
    @return moduleの種類
 */
 CDFG_Operator::eType
-CDFG_Operator::get_type(void) const {
+CDFG_Operator::get_type
+(void) const
+{
   return this->_type;
 }
 
@@ -53,7 +68,9 @@ CDFG_Operator::get_type(void) const {
    @return 0 Portが定義されていない, それ以外 moduleの入力の数
 */
 unsigned
-CDFG_Operator::get_num_input(void) const {
+CDFG_Operator::get_num_input
+(void) const
+{
   if (this->_input_list.empty())
     return 0;
 
@@ -65,7 +82,9 @@ CDFG_Operator::get_num_input(void) const {
    @return 0 Portが定義されていない, それ以外 moduleの出力の数
 */
 unsigned
-CDFG_Operator::get_num_output(void) const {
+CDFG_Operator::get_num_output
+(void) const
+{
   if (this->_output_list.empty())
     return 0;
 
@@ -79,7 +98,8 @@ CDFG_Operator::get_num_output(void) const {
  */
 std::string
 CDFG_Operator::get_input_signal_at
-(const unsigned & at) const {
+(const unsigned & at) const
+{
   return this->_input_list.at(at).first;
 }
 
@@ -90,7 +110,8 @@ CDFG_Operator::get_input_signal_at
  */
 std::string
 CDFG_Operator::get_output_signal_at
-(const unsigned & at) const {
+(const unsigned & at) const
+{
   return this->_output_list.at(at).first;
 }
 
@@ -101,7 +122,8 @@ CDFG_Operator::get_output_signal_at
 */
 std::shared_ptr<CDFG_Node>
 CDFG_Operator::get_input_node_at
-(const unsigned & at) const {
+(const unsigned & at) const
+{
   return this->_input_list.at(at).second;
 }
 
@@ -112,7 +134,8 @@ CDFG_Operator::get_input_node_at
 */
 std::shared_ptr<CDFG_Node>
 CDFG_Operator::get_output_node_at
-(const unsigned & at) const {
+(const unsigned & at) const
+{
   return this->_output_list.at(at).second;
 }
 
@@ -123,7 +146,8 @@ CDFG_Operator::get_output_node_at
 */
 void CDFG_Operator::add_input_port
 (const std::string & port_name,
- const std::shared_ptr<CDFG_Node> & node) {
+ const std::shared_ptr<CDFG_Node> & node)
+{
   this->_input_list.push_back
     (std::pair<std::string, std::shared_ptr<CDFG_Node> >
      (port_name, node));
@@ -136,7 +160,8 @@ void CDFG_Operator::add_input_port
 */
 void CDFG_Operator::add_output_port
 (const std::string & port_name,
- const std::shared_ptr<CDFG_Node> & node) {
+ const std::shared_ptr<CDFG_Node> & node)
+{
   this->_output_list.push_back
     (std::pair<std::string, std::shared_ptr<CDFG_Node> >
      (port_name, node));
@@ -147,7 +172,8 @@ void CDFG_Operator::add_output_port
    @param[in] latency moduleのレイテンシ
 */
 void CDFG_Operator::set_latency
-(const unsigned & latency) {
+(const unsigned & latency)
+{
   this->_latency = latency;
 }
 
@@ -156,7 +182,8 @@ void CDFG_Operator::set_latency
    @param[in] type moduleの種類
  */
 void CDFG_Operator::set_type
-(const CDFG_Operator::eType & type) {
+(const CDFG_Operator::eType & type)
+{
   this->_type = type;
 }
 
@@ -166,6 +193,7 @@ void CDFG_Operator::set_type
    @note phony演算器(演算器を使用しない演算)で使用
  */
 void CDFG_Operator::set_num_input
-(const unsigned & num) {
+(const unsigned & num)
+{
   this->_input_list.resize(num);
 }

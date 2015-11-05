@@ -71,7 +71,7 @@ CDFG_Ram::CDFG_Ram
 /**
    メモリの初期化部を出力する
    @param[in] indent 現在のインデント
-   @todo 浮動小数点対応
+   @todo 実装
 */
 std::string
 CDFG_Ram::init_string
@@ -83,7 +83,7 @@ CDFG_Ram::init_string
   if (this->_is_initialized)
     if (this->_data_type
         == CDFG_Mem::eDataType::INTEGER)
-      ret_str.append(indent); ///< @todo
+      ret_str.append(indent);
 
   return ret_str;
 } // init_string

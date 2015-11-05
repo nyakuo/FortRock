@@ -31,7 +31,8 @@ CDFG_Node::CDFG_Node(const std::string & asm_name,
    @note CModuleGeneratorでPHI命令の出力に使用
  */
 std::string
-CDFG_Node::get_safe_name(void) {
+CDFG_Node::get_safe_name(void)
+{
   auto safe_name = this->_asm_name;
 
   int at;
@@ -50,7 +51,8 @@ CDFG_Node::get_safe_name(void) {
    @return NodeのLLVM IR上での信号名
  */
 std::string &
-CDFG_Node::get_asm_name(void){
+CDFG_Node::get_asm_name(void)
+{
   return this->_asm_name;
 }
 
@@ -59,7 +61,8 @@ CDFG_Node::get_asm_name(void){
    @return NodeのVerilog HDL上での信号名
  */
 std::string &
-CDFG_Node::get_verilog_name(void){
+CDFG_Node::get_verilog_name(void)
+{
   return this->_verilog_name;
 }
 
@@ -68,7 +71,8 @@ CDFG_Node::get_verilog_name(void){
    @return Nodeのビット幅
  */
 unsigned &
-CDFG_Node::get_bit_width(void) {
+CDFG_Node::get_bit_width(void)
+{
   return this->_bit_width;
 }
 
@@ -77,7 +81,8 @@ CDFG_Node::get_bit_width(void) {
    @return Nodeが is_signed かどうか
  */
 bool &
-CDFG_Node::get_is_signed(void) {
+CDFG_Node::get_is_signed(void)
+{
   return this->_is_signed;
 }
 
@@ -86,7 +91,8 @@ CDFG_Node::get_is_signed(void) {
    @return Nodeの種類
  */
 CDFG_Node::eNode &
-CDFG_Node::get_type(void) {
+CDFG_Node::get_type(void)
+{
   return this->_type;
 }
 
@@ -96,6 +102,7 @@ CDFG_Node::get_type(void) {
    @note fortrock.cpp(FortRockの本体)で利用するためだけに実装
  */
 void CDFG_Node::set_type
-(const CDFG_Node::eNode & type) {
+(const CDFG_Node::eNode & type)
+{
   this->_type = type;
 }

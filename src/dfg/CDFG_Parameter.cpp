@@ -128,7 +128,9 @@ CDFG_Parameter::CDFG_Parameter
    @return ノードに設定された定数 (整数型)
 */
 long
-CDFG_Parameter::get_parameter(void) {
+CDFG_Parameter::get_parameter
+(void) const
+{
   return this->_data.param;
 }
 
@@ -137,7 +139,9 @@ CDFG_Parameter::get_parameter(void) {
    @return ノードに設定された定数 (倍精度浮動小数点型)
 */
 double
-CDFG_Parameter::get_lfparameter(void) {
+CDFG_Parameter::get_lfparameter
+(void) const
+{
   return this->_data.lfparam;
 }
 
@@ -146,7 +150,9 @@ CDFG_Parameter::get_lfparameter(void) {
    @return ノードに設定された定数 (浮動小数点型)
 */
 float
-CDFG_Parameter::get_fparameter(void) {
+CDFG_Parameter::get_fparameter
+(void) const
+{
   return this->_data.fparam;
 }
 
@@ -157,7 +163,9 @@ CDFG_Parameter::get_fparameter(void) {
    出力が変化
 */
 std::string
-CDFG_Parameter::to_string(void){
+CDFG_Parameter::to_string
+(void)
+{
   std::string ret ("");
   char buf[64];
 
@@ -197,4 +205,4 @@ CDFG_Parameter::to_string(void){
   }
 
   return ret;
-}
+} // to_string

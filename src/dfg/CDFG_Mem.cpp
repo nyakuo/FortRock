@@ -93,7 +93,8 @@ CDFG_Mem::get_num_r_port(void)
  */
 std::shared_ptr<CDFG_Node>
 CDFG_Mem::get_read_port
-(const unsigned & port_num) {
+(const unsigned & port_num)
+{
   return this->_read_ports.at(port_num);
 } // get_read_port
 
@@ -104,7 +105,8 @@ CDFG_Mem::get_read_port
  */
 std::shared_ptr<CDFG_Node>
 CDFG_Mem::get_write_port
-(const unsigned & port_num) {
+(const unsigned & port_num)
+{
   return this->_write_ports.at(port_num);
 } // get_write_port
 
@@ -113,6 +115,7 @@ CDFG_Mem::get_write_port
    @return メモリのアクセスレイテンシ
  */
 const unsigned &
-CDFG_Mem::get_latency(void) {
+CDFG_Mem::get_latency(void)
+{
   return this->_latency;
 } // get_latency

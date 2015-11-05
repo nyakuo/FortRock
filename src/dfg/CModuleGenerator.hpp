@@ -27,7 +27,6 @@
 #include "COutput.hpp"
 #include "CModule.hpp"
 
-
 /**
    @class CModuleGenerator
    @brief モジュールを出力するクラス

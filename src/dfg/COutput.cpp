@@ -14,7 +14,8 @@ COutput::COutput(void)
    デストラクタ
    @brief ofstreamを閉じる
  */
-COutput::~COutput(void) {
+COutput::~COutput(void)
+{
   this->_ofs.close();
 }
 
@@ -22,19 +23,21 @@ COutput::~COutput(void) {
    ofstreamを開く
    @param[in] 出力するファイル名
  */
-void COutput::open_ofstream(const std::string filename) {
+void
+COutput::open_ofstream
+(const std::string filename)
+{
   this->_ofs.open(filename, std::ios::out);
-}
-
-void COutput::close_ofstream(void) {
-  this->_ofs.close();
 }
 
 /**
    現在のインデントレベルでスペース文字を返す
    @return 現在のインデントレベル分のスペース文字列
 */
-std::string COutput::output_indent(void) {
+std::string
+COutput::output_indent
+(void)
+{
   std::string spaces ("");
   for (auto i=0;
        i<this->_INDENT_WIDTH * this->_indent_level;
@@ -50,7 +53,10 @@ std::string COutput::output_indent(void) {
    @note _INDET_WIDTH * num_level 分だけインデントが浅くなる
          this->_indent_levelが0以下になる場合は0となる
  */
-void COutput::indent_left(const unsigned & num_level) {
+void
+COutput::indent_left
+(const unsigned & num_level)
+{
   if ((this->_indent_level - num_level) > 0)
     this->_indent_level -= num_level;
   else
@@ -62,7 +68,10 @@ void COutput::indent_left(const unsigned & num_level) {
    @param[in] num_level 深くする数
    @note _INDET_WIDTH * num_level 分だけインデントが浅くなる
  */
-void COutput::indent_right(const unsigned & num_level) {
+void
+COutput::indent_right
+(const unsigned & num_level)
+{
   this->_indent_level += num_level;
 }
 
@@ -70,8 +79,13 @@ void COutput::indent_right(const unsigned & num_level) {
    ファイルに文字列を出力する
    @param[in] str ファイルに出力する文字列
  */
-std::ostream & COutput::operator << (const std::string & str) {
-  this->_ofs << this->output_indent() << str;
+std::ostream &
+COutput::operator <<
+(const std::string & str)
+{
+  this->_ofs << this->output_indent()
+             << str;
+
   return this->_ofs.flush();
 }
 
@@ -80,7 +94,10 @@ std::ostream & COutput::operator << (const std::string & str) {
    @param[in] str ファイルに出力する文字列
    @note operator << (const std::string & str)に処理を渡している
  */
-std::ostream & COutput::operator << (const char * str) {
+std::ostream &
+COutput::operator <<
+(const char * str)
+{
   return (*this) << std::string(str);
 }
 
@@ -89,7 +106,10 @@ std::ostream & COutput::operator << (const char * str) {
    @param[in] i ファイルに出力する文字
    @note operator << (const std::string & str)に処理を渡している
 */
-std::ostream & COutput::operator << (const char & i) {
+std::ostream &
+COutput::operator <<
+(const char & i)
+{
   return (*this) << std::string(1, i);
 }
 
@@ -98,7 +118,10 @@ std::ostream & COutput::operator << (const char & i) {
    @param[in] i ファイルに出力する数字
    @note operator << (const std::string & str)に処理を渡している
  */
-std::ostream & COutput::operator << (const unsigned int & i) {
+std::ostream &
+COutput::operator <<
+(const unsigned int & i)
+{
   return (*this) << std::to_string(i);
 }
 
@@ -106,7 +129,10 @@ std::ostream & COutput::operator << (const unsigned int & i) {
    文字列をインデントなしでファイルに出力する
    @param[in] str ファイルに出力する文字列
  */
-std::ostream & COutput::operator <<= (const std::string & str) {
+std::ostream &
+COutput::operator <<=
+(const std::string & str)
+{
   this->_ofs << str;
   return this->_ofs.flush();
 }
@@ -116,7 +142,10 @@ std::ostream & COutput::operator <<= (const std::string & str) {
    @param[in] str ファイルに出力する文字列
    @note operator <<= (const std::string & str)に処理を渡している
  */
-std::ostream & COutput::operator <<= (const char * str) {
+std::ostream &
+COutput::operator <<=
+(const char * str)
+{
   return (*this) <<= std::string(str);
 }
 
@@ -125,7 +154,10 @@ std::ostream & COutput::operator <<= (const char * str) {
    @param[in] i ファイルに出力する文字
    @note operator <<= (const std::string & str)に処理を渡している
 */
-std::ostream & COutput::operator <<= (const char & i) {
+std::ostream &
+COutput::operator <<=
+(const char & i)
+{
   return (*this) <<= std::string(1, i);
 }
 
@@ -134,6 +166,9 @@ std::ostream & COutput::operator <<= (const char & i) {
    @param[in] i ファイルに出力する数字
    @note operator <<= (const std::string & str)に処理を渡している
  */
-std::ostream & COutput::operator <<= (const unsigned int & i) {
+std::ostream &
+COutput::operator <<=
+(const unsigned int & i)
+{
   return (*this) <<= std::to_string(i);
 }

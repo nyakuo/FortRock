@@ -56,10 +56,12 @@ public:
                  const eParamType  & param_type);
 
   // Getter
-  long get_parameter(void);
-  double get_lfparameter(void);
-  float get_fparameter(void);
-  eParamType get_type(void) { return this->_param_type; }
+  long get_parameter(void) const;
+  double get_lfparameter(void) const;
+  float get_fparameter(void) const;
+  eParamType get_type(void) const { return this->_param_type; }
+
+  // Override
   virtual std::string to_string(void) override final;
   virtual bool is_input(void) override final { return false; }
   virtual bool is_output(void) override final { return false; }

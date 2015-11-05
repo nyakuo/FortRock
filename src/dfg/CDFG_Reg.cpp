@@ -5,7 +5,8 @@
    @return 常にfalse
  */
 bool
-CDFG_Reg::is_input(void) {
+CDFG_Reg::is_input(void)
+{
   return false;
 } // is_input
 

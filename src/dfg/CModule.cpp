@@ -15,7 +15,8 @@ CModule::CModule
    @param[in] element DFGに追加するElementの参照
  */
 void CModule::add_element
-(const std::shared_ptr<CDFG_Element> element) {
+(const std::shared_ptr<CDFG_Element> element)
+{
   this->_dfg.emplace_back(element);
 }
 
@@ -24,7 +25,8 @@ void CModule::add_element
    @param[in] node モジュールに追加するNodeの参照
  */
 void CModule::add_node
-(const std::shared_ptr<CDFG_Node> & node) {
+(const std::shared_ptr<CDFG_Node> & node)
+{
   this->_node_list.emplace_back(node);
 }
 
@@ -33,7 +35,8 @@ void CModule::add_node
    @param[in] ope モジュールに追加するOperatorの参照
  */
 void CModule::add_operator
-(std::shared_ptr<CDFG_Operator> & ope) {
+(std::shared_ptr<CDFG_Operator> & ope)
+{
   this->_operator_list.emplace_back(ope);
 }
 
@@ -41,7 +44,8 @@ void CModule::add_operator
    モジュールの名前を取得
    @return モジュール名
  */
-std::string & CModule::get_name(void) {
+std::string & CModule::get_name(void)
+{
   return this->_module_name;
 }
 
@@ -50,9 +54,11 @@ std::string & CModule::get_name(void) {
    @return モジュールのElementのリスト(DFG)
  */
 std::list<std::shared_ptr<CDFG_Element> > &
-CModule::get_element_list(void) {
+CModule::get_element_list(void)
+{
   this->_dfg.sort([](const std::shared_ptr<CDFG_Element> & obj1,
-                     const std::shared_ptr<CDFG_Element> & obj2) -> bool {
+                     const std::shared_ptr<CDFG_Element> & obj2) -> bool
+                  {
                     return obj1->get_state() < obj2->get_state()
                       && obj1->get_step() < obj2->get_step();
                   });
@@ -64,7 +70,8 @@ CModule::get_element_list(void) {
    @return モジュールのNodeのリスト
  */
 std::list<std::shared_ptr<CDFG_Node> > &
-CModule::get_node_list(void) {
+CModule::get_node_list(void)
+{
   return this->_node_list;
 }
 
@@ -73,7 +80,8 @@ CModule::get_node_list(void) {
    @return モジュールの演算器のリスト
  */
 std::list<std::shared_ptr<CDFG_Operator> > &
-CModule::get_operator_list(void) {
+CModule::get_operator_list(void)
+{
   return this->_operator_list;
 }
 
@@ -85,11 +93,13 @@ CModule::get_operator_list(void) {
  */
 std::shared_ptr<CDFG_Node> &
 CModule::get_node
-(const CDFG_Node::eNode & type) {
+(const CDFG_Node::eNode & type)
+{
   auto ite =
     std::find_if(this->_node_list.begin(),
                  this->_node_list.end(),
-                 [type](const std::shared_ptr<CDFG_Node> & obj) -> bool {
+                 [type](const std::shared_ptr<CDFG_Node> & obj) -> bool
+                 {
                    return obj->get_type() == type;
                  });
   return *ite;
@@ -102,14 +112,16 @@ CModule::get_node
  */
 std::shared_ptr<CDFG_Node> &
 CModule::get_node
-(const CDFG_Label::eLabelType & type) {
+(const CDFG_Label::eLabelType & type)
+{
   auto ite =
     std::find_if(this->_node_list.begin(),
                  this->_node_list.end(),
-                 [type](const std::shared_ptr<CDFG_Node> & obj) -> bool {
+                 [type](const std::shared_ptr<CDFG_Node> & obj) -> bool
+                 {
                    return obj->get_type() == CDFG_Node::eNode::LABEL
                      && std::dynamic_pointer_cast<CDFG_Label>
-                          (obj)->get_type() == type;
+                     (obj)->get_type() == type;
                  });
   return *ite;
 }
@@ -121,14 +133,16 @@ CModule::get_node
  */
 std::shared_ptr<CDFG_Node> &
 CModule::get_node
-(const CDFG_Parameter::eParamType & type) {
+(const CDFG_Parameter::eParamType & type)
+{
   auto ite =
     std::find_if(this->_node_list.begin(),
                  this->_node_list.end(),
-                 [type](const std::shared_ptr<CDFG_Node> & obj) -> bool {
+                 [type](const std::shared_ptr<CDFG_Node> & obj) -> bool
+                 {
                    return obj->get_type() == CDFG_Node::eNode::PARAM
                      && std::dynamic_pointer_cast<CDFG_Parameter>
-                           (obj)->get_type() == type;
+                     (obj)->get_type() == type;
                  });
   return *ite;
 }
@@ -140,14 +154,16 @@ CModule::get_node
  */
 std::shared_ptr<CDFG_Node> &
 CModule::get_node
-(const CDFG_Reg::eRegType & type) {
+(const CDFG_Reg::eRegType & type)
+{
   auto ite =
     std::find_if(this->_node_list.begin(),
                  this->_node_list.end(),
-                 [type](const std::shared_ptr<CDFG_Node> & obj) -> bool {
+                 [type](const std::shared_ptr<CDFG_Node> & obj) -> bool
+                 {
                    return obj->get_type() == CDFG_Node::eNode::REG
                      && std::dynamic_pointer_cast<CDFG_Reg>
-                           (obj)->get_type() == type;
+                     (obj)->get_type() == type;
                  });
   return *ite;
 }
@@ -159,14 +175,16 @@ CModule::get_node
  */
 std::shared_ptr<CDFG_Node> &
 CModule::get_node
-(const CDFG_Wire::eWireType & type) {
+(const CDFG_Wire::eWireType & type)
+{
   auto ite =
     std::find_if(this->_node_list.begin(),
                  this->_node_list.end(),
-                 [type](const std::shared_ptr<CDFG_Node> & obj) -> bool {
+                 [type](const std::shared_ptr<CDFG_Node> & obj) -> bool
+                 {
                    return obj->get_type() == CDFG_Node::eNode::WIRE
                      && std::dynamic_pointer_cast<CDFG_Wire>
-                           (obj)->get_type() == type;
+                     (obj)->get_type() == type;
                  });
   return *ite;
 }
@@ -180,12 +198,14 @@ CModule::get_node
 std::shared_ptr<CDFG_Node> &
 CModule::get_node
 (const std::string & node_name,
- const CDFG_Node::eNode & type) {
+ const CDFG_Node::eNode & type)
+{
   auto ite =
     std::find_if(this->_node_list.begin(),
                  this->_node_list.end(),
                  [node_name, type]
-                 (const std::shared_ptr<CDFG_Node> & obj) -> bool {
+                 (const std::shared_ptr<CDFG_Node> & obj) -> bool
+                 {
                    return type == obj->get_type()
                      && obj->get_asm_name() == node_name;
                  });
@@ -198,11 +218,14 @@ CModule::get_node
    @return ラベルNode
 */
 std::shared_ptr<CDFG_Node> &
-CModule::get_label_node(const unsigned & state) {
+CModule::get_label_node
+(const unsigned & state)
+{
   auto ite =
     std::find_if(this->_node_list.begin(),
                  this->_node_list.end(),
-                 [state](const std::shared_ptr<CDFG_Node> & obj) -> bool {
+                 [state](const std::shared_ptr<CDFG_Node> & obj) -> bool
+                 {
                    return (obj->get_type() == CDFG_Node::eNode::LABEL)
                      && (std::dynamic_pointer_cast<CDFG_Label>
                          (obj)->get_state() == state);
@@ -218,11 +241,13 @@ CModule::get_label_node(const unsigned & state) {
  */
 bool
 CModule::find_node(const std::string & asm_name,
-                   const CDFG_Node::eNode & type) {
+                   const CDFG_Node::eNode & type)
+{
   auto ite =
     std::find_if(this->_node_list.begin(),
                  this->_node_list.end(),
-                 [asm_name, type](const std::shared_ptr<CDFG_Node> & obj) -> bool {
+                 [asm_name, type](const std::shared_ptr<CDFG_Node> & obj) -> bool
+                 {
                    return obj->get_asm_name() == asm_name
                      && obj->get_type() == type;
                  });
@@ -236,7 +261,8 @@ CModule::find_node(const std::string & asm_name,
    @return step信号に必要なビット幅
  */
 unsigned
-CModule::get_max_step(void) {
+CModule::get_max_step(void)
+{
   unsigned max_step = 0;
 
   for (auto & obj : this->_dfg)
