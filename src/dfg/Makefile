@@ -20,7 +20,6 @@ OBJS := \
 	CModuleGenerator.o \
 	CModule.o \
 
-TARGET := generator
 TARGETS := $(TARGET)
 
 include ../Makefile.in
