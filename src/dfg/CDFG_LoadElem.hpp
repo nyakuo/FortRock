@@ -23,7 +23,7 @@ public:
                 const unsigned & step,
                 const unsigned & latency)
     : _is_gepope(is_gepope),
-      CDFG_Element(CDFG_Operator::eType::LOAD,
+      CDFG_Element(CDFG_Operator::eType::Load,
                    1, // 入力数
                    state,
                    step,

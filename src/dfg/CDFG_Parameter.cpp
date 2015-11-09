@@ -1,9 +1,9 @@
 #include "CDFG_Parameter.hpp"
 
 // static値の初期化
-const unsigned CDFG_Parameter::SINGLE_FP_BIT_WIDTH = 32;
-const unsigned CDFG_Parameter::DOUBLE_FP_BIT_WIDTH = 64;
-const bool CDFG_Parameter::IS_POSITIVE_LOGIC = true;
+const unsigned CDFG_Parameter::Single_fp_bit_width = 32;
+const unsigned CDFG_Parameter::Double_fp_bit_width = 64;
+const bool CDFG_Parameter::Is_positive_logic = true;
 
 /**
    整数型のコンストラクタ
@@ -17,11 +17,11 @@ CDFG_Parameter::CDFG_Parameter
 (const std::string & asm_name,
  const unsigned    & bit_width,
  const long        & parameter)
-  : _param_type(eParamType::INTEGER),
+  : _param_type(eParamType::Integer),
     CDFG_Node(asm_name,
               bit_width,
               true, // is signed
-              CDFG_Node::eNode::PARAM,
+              CDFG_Node::eNode::Param,
               "p_")
 {
   this->_data.param = parameter;
@@ -35,11 +35,11 @@ CDFG_Parameter::CDFG_Parameter
 CDFG_Parameter::CDFG_Parameter
 (const std::string & asm_name,
  const double      & parameter)
-  : _param_type(eParamType::DOUBLE),
+  : _param_type(eParamType::Double),
     CDFG_Node(asm_name,
-              CDFG_Parameter::DOUBLE_FP_BIT_WIDTH,
+              CDFG_Parameter::Double_fp_bit_width,
               true, // 浮動小数点は常にsigned
-              CDFG_Node::eNode::PARAM,
+              CDFG_Node::eNode::Param,
               "pf_")
 {
   this->_data.lfparam = parameter;
@@ -53,11 +53,11 @@ CDFG_Parameter::CDFG_Parameter
 CDFG_Parameter::CDFG_Parameter
 (const std::string & asm_name,
  const float       & parameter)
-  : _param_type(eParamType::FLOAT),
+  : _param_type(eParamType::Float),
     CDFG_Node(asm_name,
-              CDFG_Parameter::SINGLE_FP_BIT_WIDTH,
+              CDFG_Parameter::Single_fp_bit_width,
               true, // 浮動小数点は常にsigned
-              CDFG_Node::eNode::PARAM,
+              CDFG_Node::eNode::Param,
               "pf_")
 {
   this->_data.fparam = parameter;
@@ -71,11 +71,11 @@ CDFG_Parameter::CDFG_Parameter
 CDFG_Parameter::CDFG_Parameter
 (const std::string & asm_name,
  const bool        & parameter)
-  : _param_type(eParamType::BOOL),
+  : _param_type(eParamType::Bool),
     CDFG_Node(asm_name,
               1, // bit width
               false,
-              CDFG_Node::eNode::PARAM,
+              CDFG_Node::eNode::Param,
               "pb_")
 {
   this->_data.param = (long)parameter;
@@ -93,25 +93,25 @@ CDFG_Parameter::CDFG_Parameter
     CDFG_Node(asm_name,
               1, // bit width
               true, // signed
-              CDFG_Node::eNode::PARAM,
+              CDFG_Node::eNode::Param,
               "pb_")
 {
   switch (param_type) {
   case eParamType::True:
-    if (CDFG_Parameter::IS_POSITIVE_LOGIC)
+    if (CDFG_Parameter::Is_positive_logic)
       this->_data.param = 1L;
     else
       this->_data.param = 0L;
     break;
 
   case eParamType::False:
-    if (CDFG_Parameter::IS_POSITIVE_LOGIC)
+    if (CDFG_Parameter::Is_positive_logic)
       this->_data.param = 0L;
     else
       this->_data.param = 1L;
     break;
 
-  case eParamType::ZERO:
+  case eParamType::Zero:
     this->_data.param = 0L;
     break;
 
@@ -170,7 +170,7 @@ CDFG_Parameter::to_string
   char buf[64];
 
   // 負の数
-  if (this->_param_type == eParamType::INTEGER
+  if (this->_param_type == eParamType::Integer
        && this->_data.param < 0)
     ret = "-";
 
@@ -179,18 +179,18 @@ CDFG_Parameter::to_string
     + "'h";
 
   switch (this->_param_type) {
-  case eParamType::INTEGER:
+  case eParamType::Integer:
   case eParamType::True:
   case eParamType::False:
-  case eParamType::BOOL:
-  case eParamType::ZERO:
+  case eParamType::Bool:
+  case eParamType::Zero:
     snprintf(buf, sizeof(buf), "%lx"
              , std::abs(this->_data.param));
     ret += buf;
     break;
 
-  case eParamType::FLOAT:
-  case eParamType::DOUBLE:
+  case eParamType::Float:
+  case eParamType::Double:
     for (int i=this->_bit_width / 8 - 1 * ((this->_bit_width % 8) == 0);
          i >= 0;
          --i)

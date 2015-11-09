@@ -22,15 +22,18 @@ CDFG_Scheduler::do_schedule
   {
     auto state = 0;
     for (auto & elem
-           : this->_module->get_element_list()) {
-      // ステートが移動したか
-      if (state != elem->get_state()) {
-        dfg.emplace_back(tmp_dfg);
-        tmp_dfg.clear();
-        state = elem->get_state();
-      }
-      tmp_dfg.emplace_back(elem);
-    }
+           : this->_module->get_element_list())
+      {
+        // ステートが移動したか
+        if (state != elem->get_state())
+          {
+            dfg.emplace_back(tmp_dfg);
+            tmp_dfg.clear();
+            state = elem->get_state();
+          } // if
+
+        tmp_dfg.emplace_back(elem);
+      } // for
   }
 
   // 演算器の種類ごとの一覧の作成
@@ -41,76 +44,86 @@ CDFG_Scheduler::do_schedule
 
   // 各ステートに対してスケジューリング
   tmp_dfg.clear();
-  for (auto & state_dfg : dfg) {
-    for (auto elem = state_dfg.cbegin();
-         elem != state_dfg.cend();
-         ++elem) {
-      auto original_step = (*elem)->get_step();
+  for (auto & state_dfg : dfg)
+    {
+      for (auto elem = state_dfg.cbegin();
+           elem != state_dfg.cend();
+           ++elem)
+        {
+          auto original_step = (*elem)->get_step();
 
-      // step(0)実行は依存が発生しない
-      if ((*elem)->get_step() == 0) {
-        tmp_dfg.emplace_back(*elem);
-        continue;
-      }
-
-      // データ依存の判定
-      auto data_depend_step
-        = this->_min_step_data(tmp_dfg, (*elem));
-
-      // 演算器依存の判定
-      auto min_step = this->_get_last_step(state_dfg);
-      {
-        std::shared_ptr<CDFG_Operator> & min_ope = (*elem)->get_operator();
-        if (ope_list[min_ope->get_type()].size() > 0) {
-
-          for (auto & ope : ope_list[min_ope->get_type()]) {
-            auto new_min_step
-              = this->_min_step_operator(tmp_dfg,
-                                         ope,
-                                         data_depend_step);
-
-            if (new_min_step < min_step) {
-              // 実行演算器の変更
-              (*elem)->set_operator(ope);
-              min_step = new_min_step;
+          // step(0)実行は依存が発生しない
+          if ((*elem)->get_step() == 0)
+            {
+              tmp_dfg.emplace_back(*elem);
+              continue;
             }
+
+          // データ依存の判定
+          auto data_depend_step
+            = this->_min_step_data(tmp_dfg, (*elem));
+
+          // 演算器依存の判定
+          auto min_step = this->_get_last_step(state_dfg);
+          {
+            std::shared_ptr<CDFG_Operator> & min_ope
+              = (*elem)->get_operator();
+
+            if (ope_list[min_ope->get_type()].size() > 0)
+              {
+                for (auto & ope : ope_list[min_ope->get_type()])
+                  {
+                    auto new_min_step
+                      = this->_min_step_operator
+                      (tmp_dfg,
+                       ope,
+                       data_depend_step);
+
+                    if (new_min_step < min_step)
+                      {
+                        // 実行演算器の変更
+                        (*elem)->set_operator(ope);
+                        min_step = new_min_step;
+                      }
+                  } // for : ope
+              } // if : ope_list.size() > 0
+
+            else
+              min_step = data_depend_step;
           }
 
-        } // if : ope_list.size() > 0
-        else
-          min_step = data_depend_step;
-      }
+          // 実行ステップの変更
+          (*elem)->set_step(min_step);
 
-      // 実行ステップの変更
-      (*elem)->set_step(min_step);
+          ret_change_ltc += original_step - min_step;
 
-      ret_change_ltc += original_step - min_step;
+          // DFGの再構築
+          tmp_dfg.emplace_back(*elem);
+          tmp_dfg.sort([](const std::shared_ptr<CDFG_Element> & obj1,
+                          const std::shared_ptr<CDFG_Element> & obj2)
+                       -> bool
+                       {
+                         return obj1->get_state() < obj2->get_state()
+                           && obj1->get_step() < obj2->get_step();
+                       });
+        } // for : elem
 
-      // DFGの再構築
-      tmp_dfg.emplace_back(*elem);
-      tmp_dfg.sort([](const std::shared_ptr<CDFG_Element> & obj1,
-                      const std::shared_ptr<CDFG_Element> & obj2)
-                   -> bool {
-                     return obj1->get_state() < obj2->get_state()
-                       && obj1->get_step() < obj2->get_step();
-                   });
-    } // for : elem
+      // br命令をDFGの最後に移動
+      for (auto & elem : tmp_dfg)
+        if (elem->get_operator()->get_type()
+            == CDFG_Operator::eType::Br)
+          {
+            elem->set_step(this->_get_last_step(tmp_dfg));
+            break;
+          }
 
-    // br命令をDFGの最後に移動
-    for (auto & elem : tmp_dfg)
-      if (elem->get_operator()->get_type()
-          == CDFG_Operator::eType::BR) {
-        elem->set_step(this->_get_last_step(tmp_dfg));
-        break;
-      }
+      //    _show_list(tmp_dfg);
 
-    //    _show_list(tmp_dfg);
+      // ステートのDFGを更新
+      state_dfg = tmp_dfg;
+      tmp_dfg.clear();
 
-    // ステートのDFGを更新
-    state_dfg = tmp_dfg;
-    tmp_dfg.clear();
-
-  } // for : state_dfg
+    } // for : state_dfg
 
   return ret_change_ltc;
 } // do_schedule
@@ -125,7 +138,8 @@ CDFG_Scheduler::do_schedule
 int
 CDFG_Scheduler::_min_step_data
 (const std::list<std::shared_ptr<CDFG_Element> > & list,
- const std::shared_ptr<CDFG_Element> & target_elem) {
+ const std::shared_ptr<CDFG_Element> & target_elem)
+{
   auto cp_list = list;
 
   // データ依存の判定の簡単化のために実行ステップでソート
@@ -144,73 +158,78 @@ CDFG_Scheduler::_min_step_data
     auto input = target_elem->get_input_at(i);
     // 入力が即値の場合は考慮しない
     if (input->get_type()
-        == CDFG_Node::eNode::PARAM)
+        == CDFG_Node::eNode::Param)
       continue;
 
     // 命令の出力との比較
-    for (auto & elem : cp_list) {
-      if (elem->get_num_output() == 0)
-        continue;
+    for (auto & elem : cp_list)
+      {
+        if (elem->get_num_output() == 0)
+          continue;
 
-      // 同一基本ブロック内で定義された変数が出力に存在する場合
-      // 最小ステップを更新
-      if (elem->get_output_at(0) == input)
-        min_step
-          = std::max(min_step,
-                     elem->get_step()
-                     + elem->get_operator()->get_latency()
-                     + 1
-                     + ((elem->get_operator()->get_latency() == 0)
-                        ? 0 : 1)); // IPCoreは出力と同一クロックでは読めない
+        // 同一基本ブロック内で定義された変数が出力に存在する場合
+        // 最小ステップを更新
+        if (elem->get_output_at(0) == input)
+          min_step
+            = std::max(min_step,
+                       elem->get_step()
+                       + elem->get_operator()->get_latency()
+                       + 1
+                       + ((elem->get_operator()->get_latency() == 0)
+                          ? 0 : 1)); // IPCoreは出力と同一クロックでは読めない
 
-      // 配列の添字が確定する最小ステップで更新
-      if (input->get_type()
-          == CDFG_Node::eNode::ADDR) {
-        auto addr
-          = std::dynamic_pointer_cast<CDFG_Addr>
-          (input);
+        // 配列の添字が確定する最小ステップで更新
+        if (input->get_type()
+            == CDFG_Node::eNode::Addr)
+          {
+            auto addr
+              = std::dynamic_pointer_cast<CDFG_Addr>
+              (input);
 
-        for (auto i=0; i<addr->get_addr_dim();
-             ++i)
-          if (addr->get_address(i)
-              == elem->get_output_at(0))
-            min_step
-              = std::max(min_step,
-                         elem->get_step()
-                         + elem->get_operator()->get_latency()
-                         + 1
-                         + ((elem->get_operator()->get_latency() == 0)
-                            ? 0 : 1)); // IPCoreは出力と同一クロックでは読めない
-      } // if : input->get_type()
-    } // for : elem
+            for (auto i=0; i<addr->get_addr_dim();
+                 ++i)
+              if (addr->get_address(i)
+                  == elem->get_output_at(0))
+                min_step
+                  = std::max(min_step,
+                             elem->get_step()
+                             + elem->get_operator()->get_latency()
+                             + 1
+                             + ((elem->get_operator()->get_latency() == 0)
+                                ? 0 : 1)); // IPCoreは出力と同一クロックでは読めない
+          } // if : input->get_type()
+      } // for : elem
   } // for : i
 
   // 出力が可能となる最小ステップの取得
-  if (target_elem->get_num_output() > 0) {
-    auto output = target_elem->get_output_at(0);
-    if (output->get_type()
-        == CDFG_Node::eNode::ADDR) {
-      auto addr
-        = std::dynamic_pointer_cast<CDFG_Addr>(output);
+  if (target_elem->get_num_output() > 0)
+    {
+      auto output = target_elem->get_output_at(0);
+      if (output->get_type()
+          == CDFG_Node::eNode::Addr)
+        {
+          auto addr
+            = std::dynamic_pointer_cast<CDFG_Addr>(output);
 
-      for (auto  & elem : cp_list) {
-        if (elem->get_num_output() ==0)
-          continue;
+          for (auto  & elem : cp_list)
+            {
+              if (elem->get_num_output() ==0)
+                continue;
 
-        for (auto i=0; i<addr->get_addr_dim();
-             ++i)
-          if (elem->get_output_at(0)
-              == addr->get_address(i))
-            min_step
-              = std::max(min_step,
-                         elem->get_step()
-                         + elem->get_operator()->get_latency()
-                         + 1
-                         + ((elem->get_operator()->get_latency() == 0)
-                            ? 0 : 1));
-      } // for : elem
-    } // if : output->get_type()
-  }
+              for (auto i=0; i<addr->get_addr_dim();
+                   ++i)
+                if (elem->get_output_at(0)
+                    == addr->get_address(i))
+                  min_step
+                    = std::max(min_step,
+                               elem->get_step()
+                               + elem->get_operator()->get_latency()
+                               + 1
+                               + ((elem->get_operator()->get_latency() == 0)
+                                  ? 0 : 1));
+            } // for : elem
+        } // if : output->get_type()
+    } // if : target_elem
   return min_step;
 } // _min_step_data
 
@@ -228,7 +247,8 @@ int
 CDFG_Scheduler::_min_step_operator
 (const std::list<std::shared_ptr<CDFG_Element> > & list,
  const std::shared_ptr<CDFG_Operator> & ope,
- const unsigned & data_depend_step) {
+ const unsigned & data_depend_step)
+{
   auto latency = ope->get_latency();
 
   // 同一演算器の命令のリストを取得
@@ -249,41 +269,97 @@ CDFG_Scheduler::_min_step_operator
 
   auto step = data_depend_step+1;
   auto last_step = this->_get_last_step(target_elem);
-  for (;step < this->_get_last_step(target_elem);
-       ++step) {
-    if (this->_can_use(step, ope, target_elem))
-      return step;
-  }
-  return last_step;
 
+  for (;step < this->_get_last_step(target_elem);
+       ++step)
+    {
+      if (this->_can_use(step, ope, target_elem))
+        return step;
+    }
+
+  return last_step;
 } // _min_step_operator
 
 /**
    指定されたステップで演算器が使用可能か判定
    @param[in] step 演算の実行開始ステップ
    @param[in] ope 演算に使用する演算器
-   @param[in] list 演算前のdfg
+   @param[in] dfg 演算前のdfg
    @return 指定されたステップで演算器が使用可能か
  */
-bool CDFG_Scheduler::_can_use
+bool
+CDFG_Scheduler::_can_use
 (const unsigned & step,
  const std::shared_ptr<CDFG_Operator> & ope,
- const std::list<std::shared_ptr<CDFG_Element> > & dfg) {
+ const std::list<std::shared_ptr<CDFG_Element> > & dfg)
+{
   auto latency = ope->get_latency();
 
-  for (auto & elem : dfg) {
-    if (elem->get_operator() != ope)
-      continue;
+  for (auto & elem : dfg)
+    {
+      if (elem->get_operator() != ope)
+        continue;
 
-    auto tmp_step = elem->get_step();
-    if (step < tmp_step + latency + 1
-        && step + latency + 1 > tmp_step)
-      return false;
-  }
+      auto tmp_step = elem->get_step();
+      if (step < tmp_step + latency
+          && step + latency > tmp_step)
+        return false;
+    }
 
   return true;
-}
+} // _can_use
+#if 0
+/**
+   指定されたステップでRAMが使用可能か判定
+   @param[in] step 演算の実行開始ステップ
+   @param[in] ram 演算に使用するRAM
+   @parma[in] dfg 演算前のdfg
+   @return 指定されたステップでRAMが使用可能か
+ */
+bool
+CDFG_Scheduler::_can_use
+(const unsigned & step,
+ const std::shared_ptr<CDFG_Ram> & ram,
+ const std::list<std::shared_ptr<CDFG_Element> > & dfg)
+{
+  auto latency = ram->get_latency();
+  bool can_use = true;
+  auto num_col = 0;
 
+  for (auto & elem : dfg)
+    {
+      // 他入力との衝突判定
+      for (auto i=0; i<elem->get_num_input();
+           ++i)
+        {
+          auto in = elem->get_input_at(i);
+
+          if (in == ram)
+            {
+              auto tmp_step = elem->get_step();
+
+              // 衝突
+              if (tmp_step <= step + ram->get_latency()
+                  && tmp_step + ram->get_latency() >= step)
+                ++num_col;
+            }
+        } // for : i
+
+      auto out = elem->get_output_at(0);
+      if (out == ram)
+        {
+          auto tmp_step = elem->get_step();
+
+          // 衝突
+          if (tmp_step <= step + ram->get_latency()
+              && tmp_step + ram->get_latency() >= step)
+            ++num_col;
+        }
+    } // for : elem
+
+  return can_use;
+} // _can_use
+#endif
 /**
    最後に実行が完了する命令の実行終了ステップを取得する
    @param[in] list 取得対象のDFG
@@ -291,7 +367,8 @@ bool CDFG_Scheduler::_can_use
  */
 unsigned
 CDFG_Scheduler::_get_last_step
-(const std::list<std::shared_ptr<CDFG_Element> > & list) {
+(const std::list<std::shared_ptr<CDFG_Element> > & list)
+{
   auto last_elem = std::max_element
     (list.begin(), list.end(),
      [](const std::shared_ptr<CDFG_Element> & elem1,
@@ -312,7 +389,8 @@ CDFG_Scheduler::_get_last_step
 #include <iostream>
 void
 CDFG_Scheduler::_show_list
-(const std::list<std::shared_ptr<CDFG_Element> > & list) {
+(const std::list<std::shared_ptr<CDFG_Element> > & list)
+ {
   for (auto & elem : list)
     std::cout << elem->get_operator()->get_latency()
               << ": "
@@ -321,4 +399,4 @@ CDFG_Scheduler::_show_list
               << elem->get_step()
               << '\n'
               << std::endl;
-}
+} // _show_list

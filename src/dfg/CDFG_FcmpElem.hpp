@@ -16,20 +16,20 @@ public:
   enum class eCond : unsigned char {
     False,  ///< always false
       True, ///< always true
-      OEQ,  ///< orderd and equal
-      OGT,  ///< orderd and greater than
-      OGE,  ///< orderd and greater than or equal
-      OLT,  ///< orderd and less than
-      OLE,  ///< orderd and less than or equal
-      ONE,  ///< orderd and not equal
-      ORD,  ///< orderd
-      UNO,  ///< unorderd
-      UEQ,  ///< unorderd and equal
-      UGT,  ///< unorderd and greater than
-      UGE,  ///< unorderd and greater than or equal
-      ULT,  ///< unorderd and less than
-      ULE,  ///< unorderd and less than or equal
-      UNE,  ///< unorderd and not equal
+      Oeq,  ///< orderd and equal
+      Ogt,  ///< orderd and greater than
+      Oge,  ///< orderd and greater than or equal
+      Olt,  ///< orderd and less than
+      Ole,  ///< orderd and less than or equal
+      One,  ///< orderd and not equal
+      Ord,  ///< orderd
+      Uno,  ///< unorderd
+      Ueq,  ///< unorderd and equal
+      Ugt,  ///< unorderd and greater than
+      Uge,  ///< unorderd and greater than or equal
+      Ult,  ///< unorderd and less than
+      Ule,  ///< unorderd and less than or equal
+      Une,  ///< unorderd and not equal
   };
 
   /**

@@ -21,22 +21,22 @@ void COperatorGenerator::generate_operator
     for (auto & inode : this->_inode_info) {
       std::shared_ptr<CDFG_Node> node;
       // CKL, CE
-      if (inode->get_type() == CNode_data::ePortType::CLK ||
-          inode->get_type() == CNode_data::ePortType::CE) {
+      if (inode->get_type() == CNode_data::ePortType::Clk ||
+          inode->get_type() == CNode_data::ePortType::Ce) {
         node = module_gen->get_node((inode->get_type()
-                                     == CNode_data::ePortType::CLK) ?
-                                    CDFG_Wire::eWireType::CLK
-                                    : CDFG_Wire::eWireType::CE);
+                                     == CNode_data::ePortType::Clk) ?
+                                    CDFG_Wire::eWireType::Clk
+                                    : CDFG_Wire::eWireType::Ce);
         ope->add_input_port(inode->get_name(),
                             node);
       }
       // 引数ポート
-      else if (inode->get_type() == CNode_data::ePortType::IN) {
+      else if (inode->get_type() == CNode_data::ePortType::In) {
         node = std::make_shared<CDFG_Reg>
           (this->_instance_name + '_' + inode->get_name(),
            inode->get_bit_width(),
            inode->get_is_signed(),
-           CDFG_Reg::eRegType::REG);
+           CDFG_Reg::eRegType::Reg);
 
         ope->add_input_port(inode->get_name(),
                             node);
@@ -50,7 +50,7 @@ void COperatorGenerator::generate_operator
         (this->_instance_name + '_' + onode->get_name(),
          onode->get_bit_width(),
          onode->get_is_signed(),
-         CDFG_Wire::eWireType::WIRE);
+         CDFG_Wire::eWireType::Wire);
       ope->add_output_port(onode->get_name(),
                            node);
       module_gen->add_node(node);
@@ -77,11 +77,11 @@ void COperatorGenerator::add_port_info
   auto node_data = std::make_shared<CNode_data>
     (name, bit_width, type, is_signed);
 
-  if (type == CNode_data::ePortType::IN
-      || type == CNode_data::ePortType::CLK
-      || type == CNode_data::ePortType::CE)
+  if (type == CNode_data::ePortType::In
+      || type == CNode_data::ePortType::Clk
+      || type == CNode_data::ePortType::Ce)
     this->_inode_info.push_back(node_data);
-  else if (type == CNode_data::ePortType::OUT)
+  else if (type == CNode_data::ePortType::Out)
     this->_onode_info.push_back(node_data);
 }
 

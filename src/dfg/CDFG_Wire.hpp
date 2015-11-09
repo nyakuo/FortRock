@@ -14,12 +14,12 @@ public:
      Wire信号の種類を表す定数
    */
   enum class eWireType : unsigned {
-    WIRE = 0,  ///< 回路内部で使用するwire信号
-      CLK,     ///< clock信号
-      RES,     ///< reset信号
-      REQ,     ///< request信号
-      CE,      ///< clock enable信号
-      IN_ORIG, ///< 入力信号
+    Wire = 0,  ///< 回路内部で使用するwire信号
+      Clk,     ///< clock信号
+      Res,     ///< reset信号
+      Req,     ///< request信号
+      Ce,      ///< clock enable信号
+      In_orig, ///< 入力信号
   };
 
   /**
@@ -37,7 +37,7 @@ public:
       CDFG_Node(asm_name,
                 bit_width,
                 is_signed,
-                CDFG_Node::eNode::WIRE,
+                CDFG_Node::eNode::Wire,
                 this->_get_prefix(type))
   {}
 

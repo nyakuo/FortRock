@@ -48,10 +48,10 @@ private:
   unsigned _address_width;                   ///< アドレス幅
   std::vector<std::shared_ptr<CDFG_Reg> > _address_ports; ///< アドレスポート
   std::vector<std::shared_ptr<CDFG_Reg> > _rw_ports;      ///< R/Wポート (0: read  1: write)
-  const static std::string _RAM_MODULE_NAME; ///< RAMのモジュール名
-  static unsigned _NUM_INSTANCE;             ///< インスタンス化されたモジュールの数
-  static unsigned _NUM_R_PORT;               ///< 読み出しポート数
-  static unsigned _NUM_W_PORT;               ///< 書き込みポート数
+  const static std::string _ram_module_name; ///< RAMのモジュール名
+  static unsigned _num_instance;             ///< インスタンス化されたモジュールの数
+  static unsigned _num_r_port;               ///< 読み出しポート数
+  static unsigned _num_w_port;               ///< 書き込みポート数
 };
 
 #endif

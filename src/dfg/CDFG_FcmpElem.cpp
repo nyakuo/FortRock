@@ -11,40 +11,40 @@ CDFG_FcmpElem::get_condition_code(void)
     ->get_output_node_at(0)->get_verilog_name();
 
   switch (this->_cond) {
-  case eCond::UEQ:
+  case eCond::Ueq:
     return result + "[3] & " + result + "[0]";
 
-  case eCond::UNE:
+  case eCond::Une:
     return result + "[3] & " + result + "[0]";
 
-  case eCond::ULT:
+  case eCond::Ult:
     return result + "[3] & " + result + "[1]";
 
-  case eCond::UGT:
+  case eCond::Ugt:
     return result + "[3] & " + result + "[2]";
 
-  case eCond::UGE:
+  case eCond::Uge:
     return result + "[3] & " + result + "[2] | " + result + "[0]";
 
-  case eCond::ULE:
+  case eCond::Ule:
     return result + "[3] & " + result + "[1] | " + result + "[0]";
 
-  case eCond::OEQ:
+  case eCond::Oeq:
     return "~" + result + "[3] & " + result + "[0]";
 
-  case eCond::ONE:
+  case eCond::One:
     return "~" + result + "[3] & ~" + result + "[0]";
 
-  case eCond::OLT:
+  case eCond::Olt:
     return "~" + result + "[3] & " + result + "[1]";
 
-  case eCond::OGT:
+  case eCond::Ogt:
     return "~" + result + "[3] & " + result + "[2]";
 
-  case eCond::OGE:
+  case eCond::Oge:
     return "~" + result + "[3] & " + result + "[2] | " + result + "[0]";
 
-  case eCond::OLE:
+  case eCond::Ole:
     return "~" + result + "[3] & " + result + "[1] | " + result + "[0]";
 
   default: return "";

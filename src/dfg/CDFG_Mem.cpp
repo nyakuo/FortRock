@@ -32,7 +32,7 @@ CDFG_Mem::CDFG_Mem
     CDFG_Node(name,
               word_length,
               true, // is_signed
-              CDFG_Node::eNode::MEM,
+              CDFG_Node::eNode::Mem,
               "m_")
 {
   // 書き込みポートのインスタンス化
@@ -43,7 +43,7 @@ CDFG_Mem::CDFG_Mem
         (name + "_" + std::to_string(i),
          word_length,
          true,
-         CDFG_Reg::eRegType::REG);
+         CDFG_Reg::eRegType::Reg);
 
       this->_write_ports.emplace_back(w_port);
     }
@@ -56,7 +56,7 @@ CDFG_Mem::CDFG_Mem
         (name + "_" + std::to_string(i),
          word_length,
          true,
-         CDFG_Wire::eWireType::WIRE);
+         CDFG_Wire::eWireType::Wire);
 
       this->_read_ports.emplace_back(r_port);
     }

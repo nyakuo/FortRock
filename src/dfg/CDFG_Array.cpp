@@ -23,7 +23,7 @@ CDFG_Array::CDFG_Array
              word_length,
              write_ports,
              read_ports,
-             CDFG_Mem::eMemType::ARRAY,
+             CDFG_Mem::eMemType::Array,
              type,
              false,
              0)
@@ -53,7 +53,7 @@ CDFG_Array::CDFG_Array
              word_length,
              write_ports,
              read_ports,
-             CDFG_Mem::eMemType::ARRAY,
+             CDFG_Mem::eMemType::Array,
              type,
              true,
              0)
@@ -85,7 +85,7 @@ CDFG_Array::init_string
   if (this->_is_initialized)
     {
       if (this->_data_type
-          == CDFG_Mem::eDataType::INTEGER)
+          == CDFG_Mem::eDataType::Integer)
         {
           for (auto i=0; i<this->_length[0]; ++i)
             ret_str.append(indent
@@ -142,13 +142,13 @@ CDFG_Array::access_string
       auto address = addr->get_address(i);
 
       if (address->get_type()
-          == CDFG_Node::eNode::REG)
+          == CDFG_Node::eNode::Reg)
         ret_str.append("["
                        + address->get_verilog_name()
                        + "]");
 
       else if (address->get_type()
-               == CDFG_Node::eNode::PARAM)
+               == CDFG_Node::eNode::Param)
         {
           auto param
             = std::dynamic_pointer_cast

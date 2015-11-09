@@ -77,34 +77,34 @@ CInstancingOperator::_parse_operator_info
 
     //! @todo その他の種類への対応
     if (xmlStrcmp(cur->name, (const xmlChar*)"add_int") == 0)
-      ope_gen->set_type(CDFG_Operator::eType::ADD);
+      ope_gen->set_type(CDFG_Operator::eType::Add);
 
     else if (xmlStrcmp(cur->name, (const xmlChar*)"fadd") == 0)
-      ope_gen->set_type(CDFG_Operator::eType::FADD);
+      ope_gen->set_type(CDFG_Operator::eType::Fadd);
 
     else if (xmlStrcmp(cur->name, (const xmlChar*)"sub_int") == 0)
-      ope_gen->set_type(CDFG_Operator::eType::SUB);
+      ope_gen->set_type(CDFG_Operator::eType::Sub);
 
     else if (xmlStrcmp(cur->name, (const xmlChar*)"fsub") == 0)
-      ope_gen->set_type(CDFG_Operator::eType::FSUB);
+      ope_gen->set_type(CDFG_Operator::eType::Fsub);
 
     else if (xmlStrcmp(cur->name, (const xmlChar*)"mul") == 0)
-      ope_gen->set_type(CDFG_Operator::eType::MUL);
+      ope_gen->set_type(CDFG_Operator::eType::Mul);
 
     else if (xmlStrcmp(cur->name, (const xmlChar*)"fmul") == 0)
-      ope_gen->set_type(CDFG_Operator::eType::FMUL);
+      ope_gen->set_type(CDFG_Operator::eType::Fmul);
 
     else if (xmlStrcmp(cur->name, (const xmlChar*)"s_rem") == 0)
-      ope_gen->set_type(CDFG_Operator::eType::SREM);
+      ope_gen->set_type(CDFG_Operator::eType::Srem);
 
     else if (xmlStrcmp(cur->name, (const xmlChar*)"s_div") == 0)
-      ope_gen->set_type(CDFG_Operator::eType::SDIV);
+      ope_gen->set_type(CDFG_Operator::eType::Sdiv);
 
     else if (xmlStrcmp(cur->name, (const xmlChar*)"fdiv") == 0)
-      ope_gen->set_type(CDFG_Operator::eType::FDIV);
+      ope_gen->set_type(CDFG_Operator::eType::Fdiv);
 
     else if (xmlStrcmp(cur->name, (const xmlChar*)"fcmp") == 0)
-      ope_gen->set_type(CDFG_Operator::eType::FCMP);
+      ope_gen->set_type(CDFG_Operator::eType::Fcmp);
 
     else {
       cur = cur->next;
@@ -187,13 +187,13 @@ CInstancingOperator::_parse_operator_info
 
                 else if (xmlStrcmp(text->name, (const xmlChar*)"type") == 0) {
                   if (str.compare("input") == 0)
-                    type = CNode_data::ePortType::IN;
+                    type = CNode_data::ePortType::In;
                   else if (str.compare("output") == 0)
-                    type = CNode_data::ePortType::OUT;
+                    type = CNode_data::ePortType::Out;
                   else if (str.compare("clock") == 0)
-                    type = CNode_data::ePortType::CLK;
+                    type = CNode_data::ePortType::Clk;
                   else if (str.compare("clock_enable") == 0)
-                    type = CNode_data::ePortType::CE;
+                    type = CNode_data::ePortType::Ce;
                 }
               } // for : text
               ope_gen->add_port_info(port_name,

@@ -8,11 +8,11 @@ bool
 CDFG_Wire::is_input(void) {
 
   switch (this->_type) {
-  case eWireType::CLK:
-  case eWireType::RES:
-  case eWireType::REQ:
-  case eWireType::CE:
-  case eWireType::IN_ORIG:
+  case eWireType::Clk:
+  case eWireType::Res:
+  case eWireType::Req:
+  case eWireType::Ce:
+  case eWireType::In_orig:
     return true;
 
   default: return false;
@@ -38,14 +38,14 @@ CDFG_Wire::_get_prefix
 {
   switch (type)
     {
-    case eWireType::WIRE:
+    case eWireType::Wire:
       return "w_";
 
-    case eWireType::CLK:
-    case eWireType::RES:
-    case eWireType::REQ:
-    case eWireType::CE:
-    case eWireType::IN_ORIG:
+    case eWireType::Clk:
+    case eWireType::Res:
+    case eWireType::Req:
+    case eWireType::Ce:
+    case eWireType::In_orig:
       return "i_w_";
     }
 }

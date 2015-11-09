@@ -119,7 +119,7 @@ CModule::get_node
                  this->_node_list.end(),
                  [type](const std::shared_ptr<CDFG_Node> & obj) -> bool
                  {
-                   return obj->get_type() == CDFG_Node::eNode::LABEL
+                   return obj->get_type() == CDFG_Node::eNode::Label
                      && std::dynamic_pointer_cast<CDFG_Label>
                      (obj)->get_type() == type;
                  });
@@ -140,7 +140,7 @@ CModule::get_node
                  this->_node_list.end(),
                  [type](const std::shared_ptr<CDFG_Node> & obj) -> bool
                  {
-                   return obj->get_type() == CDFG_Node::eNode::PARAM
+                   return obj->get_type() == CDFG_Node::eNode::Param
                      && std::dynamic_pointer_cast<CDFG_Parameter>
                      (obj)->get_type() == type;
                  });
@@ -161,7 +161,7 @@ CModule::get_node
                  this->_node_list.end(),
                  [type](const std::shared_ptr<CDFG_Node> & obj) -> bool
                  {
-                   return obj->get_type() == CDFG_Node::eNode::REG
+                   return obj->get_type() == CDFG_Node::eNode::Reg
                      && std::dynamic_pointer_cast<CDFG_Reg>
                      (obj)->get_type() == type;
                  });
@@ -182,7 +182,7 @@ CModule::get_node
                  this->_node_list.end(),
                  [type](const std::shared_ptr<CDFG_Node> & obj) -> bool
                  {
-                   return obj->get_type() == CDFG_Node::eNode::WIRE
+                   return obj->get_type() == CDFG_Node::eNode::Wire
                      && std::dynamic_pointer_cast<CDFG_Wire>
                      (obj)->get_type() == type;
                  });
@@ -226,7 +226,7 @@ CModule::get_label_node
                  this->_node_list.end(),
                  [state](const std::shared_ptr<CDFG_Node> & obj) -> bool
                  {
-                   return (obj->get_type() == CDFG_Node::eNode::LABEL)
+                   return (obj->get_type() == CDFG_Node::eNode::Label)
                      && (std::dynamic_pointer_cast<CDFG_Label>
                          (obj)->get_state() == state);
                  });

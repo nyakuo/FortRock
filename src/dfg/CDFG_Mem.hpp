@@ -22,14 +22,14 @@ class CDFG_Mem : public CDFG_Node {
 public:
   /** メモリの種類を表す定数 */
   enum class eMemType : unsigned {
-    ARRAY = 0, ///< 配列
-      RAM,     ///< RAM
-      OTHER,   ///< その他
+    Array = 0, ///< 配列
+      Ram,     ///< RAM
+      Other,   ///< その他
       };
 
   enum class eDataType : unsigned {
-    INTEGER = 0, ///< 整数型
-      FLOAT,     ///< 浮動小数点型
+    Integer = 0, ///< 整数型
+      Float,     ///< 浮動小数点型
   };
 
   CDFG_Mem(const std::string & name,

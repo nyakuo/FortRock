@@ -11,8 +11,8 @@
 class CDFG_Label : public CDFG_Node {
 public:
   enum eLabelType {
-    FINISH = 0,  ///< 終了ステート
-    LABEL,       ///< その他のステート
+    Finish = 0,  ///< 終了ステート
+    Label,       ///< その他のステート
   };
 
   CDFG_Label(const std::string & asm_name,
@@ -24,7 +24,7 @@ public:
       CDFG_Node(asm_name,
                 bit_width,
                 false, // == is signed
-                CDFG_Node::eNode::LABEL,
+                CDFG_Node::eNode::Label,
                 "l_") {}
 
   ~CDFG_Label(void) {}

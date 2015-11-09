@@ -10,7 +10,7 @@ CDFG_StoreElem::CDFG_StoreElem
 (const unsigned & state,
  const unsigned & step,
  const unsigned & latency)
-  : CDFG_Element(CDFG_Operator::eType::STORE,
+  : CDFG_Element(CDFG_Operator::eType::Store,
                  1, // 入力数
                  state,
                  step,

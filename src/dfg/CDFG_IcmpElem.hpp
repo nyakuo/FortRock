@@ -11,16 +11,16 @@ class CDFG_IcmpElem : public CDFG_Element {
 public:
   /** 比較条件を表す定数 */
   enum class eCond : unsigned {
-    EQ  = 1 << 0, ///< ==
-    NE  = 1 << 1, ///< !=
-    UGT = 1 << 2, ///< (unsigned) > (unsigned)
-    UGE = 1 << 3, ///< (unsigned) >= (unsigned)
-    ULT = 1 << 4, ///< (unsigned) < (unsigned)
-    ULE = 1 << 5, ///< (unsigned) <= (unsigned)
-    SGT = 1 << 6, ///< (signed) > (signed)
-    SGE = 1 << 7, ///< (signed) >= (signed)
-    SLT = 1 << 8, ///< (signed) < (signed)
-    SLE = 1 << 9, ///< (signed) <= (signed)
+    Eq  = 1 << 0, ///< ==
+    Ne  = 1 << 1, ///< !=
+    Ugt = 1 << 2, ///< (unsigned) > (unsigned)
+    Uge = 1 << 3, ///< (unsigned) >= (unsigned)
+    Ult = 1 << 4, ///< (unsigned) < (unsigned)
+    Ule = 1 << 5, ///< (unsigned) <= (unsigned)
+    Sgt = 1 << 6, ///< (signed) > (signed)
+    Sge = 1 << 7, ///< (signed) >= (signed)
+    Slt = 1 << 8, ///< (signed) < (signed)
+    Sle = 1 << 9, ///< (signed) <= (signed)
     };
 
   /**
@@ -33,7 +33,7 @@ public:
                 const unsigned & state,
                 const unsigned & step)
     : _cond(cond),
-      CDFG_Element(CDFG_Operator::eType::ICMP,
+      CDFG_Element(CDFG_Operator::eType::Icmp,
                    2, // num input
                    state,
                    step)

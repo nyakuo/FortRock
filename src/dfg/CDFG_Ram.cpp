@@ -1,10 +1,10 @@
 #include "CDFG_Ram.hpp"
 
 // static
-const std::string CDFG_Ram::_RAM_MODULE_NAME = "ram";
-unsigned CDFG_Ram::_NUM_INSTANCE = 0;
-unsigned CDFG_Ram::_NUM_R_PORT = 2;
-unsigned CDFG_Ram::_NUM_W_PORT = 2;
+const std::string CDFG_Ram::_ram_module_name = "ram";
+unsigned CDFG_Ram::_num_instance = 0;
+unsigned CDFG_Ram::_num_r_port = 2;
+unsigned CDFG_Ram::_num_w_port = 2;
 
 /**
    コンストラクタ
@@ -31,38 +31,38 @@ CDFG_Ram::CDFG_Ram
     CDFG_Mem(name,
              num_datas,
              word_length,
-             _NUM_W_PORT,
-             _NUM_R_PORT,
-             CDFG_Mem::eMemType::RAM,
+             _num_w_port,
+             _num_r_port,
+             CDFG_Mem::eMemType::Ram,
              data_type,
              is_initialized,
              latency)
 {
   // インスタンス数の更新
-  ++CDFG_Ram::_NUM_INSTANCE;
+  ++CDFG_Ram::_num_instance;
 
   // アドレスポートのインスタンス化
-  for (auto i=0; i<_NUM_W_PORT; ++i)
+  for (auto i=0; i<_num_w_port; ++i)
     {
       auto a_port =
         std::make_shared<CDFG_Reg>
         (name + "_addr_" + std::to_string(i),
          word_length,
          false,
-         CDFG_Reg::eRegType::REG);
+         CDFG_Reg::eRegType::Reg);
 
       this->_address_ports.emplace_back(a_port);
     }
 
   // r/wポートのインスタンス化
-  for (auto i=0; i<_NUM_W_PORT; ++i)
+  for (auto i=0; i<_num_w_port; ++i)
     {
       auto rw_port =
         std::make_shared<CDFG_Reg>
         (name + "_rw_" + std::to_string(i),
          1,
          false,
-         CDFG_Reg::eRegType::REG);
+         CDFG_Reg::eRegType::Reg);
 
       this->_rw_ports.emplace_back(rw_port);
     }
@@ -82,7 +82,7 @@ CDFG_Ram::init_string
 
   if (this->_is_initialized)
     if (this->_data_type
-        == CDFG_Mem::eDataType::INTEGER)
+        == CDFG_Mem::eDataType::Integer)
       ret_str.append(indent);
 
   return ret_str;
@@ -99,7 +99,7 @@ CDFG_Ram::define_string
 
   // Ram モジュールのインスタンス化
   ret_str.append
-    (_RAM_MODULE_NAME
+    (_ram_module_name
      + " "
      + this->_verilog_name
      + "(");
@@ -197,8 +197,8 @@ void CDFG_Ram::set_num_port
 (const unsigned & num_r_port,
  const unsigned & num_w_port)
 {
-  _NUM_R_PORT = num_r_port;
-  _NUM_W_PORT = num_w_port;
+  _num_r_port = num_r_port;
+  _num_w_port = num_w_port;
 } // set_num_port
 
 /**

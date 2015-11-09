@@ -12,13 +12,13 @@ class CDFG_Reg : public CDFG_Node {
 public:
   /** 信号線の種類定数 */
   enum class eRegType : unsigned {
-    REG = 0,
-      IN_COPY,
-      FIN,
-      OUT,
-      STATE,
-      PREV_STATE,
-      STEP,
+    Reg = 0,
+      In_copy,
+      Fin,
+      Out,
+      State,
+      Prev_state,
+      Step,
       };
 
   /**
@@ -36,7 +36,7 @@ public:
       CDFG_Node(asm_name,
                 bit_width,
                 is_signed,
-                CDFG_Node::eNode::REG,
+                CDFG_Node::eNode::Reg,
                 this->_get_prefix(type))
   {}
 

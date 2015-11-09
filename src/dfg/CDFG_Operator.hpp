@@ -15,37 +15,37 @@
 class CDFG_Operator {
 public:
   enum class eType : unsigned {
-    ADD = 0,
-      FADD,
-      SUB,
-      FSUB,
-      ADD_SUB,
-      DIV,
-      FUNC,
-      MUL,
-      FMUL,
-      SDIV,
-      FDIV,
-      SREM,   // ↑演算器使用のレイテンシあり
-      RET,    // ↓演算器不使用のレイテンシなし (代入など)
-      BR,
-      LOAD,
-      STORE,
-      ICMP,
-      FCMP,
-      PHI,
-      SELECT,
-      SWITCH,
-      LSHIFTL,
-      LSHIFTR,
-      ASHIFTR,
-      AND,
-      OR,
-      XOR,
-      COPY, ///< 引数のコピー (非LLVMの命令)
-      TRUNC,
-      GETELEMENTPTR,
-      ZEXT,
+    Add = 0,
+      Fadd,
+      Sub,
+      Fsub,
+      Add_sub,
+      Div,
+      Func,
+      Mul,
+      Fmul,
+      Sdiv,
+      Fdiv,
+      Srem,   // ↑演算器使用のレイテンシあり
+      Ret,    // ↓演算器不使用のレイテンシなし (代入など)
+      Br,
+      Load,
+      Store,
+      Icmp,
+      Fcmp,
+      Phi,
+      Select,
+      Switch,
+      Lshiftl,
+      Lshiftr,
+      Ashiftr,
+      And,
+      Or,
+      Xor,
+      Copy, ///< 引数のコピー (非LLVMの命令)
+      Trunc,
+      Getelementptr,
+      Zext,
       };
 
   ///< @todo 演算器の入力ポートの名前などを外部の入力ファイルを用いて指定する機能

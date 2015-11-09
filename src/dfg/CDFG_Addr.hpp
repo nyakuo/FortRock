@@ -30,7 +30,7 @@ public:
     : CDFG_Node(asm_name,
                 bit_width,
                 false, // == is signed
-                CDFG_Node::eNode::ADDR,
+                CDFG_Node::eNode::Addr,
                 "ra_")
   {
     if (ref != NULL)

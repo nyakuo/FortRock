@@ -18,8 +18,8 @@ bool
 CDFG_Reg::is_output(void)
 {
   switch (this->_type) {
-  case eRegType::FIN:
-  case eRegType::OUT:
+  case eRegType::Fin:
+  case eRegType::Out:
     return true;
 
   default:
@@ -36,17 +36,17 @@ CDFG_Reg::_get_prefix
 (const CDFG_Reg::eRegType & type)
 {
   switch (type) {
-  case eRegType::IN_COPY:
-  case eRegType::REG:
+  case eRegType::In_copy:
+  case eRegType::Reg:
     return "r_";
 
-  case eRegType::FIN:
-  case eRegType::OUT:
+  case eRegType::Fin:
+  case eRegType::Out:
     return "o_r_";
 
-  case eRegType::STATE:
-  case eRegType::PREV_STATE:
-  case eRegType::STEP:
+  case eRegType::State:
+  case eRegType::Prev_state:
+  case eRegType::Step:
     return "r_sys_";
   }
 } // _get_prefix

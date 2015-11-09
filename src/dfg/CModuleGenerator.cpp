@@ -15,15 +15,15 @@ CModuleGenerator::CModuleGenerator
   // 基本的なノードの確保
   // 基本入出力
   auto i_clk = std::make_shared<CDFG_Wire>
-    ("clk", 1, false, CDFG_Wire::eWireType::CLK);
+    ("clk", 1, false, CDFG_Wire::eWireType::Clk);
   auto i_res = std::make_shared<CDFG_Wire>
-    ("res_p", 1, false, CDFG_Wire::eWireType::RES);
+    ("res_p", 1, false, CDFG_Wire::eWireType::Res);
   auto i_req = std::make_shared<CDFG_Wire>
-    ("req_p", 1, false, CDFG_Wire::eWireType::REQ);
+    ("req_p", 1, false, CDFG_Wire::eWireType::Req);
   auto i_ce = std::make_shared<CDFG_Wire>
-    ("ce_p", 1, false, CDFG_Wire::eWireType::CE);
+    ("ce_p", 1, false, CDFG_Wire::eWireType::Ce);
   auto o_fin = std::make_shared<CDFG_Reg>
-    ("fin_p", 1, false, CDFG_Reg::eRegType::FIN);
+    ("fin_p", 1, false, CDFG_Reg::eRegType::Fin);
 
   // 定数
   auto p_true = std::make_shared<CDFG_Parameter>
@@ -31,7 +31,7 @@ CModuleGenerator::CModuleGenerator
   auto p_false = std::make_shared<CDFG_Parameter>
     ("FALSE", CDFG_Parameter::eParamType::False);
   auto p_zero = std::make_shared<CDFG_Parameter>
-    ("ZERO", CDFG_Parameter::eParamType::ZERO);
+    ("ZERO", CDFG_Parameter::eParamType::Zero);
 
   this->_module->add_node(i_clk);
   this->_module->add_node(i_res);
@@ -212,25 +212,25 @@ void CModuleGenerator::_generate_test_data(void)
   // ノード確保
   // 基本入出力
   auto i_clk = std::make_shared<CDFG_Wire>
-    ("clk", 1, false, CDFG_Wire::eWireType::CLK);
+    ("clk", 1, false, CDFG_Wire::eWireType::Clk);
   auto i_res = std::make_shared<CDFG_Wire>
-    ("res_p", 1, false, CDFG_Wire::eWireType::RES);
+    ("res_p", 1, false, CDFG_Wire::eWireType::Res);
   auto i_req = std::make_shared<CDFG_Wire>
-    ("req_p", 1, false, CDFG_Wire::eWireType::REQ);
+    ("req_p", 1, false, CDFG_Wire::eWireType::Req);
   auto i_ce = std::make_shared<CDFG_Wire>
-    ("ce_p", 1, false, CDFG_Wire::eWireType::CE);
+    ("ce_p", 1, false, CDFG_Wire::eWireType::Ce);
   auto o_fin = std::make_shared<CDFG_Reg>
-    ("fin_p", 1, false, CDFG_Reg::eRegType::FIN);
+    ("fin_p", 1, false, CDFG_Reg::eRegType::Fin);
 
   // 入力
   auto a = std::make_shared<CDFG_Wire>
-    ("i_a", 8, true, CDFG_Wire::eWireType::IN_ORIG);
+    ("i_a", 8, true, CDFG_Wire::eWireType::In_orig);
   auto b = std::make_shared<CDFG_Wire>
-    ("i_b", 8, true, CDFG_Wire::eWireType::IN_ORIG);
+    ("i_b", 8, true, CDFG_Wire::eWireType::In_orig);
 
   // 出力
   auto out = std::make_shared<CDFG_Reg>
-    ("o_out", 8, true, CDFG_Reg::eRegType::OUT);
+    ("o_out", 8, true, CDFG_Reg::eRegType::Out);
 
   // 定数
   std::shared_ptr<CDFG_Node> p_3 = std::make_shared<CDFG_Parameter>
@@ -240,32 +240,32 @@ void CModuleGenerator::_generate_test_data(void)
   std::shared_ptr<CDFG_Node> p_false = std::make_shared<CDFG_Parameter>
     ("FALSE", CDFG_Parameter::eParamType::False);
   std::shared_ptr<CDFG_Node> p_zero = std::make_shared<CDFG_Parameter>
-    ("ZERO", CDFG_Parameter::eParamType::ZERO);
+    ("ZERO", CDFG_Parameter::eParamType::Zero);
 
   // テンプレートレジスタ
   auto t1 = std::make_shared<CDFG_Reg>
-    ("t1", 8, true, CDFG_Reg::eRegType::REG);
+    ("t1", 8, true, CDFG_Reg::eRegType::Reg);
 
   // 演算器の入出力
   auto adder1_i_a = std::make_shared<CDFG_Reg>
-    ("mr_adder1_i_a", 8, true, CDFG_Reg::eRegType::REG);
+    ("mr_adder1_i_a", 8, true, CDFG_Reg::eRegType::Reg);
   auto adder1_i_b = std::make_shared<CDFG_Reg>
-    ("mr_adder1_i_b", 8, true, CDFG_Reg::eRegType::REG);
+    ("mr_adder1_i_b", 8, true, CDFG_Reg::eRegType::Reg);
   auto adder1_out = std::make_shared<CDFG_Wire>
-    ("mw_adder1_output", 8, true, CDFG_Wire::eWireType::WIRE);
+    ("mw_adder1_output", 8, true, CDFG_Wire::eWireType::Wire);
 
   auto adder2_i_a = std::make_shared<CDFG_Reg>
-    ("mr_adder2_i_a", 8, true, CDFG_Reg::eRegType::REG);
+    ("mr_adder2_i_a", 8, true, CDFG_Reg::eRegType::Reg);
   auto adder2_i_b = std::make_shared<CDFG_Reg>
-    ("mr_adder2_i_b", 8, true, CDFG_Reg::eRegType::REG);
+    ("mr_adder2_i_b", 8, true, CDFG_Reg::eRegType::Reg);
   auto adder2_out = std::make_shared<CDFG_Wire>
-    ("mw_adder2_output", 8, true, CDFG_Wire::eWireType::WIRE);
+    ("mw_adder2_output", 8, true, CDFG_Wire::eWireType::Wire);
 
   // システム変数
   auto s_state = std::make_shared<CDFG_Reg>
-    ("r_sys_state", 8, false, CDFG_Reg::eRegType::STATE);
+    ("r_sys_state", 8, false, CDFG_Reg::eRegType::State);
   auto s_step = std::make_shared<CDFG_Reg>
-    ("r_sys_step", 8, false, CDFG_Reg::eRegType::STEP);
+    ("r_sys_step", 8, false, CDFG_Reg::eRegType::Step);
 
   // 信号登録
   this->_module->add_node(i_clk);
@@ -296,7 +296,7 @@ void CModuleGenerator::_generate_test_data(void)
     ("my_add1",
      "my_add",
      1,
-     CDFG_Operator::eType::ADD);
+     CDFG_Operator::eType::Add);
 
   add->add_input_port("i_a", adder1_i_a);
   add->add_input_port("i_b", adder1_i_b);
@@ -308,7 +308,7 @@ void CModuleGenerator::_generate_test_data(void)
     ("my_sub1",
      "my_sub",
      1,
-     CDFG_Operator::eType::SUB);
+     CDFG_Operator::eType::Sub);
 
   sub->add_input_port("i_a", adder2_i_a);
   sub->add_input_port("i_b", adder2_i_b);
@@ -386,14 +386,14 @@ void CModuleGenerator::_generate_header(void)
       std::string io_str;
 
       switch (io->get_type()) {
-      case CDFG_Node::eNode::WIRE:
+      case CDFG_Node::eNode::Wire:
         if (io->is_input())
           io_str = "input wire ";
         else
           continue;
         break;
 
-      case CDFG_Node::eNode::REG:
+      case CDFG_Node::eNode::Reg:
         if (io->is_output())
           io_str = "output reg ";
         else
@@ -449,16 +449,16 @@ void CModuleGenerator::_generate_define(void)
   for (auto & node : this->_module->get_node_list())
     {
       switch(node->get_type()) {
-      case CDFG_Node::eNode::REG:
+      case CDFG_Node::eNode::Reg:
         type = reg;
         break;
 
-      case CDFG_Node::eNode::WIRE:
+      case CDFG_Node::eNode::Wire:
         type = wire;
         break;
 
-      case CDFG_Node::eNode::LABEL:
-      case CDFG_Node::eNode::PARAM:
+      case CDFG_Node::eNode::Label:
+      case CDFG_Node::eNode::Param:
         type = param;
         break;
 
@@ -503,28 +503,28 @@ void CModuleGenerator::_generate_define_array(void)
 {
   for (auto & node : this->_module->get_node_list())
     {
-      if (node->get_type() != CDFG_Node::eNode::MEM)
+      if (node->get_type() != CDFG_Node::eNode::Mem)
         continue;
 
       auto type = std::dynamic_pointer_cast<CDFG_Mem>
         (node)->get_mem_type();
 
       switch (type) {
-      case CDFG_Mem::eMemType::ARRAY:
+      case CDFG_Mem::eMemType::Array:
         {
           auto array = std::dynamic_pointer_cast<CDFG_Array>(node);
           this->_cout << array->define_string() << std::endl;
           break;
         }
 
-      case CDFG_Mem::eMemType::RAM:
+      case CDFG_Mem::eMemType::Ram:
         {
           auto ram = std::dynamic_pointer_cast<CDFG_Ram>(node);
           this->_cout << ram->define_string() << std::endl;
           break;
         }
 
-      case CDFG_Mem::eMemType::OTHER:
+      case CDFG_Mem::eMemType::Other:
       default:
         break;
       } // switch : type
@@ -538,12 +538,12 @@ void CModuleGenerator::_generate_define_array(void)
 void CModuleGenerator::_generate_assign(void)
 {
   auto prev_state_node = this->get_node
-    (CDFG_Reg::eRegType::PREV_STATE);
+    (CDFG_Reg::eRegType::Prev_state);
 
   for (auto & elem : this->_module->get_element_list())
     {
       if (elem->get_operator()->get_type()
-          == CDFG_Operator::eType::PHI) {
+          == CDFG_Operator::eType::Phi) {
         auto dest_node = elem->get_output_at(0);
 
         this->_cout << "wire ["
@@ -577,14 +577,14 @@ void CModuleGenerator::_generate_assign(void)
 void CModuleGenerator::_generate_function(void)
 {
   auto prev_state =
-    this->get_node(CDFG_Reg::eRegType::PREV_STATE);
+    this->get_node(CDFG_Reg::eRegType::Prev_state);
 
   for (auto & elem : this->_module->get_element_list())
     {
       auto ope = elem->get_operator();
 
       // PHI 命令以外は無視
-      if (ope->get_type() != CDFG_Operator::eType::PHI)
+      if (ope->get_type() != CDFG_Operator::eType::Phi)
         continue;
 
       auto dest_node = elem->get_output_at(0);
@@ -629,7 +629,7 @@ void CModuleGenerator::_generate_function(void)
                     << elem->get_input_at(i+1)->get_verilog_name()
                     << ";\n";
 
-      auto zero_node = this->get_node(CDFG_Parameter::eParamType::ZERO);
+      auto zero_node = this->get_node(CDFG_Parameter::eParamType::Zero);
 
       this->_cout << "default: phi_"
                   << dest_node->get_verilog_name()
@@ -707,18 +707,18 @@ void CModuleGenerator::_generate_calculator(void)
 void CModuleGenerator::_generate_always(void)
 {
   // 出力に必要な情報(信号名など)を取得
-  auto clk_name   = this->get_node(CDFG_Wire::eWireType::CLK)->get_verilog_name();
-  auto res_name   = this->get_node(CDFG_Wire::eWireType::RES)->get_verilog_name();
-  auto req_name   = this->get_node(CDFG_Wire::eWireType::REQ)->get_verilog_name();
-  auto ce_name    = this->get_node(CDFG_Wire::eWireType::CE)->get_verilog_name();
-  auto state_node = this->get_node(CDFG_Reg::eRegType::STATE);
-  auto prev_state = this->get_node(CDFG_Reg::eRegType::PREV_STATE);
-  auto step_node  = this->get_node(CDFG_Reg::eRegType::STEP);
-  auto fin_name   = this->get_node(CDFG_Reg::eRegType::FIN)->get_verilog_name();
+  auto clk_name   = this->get_node(CDFG_Wire::eWireType::Clk)->get_verilog_name();
+  auto res_name   = this->get_node(CDFG_Wire::eWireType::Res)->get_verilog_name();
+  auto req_name   = this->get_node(CDFG_Wire::eWireType::Req)->get_verilog_name();
+  auto ce_name    = this->get_node(CDFG_Wire::eWireType::Ce)->get_verilog_name();
+  auto state_node = this->get_node(CDFG_Reg::eRegType::State);
+  auto prev_state = this->get_node(CDFG_Reg::eRegType::Prev_state);
+  auto step_node  = this->get_node(CDFG_Reg::eRegType::Step);
+  auto fin_name   = this->get_node(CDFG_Reg::eRegType::Fin)->get_verilog_name();
   auto true_node  = this->get_node(CDFG_Parameter::eParamType::True);
   auto false_node = this->get_node(CDFG_Parameter::eParamType::False);
-  auto zero_node  = this->get_node(CDFG_Parameter::eParamType::ZERO);
-  auto out_node   = this->get_node(CDFG_Reg::eRegType::OUT);
+  auto zero_node  = this->get_node(CDFG_Parameter::eParamType::Zero);
+  auto out_node   = this->get_node(CDFG_Reg::eRegType::Out);
 
   this->_cout << "always @(posedge "
               << clk_name
@@ -836,7 +836,7 @@ void CModuleGenerator::_generate_always(void)
     {
       auto ope = elem->get_operator();
 
-      if (ope->get_type() == CDFG_Operator::eType::COPY)
+      if (ope->get_type() == CDFG_Operator::eType::Copy)
         {
           auto orig_node = elem->get_input_at(0);
           auto copy_node = elem->get_output_at(0);
@@ -850,7 +850,7 @@ void CModuleGenerator::_generate_always(void)
   // 配列の初期化
   //! @todo 配列以外の対応
   for (auto & node : this->_module->get_node_list())
-    if (node->get_type() == CDFG_Node::eNode::MEM)
+    if (node->get_type() == CDFG_Node::eNode::Mem)
       {
         auto mem
           = std::dynamic_pointer_cast<CDFG_Mem>(node);
@@ -885,18 +885,18 @@ void CModuleGenerator::_generate_always(void)
 
       switch (ope->get_type()) {
         // 2入力1出力の普通の命令
-      case CDFG_Operator::eType::ADD:
-      case CDFG_Operator::eType::FADD:
-      case CDFG_Operator::eType::SUB:
-      case CDFG_Operator::eType::FSUB:
-      case CDFG_Operator::eType::ADD_SUB:
-      case CDFG_Operator::eType::DIV:
-      case CDFG_Operator::eType::FDIV:
-      case CDFG_Operator::eType::FUNC:
-      case CDFG_Operator::eType::MUL:
-      case CDFG_Operator::eType::FMUL:
-      case CDFG_Operator::eType::SREM:
-      case CDFG_Operator::eType::SDIV:
+      case CDFG_Operator::eType::Add:
+      case CDFG_Operator::eType::Fadd:
+      case CDFG_Operator::eType::Sub:
+      case CDFG_Operator::eType::Fsub:
+      case CDFG_Operator::eType::Add_sub:
+      case CDFG_Operator::eType::Div:
+      case CDFG_Operator::eType::Fdiv:
+      case CDFG_Operator::eType::Func:
+      case CDFG_Operator::eType::Mul:
+      case CDFG_Operator::eType::Fmul:
+      case CDFG_Operator::eType::Srem:
+      case CDFG_Operator::eType::Sdiv:
         {
           // 入力の接続
           for (auto i=0; i<ope->get_num_input(); ++i)
@@ -904,7 +904,7 @@ void CModuleGenerator::_generate_always(void)
               auto node = ope->get_input_node_at(i);
 
               // clk, res, req, ceの入力の回避
-              if (node->get_type() == CDFG_Node::eNode::REG)
+              if (node->get_type() == CDFG_Node::eNode::Reg)
                 process_str.append
                   (this->_cout.output_indent()
                    + node->get_verilog_name()
@@ -918,7 +918,7 @@ void CModuleGenerator::_generate_always(void)
 
           // 出力の接続
           auto at = 0;
-          if (ope->get_type() == CDFG_Operator::eType::SREM) // 2入力2出力演算器
+          if (ope->get_type() == CDFG_Operator::eType::Srem) // 2入力2出力演算器
             at = 1;
 
           auto ope_node = ope->get_output_node_at(at);
@@ -937,7 +937,7 @@ void CModuleGenerator::_generate_always(void)
           break;
         }
 
-      case CDFG_Operator::eType::LOAD:
+      case CDFG_Operator::eType::Load:
         {
           auto in = std::dynamic_pointer_cast<CDFG_Addr>
             (elem->get_input_at(0));
@@ -960,7 +960,7 @@ void CModuleGenerator::_generate_always(void)
                 (in->get_reference());
 
               switch (mem->get_mem_type()) {
-              case CDFG_Mem::eMemType::ARRAY:
+              case CDFG_Mem::eMemType::Array:
                 process_str.append(this->_cout.output_indent()
                                    + out->get_verilog_name()
                                    + " <= "
@@ -968,7 +968,7 @@ void CModuleGenerator::_generate_always(void)
                                    + ";\n");
                 break;
 
-              case CDFG_Mem::eMemType::RAM:
+              case CDFG_Mem::eMemType::Ram:
                 {
                   auto ram
                     = std::dynamic_pointer_cast<CDFG_Ram>(mem);
@@ -1003,9 +1003,9 @@ void CModuleGenerator::_generate_always(void)
                     (state, step + ram->get_latency(),
                      read);
                   break;
-                }
+                } // Ram
 
-              case CDFG_Mem::eMemType::OTHER:
+              case CDFG_Mem::eMemType::Other:
               default:
                 break;
               } // switch
@@ -1014,9 +1014,9 @@ void CModuleGenerator::_generate_always(void)
           sm_gen.add_state_process
             (state, step, process_str);
           break;
-        } // LOAD
+        } // Load
 
-      case CDFG_Operator::eType::STORE:
+      case CDFG_Operator::eType::Store:
         {
           auto in = elem->get_input_at(0);
           auto out = std::dynamic_pointer_cast<CDFG_Addr>
@@ -1040,7 +1040,7 @@ void CModuleGenerator::_generate_always(void)
 
               switch (mem->get_mem_type())
                 {
-                case CDFG_Mem::eMemType::ARRAY:
+                case CDFG_Mem::eMemType::Array:
                   process_str.append
                     (this->_cout.output_indent()
                      + mem->access_string(out)
@@ -1049,7 +1049,7 @@ void CModuleGenerator::_generate_always(void)
                      + ";\n");
                   break;
 
-                case CDFG_Mem::eMemType::RAM:
+                case CDFG_Mem::eMemType::Ram:
                   {
                     auto ram
                       = std::dynamic_pointer_cast<CDFG_Ram>(mem);
@@ -1080,9 +1080,9 @@ void CModuleGenerator::_generate_always(void)
                        + ";\n");
 
                     break;
-                  } // RAM
+                  } // Ram
 
-                case CDFG_Mem::eMemType::OTHER:
+                case CDFG_Mem::eMemType::Other:
                 default:
                   break;
                 } // switch
@@ -1092,9 +1092,9 @@ void CModuleGenerator::_generate_always(void)
                                    step,
                                    process_str);
           break;
-        } // STORE
+        } // Store
 
-      case CDFG_Operator::eType::ICMP:
+      case CDFG_Operator::eType::Icmp:
         {
           auto icmp = std::dynamic_pointer_cast<CDFG_IcmpElem>(elem);
           auto in_0 = elem->get_input_at(0);
@@ -1105,26 +1105,26 @@ void CModuleGenerator::_generate_always(void)
           std::string cond_str;
           switch (icmp->get_condition())
             {
-            case CDFG_IcmpElem::eCond::EQ:
+            case CDFG_IcmpElem::eCond::Eq:
               cond_str = " == "; break;
 
-            case CDFG_IcmpElem::eCond::NE:
+            case CDFG_IcmpElem::eCond::Ne:
               cond_str = " != "; break;
 
-            case CDFG_IcmpElem::eCond::UGT:
-            case CDFG_IcmpElem::eCond::SGT:
+            case CDFG_IcmpElem::eCond::Ugt:
+            case CDFG_IcmpElem::eCond::Sgt:
               cond_str = " > "; break;
 
-            case CDFG_IcmpElem::eCond::UGE:
-            case CDFG_IcmpElem::eCond::SGE:
+            case CDFG_IcmpElem::eCond::Uge:
+            case CDFG_IcmpElem::eCond::Sge:
               cond_str = " >= "; break;
 
-            case CDFG_IcmpElem::eCond::ULE:
-            case CDFG_IcmpElem::eCond::SLE:
+            case CDFG_IcmpElem::eCond::Ule:
+            case CDFG_IcmpElem::eCond::Sle:
               cond_str = " <= "; break;
 
-            case CDFG_IcmpElem::eCond::ULT:
-            case CDFG_IcmpElem::eCond::SLT:
+            case CDFG_IcmpElem::eCond::Ult:
+            case CDFG_IcmpElem::eCond::Slt:
               cond_str = " < "; break;
 
             default:;
@@ -1143,9 +1143,9 @@ void CModuleGenerator::_generate_always(void)
                                    step,
                                    process_str);
           break;
-        } // ICMP
+        } // Icmp
 
-      case CDFG_Operator::eType::FCMP:
+      case CDFG_Operator::eType::Fcmp:
         {
           auto fcmp
             = std::dynamic_pointer_cast<CDFG_FcmpElem>(elem);
@@ -1209,10 +1209,10 @@ void CModuleGenerator::_generate_always(void)
                process_str);
           }
           break;
-        } // FCMP
+        } // Fcmp
 
-    case CDFG_Operator::eType::SELECT:
-    case CDFG_Operator::eType::BR:
+    case CDFG_Operator::eType::Select:
+    case CDFG_Operator::eType::Br:
       {
         auto out  = elem->get_output_at(0);
 
@@ -1250,7 +1250,7 @@ void CModuleGenerator::_generate_always(void)
            step,
            process_str);
 
-        if (ope->get_type() == CDFG_Operator::eType::BR)
+        if (ope->get_type() == CDFG_Operator::eType::Br)
           {
             // prev_stateの変更
             process_str.assign(this->_cout.output_indent()
@@ -1273,9 +1273,9 @@ void CModuleGenerator::_generate_always(void)
                                      process_str);
           }
         break;
-      } // SELECT, BR
+      } // Select, Br
 
-    case CDFG_Operator::eType::RET:
+    case CDFG_Operator::eType::Ret:
       {
         auto finish_state_label
           = std::dynamic_pointer_cast
@@ -1313,9 +1313,9 @@ void CModuleGenerator::_generate_always(void)
            0 /* step */,
            process_str);
         break;
-      } // RET
+      } // Ret
 
-    case CDFG_Operator::eType::PHI:
+    case CDFG_Operator::eType::Phi:
       {
         auto dest_node = elem->get_output_at(0);
 
@@ -1332,9 +1332,9 @@ void CModuleGenerator::_generate_always(void)
            process_str);
 
         break;
-      } // PHI
+      } // Phi
 
-    case CDFG_Operator::eType::SWITCH:
+    case CDFG_Operator::eType::Switch:
       {
         auto condition_node = elem->get_input_at(0);
         auto default_label = elem->get_input_at(1);
@@ -1414,21 +1414,21 @@ void CModuleGenerator::_generate_always(void)
         break;
       } // SWITCH
 
-    case CDFG_Operator::eType::LSHIFTL:
-    case CDFG_Operator::eType::LSHIFTR:
-    case CDFG_Operator::eType::ASHIFTR:
+    case CDFG_Operator::eType::Lshiftl:
+    case CDFG_Operator::eType::Lshiftr:
+    case CDFG_Operator::eType::Ashiftr:
       {
         std::string ope_str;
 
         switch (ope->get_type())
           {
-          case CDFG_Operator::eType::LSHIFTL:
+          case CDFG_Operator::eType::Lshiftl:
             ope_str = " << "; break;
 
-          case CDFG_Operator::eType::LSHIFTR:
+          case CDFG_Operator::eType::Lshiftr:
             ope_str = " >> "; break;
 
-          case CDFG_Operator::eType::ASHIFTR:
+          case CDFG_Operator::eType::Ashiftr:
             ope_str = " >>> "; break;
 
           default:;
@@ -1453,21 +1453,21 @@ void CModuleGenerator::_generate_always(void)
            process_str);
 
         break;
-      } // LSHIFTL, LSHIFTR, ASHIFTR
+      } // Lshiftl, Lshiftr, Ashiftr
 
-    case CDFG_Operator::eType::AND:
-    case CDFG_Operator::eType::OR:
-    case CDFG_Operator::eType::XOR:
+    case CDFG_Operator::eType::And:
+    case CDFG_Operator::eType::Or:
+    case CDFG_Operator::eType::Xor:
       {
         std::string ope_str;
 
         switch (ope->get_type())
           {
-          case CDFG_Operator::eType::AND:
+          case CDFG_Operator::eType::And:
             ope_str = " & "; break;
-          case CDFG_Operator::eType::OR:
+          case CDFG_Operator::eType::Or:
             ope_str = " | "; break;
-          case CDFG_Operator::eType::XOR:
+          case CDFG_Operator::eType::Xor:
             ope_str = " ^ "; break;
           default:;
           }
@@ -1491,9 +1491,9 @@ void CModuleGenerator::_generate_always(void)
            process_str);
 
         break;
-      } // AND, OR, XOR
+      } // And, Or, Xor
 
-    case CDFG_Operator::eType::TRUNC:
+    case CDFG_Operator::eType::Trunc:
       {
         auto trunc_elem
           = std::dynamic_pointer_cast<CDFG_TruncElem>(elem);
@@ -1516,9 +1516,9 @@ void CModuleGenerator::_generate_always(void)
            process_str);
 
         break;
-      } // TRUNC
+      } // Trunc
 
-    case CDFG_Operator::eType::ZEXT:
+    case CDFG_Operator::eType::Zext:
       {
         process_str.append
           (this->_cout.output_indent()
@@ -1533,7 +1533,7 @@ void CModuleGenerator::_generate_always(void)
            process_str);
 
         break;
-      } // ZEXT
+      } // Zext
 
     default:
       break;

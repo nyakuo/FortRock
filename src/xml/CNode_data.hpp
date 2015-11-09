@@ -9,10 +9,10 @@ class CNode_data {
 public:
   /** ポートの種類定数 */
   enum class ePortType : unsigned {
-    IN = 0, //! 入力
-      OUT,  //! 出力
-      CLK,  //! clock
-      CE,   //! clock enable
+    In = 0, //! 入力
+      Out,  //! 出力
+      Clk,  //! clock
+      Ce,   //! clock enable
       };
 
   /**

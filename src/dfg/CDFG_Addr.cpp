@@ -7,7 +7,7 @@
 bool
 CDFG_Addr::is_mem_ref(void) {
   return this->_ref->get_type()
-    == CDFG_Node::eNode::MEM;
+    == CDFG_Node::eNode::Mem;
 }
 
 /**
@@ -17,7 +17,7 @@ CDFG_Addr::is_mem_ref(void) {
 bool
 CDFG_Addr::is_reg_ref(void) {
   return this->_ref->get_type()
-    == CDFG_Node::eNode::REG;
+    == CDFG_Node::eNode::Reg;
 }
 
 /**
@@ -27,5 +27,5 @@ CDFG_Addr::is_reg_ref(void) {
 bool
 CDFG_Addr::is_param_ref(void) {
   return this->_ref->get_type()
-    == CDFG_Node::eNode::PARAM;
+    == CDFG_Node::eNode::Param;
 }

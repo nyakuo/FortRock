@@ -28,7 +28,7 @@ CDFG_Element::CDFG_Element
   this->_output_list.resize(1);
 
   // getElementPtr inst の場合は出力は無し
-  if (type == CDFG_Operator::eType::GETELEMENTPTR)
+  if (type == CDFG_Operator::eType::Getelementptr)
     this->_output_list.resize(0);
 
   this->_ope = phony_ope;
@@ -74,13 +74,13 @@ int CDFG_Element::set_operator
     {
       auto input = ope->get_input_node_at(i);
 
-      if (input->get_type() == CDFG_Node::eNode::WIRE)
+      if (input->get_type() == CDFG_Node::eNode::Wire)
         {
           auto reg = std::dynamic_pointer_cast<CDFG_Wire>(input);
 
           // clk, ceの場合は Elementの入力に登録しない
-          if (reg->get_type() == CDFG_Wire::eWireType::CLK
-              || reg->get_type() == CDFG_Wire::eWireType::CE)
+          if (reg->get_type() == CDFG_Wire::eWireType::Clk
+              || reg->get_type() == CDFG_Wire::eWireType::Ce)
             continue;
         }
       ++cnt;

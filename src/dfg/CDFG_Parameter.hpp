@@ -14,24 +14,24 @@
 class CDFG_Parameter : public CDFG_Node {
 public:
   //! 単精度浮動小数点のビット幅
-  static const unsigned SINGLE_FP_BIT_WIDTH;
+  static const unsigned Single_fp_bit_width;
 
   //! 倍精度浮動小数点のビット幅
-  static const unsigned DOUBLE_FP_BIT_WIDTH;
+  static const unsigned Double_fp_bit_width;
 
   //! 回路が正論理かどうか
   //! @brief TRUE/FALSE の0/1に影響
-  static const bool IS_POSITIVE_LOGIC;
+  static const bool Is_positive_logic;
 
   /** 定数の種類を表す定数 */
   enum eParamType {
-    INTEGER = 1 << 0,
-    FLOAT   = 1 << 1,
-    DOUBLE  = 1 << 2,
+    Integer = 1 << 0,
+    Float   = 1 << 1,
+    Double  = 1 << 2,
     True    = 1 << 3,
     False   = 1 << 4,
-    BOOL    = (True | False),
-    ZERO    = 1 << 5,
+    Bool    = (True | False),
+    Zero    = 1 << 5,
   };
 
   //! 整数型のコンストラクタ

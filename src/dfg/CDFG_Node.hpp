@@ -12,12 +12,12 @@ class CDFG_Node {
 public:
   /** ノードの種類 */
   enum class eNode : unsigned {
-    REG = 0,
-      WIRE,
-      PARAM,
-      LABEL,
-      ADDR,
-      MEM,
+    Reg = 0,
+      Wire,
+      Param,
+      Label,
+      Addr,
+      Mem,
       };
 
   CDFG_Node(const std::string & asm_name,

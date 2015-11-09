@@ -19,7 +19,7 @@ public:
                  const unsigned & state,
                  const unsigned & step)
     : _bit_width(bit_width),
-      CDFG_Element(CDFG_Operator::eType::TRUNC,
+      CDFG_Element(CDFG_Operator::eType::Trunc,
                    1, // num input
                    state,
                    step)

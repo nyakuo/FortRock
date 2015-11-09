@@ -55,7 +55,7 @@ public:
   { return "FortRock: Fortran to Verilog backend"; }
 
   //! 演算器の設定ファイル名
-  static const std::string _OPERATOR_CONFIG_FILENAME;
+  static const std::string _operator_config_filename;
 
 private:
   std::shared_ptr<CModuleGenerator> _module_gen;
@@ -63,16 +63,16 @@ private:
   unsigned _state; //! 現在処理中の命令の実行ステート番号
 
   //! ステートマシンの遷移前の状態を保持するレジスタの名前
-  static const std::string _PREV_STATE_NAME;
+  static const std::string _prev_state_name;
 
   //! ステートマシンの現在の状態を保持するレジスタの名前
-  static const std::string _CUR_STATE_NAME;
+  static const std::string _cur_state_name;
 
   //! ステートマシンの終了状態のステート(label)名
-  static const std::string _FINISH_STATE_NAME;
+  static const std::string _finish_state_name;
 
   //! ステートマシンのステップ信号名
-  static const std::string _STEP_NAME;
+  static const std::string _step_name;
 
   // 補助関数
   std::string _get_module_name(const Module & M);
