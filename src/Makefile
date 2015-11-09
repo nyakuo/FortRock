@@ -3,11 +3,17 @@
 INPUT_LLVM    := ../fortran/lcm/lcm.s
 INPUT_FORTRAN := ../fortran/lcm/lcm.f
 
+include Makefile.in
+
+SRCS := $(shell find ./ -type f -name '*.cpp')
+OBJS := $(SRCS:.cpp=.o)
+
 .PHONY: all dfg xml core use llvm count clean
 all:
 	cd dfg; make
 	cd xml; make
 	cd core; make
+	$(CXX) -g -shared -o fortrock.so $(OBJS) $(LIBS) $(LDFLAGS)
 
 dfg:
 	cd dfg; make
@@ -31,9 +37,6 @@ count:
 	cd core; make count
 	cd dfg; make count
 	cd xml; make count
-	wc -lc dfg/*.cpp dfg/*.hpp dfg/Makefile \
-		core/*.cpp core/*.hpp core/Makefile \
-		xml/*.cpp xml/*.hpp xml/Makefile 
 
 clean:
 	cd dfg; make clean

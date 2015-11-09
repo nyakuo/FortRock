@@ -4,7 +4,7 @@ OBJS := \
 	./fortrock.o \
 	./CDebug.o \
 
-TARGETS := $(OBJS) fortrock.so
+TARGETS := $(OBJS)
 
 include ../Makefile.in
 

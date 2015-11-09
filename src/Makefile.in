@@ -5,21 +5,14 @@ CXXFLAGS  := -std=c++11 -fPIC `llvm-config-3.4 --cflags` `xml2-config --cflags`
 LIBS      := `xml2-config --libs` `llvm-config-3.4 --libs`
 LDFLAGS   := `llvm-config-3.4 --ldflags`
 
-EXOBJS := $(shell find ./ -type f -name '*.o')
-
-.PHONY: all
+.PHONY: all count clean
 all: $(TARGETS)
 
 %.o: %.cpp %.hpp
 	$(CXX) $(CXXFLAGS) -c $*.cpp
 
-fortrock.so: $(EXOBJS)
-		$(CXX) -g -shared -o fortrock.so $(EXOBJS) $(LIBS) $(LDFLAGS)
-
-.PHONY: count
 count:
 	wc -lc ./*.cpp ./*.hpp ./Makefile
 
-.PHONY: clean
 clean:
 	rm -f $(TARGETS) $(OBJS)
