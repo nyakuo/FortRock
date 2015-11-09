@@ -20,12 +20,9 @@ OBJS := \
 	CModuleGenerator.o \
 	CModule.o \
 
-TARGETS := $(TARGET)
+TARGETS := $(OBJS)
 
 include ../Makefile.in
-
-$(TARGET): $(OBJS)
-	$(CXX) -o $@ $(OBJS)
 
 CDFG_Node.o: CDFG_Node.cpp CDFG_Node.hpp
 CDFG_Parameter.o: CDFG_Parameter.hpp CDFG_Parameter.cpp
