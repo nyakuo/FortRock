@@ -28,9 +28,9 @@ public:
     INTEGER = 1 << 0,
     FLOAT   = 1 << 1,
     DOUBLE  = 1 << 2,
-    TRUE    = 1 << 3,
-    FALSE   = 1 << 4,
-    BOOL    = (TRUE | FALSE),
+    True    = 1 << 3,
+    False   = 1 << 4,
+    BOOL    = (True | False),
     ZERO    = 1 << 5,
   };
 

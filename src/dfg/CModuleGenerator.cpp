@@ -27,9 +27,9 @@ CModuleGenerator::CModuleGenerator
 
   // 定数
   auto p_true = std::make_shared<CDFG_Parameter>
-    ("TRUE", CDFG_Parameter::eParamType::TRUE);
+    ("TRUE", CDFG_Parameter::eParamType::True);
   auto p_false = std::make_shared<CDFG_Parameter>
-    ("FALSE", CDFG_Parameter::eParamType::FALSE);
+    ("FALSE", CDFG_Parameter::eParamType::False);
   auto p_zero = std::make_shared<CDFG_Parameter>
     ("ZERO", CDFG_Parameter::eParamType::ZERO);
 
@@ -236,9 +236,9 @@ void CModuleGenerator::_generate_test_data(void)
   std::shared_ptr<CDFG_Node> p_3 = std::make_shared<CDFG_Parameter>
     ("p_3", 8, 3L);
   std::shared_ptr<CDFG_Node> p_true = std::make_shared<CDFG_Parameter>
-    ("TRUE", CDFG_Parameter::eParamType::TRUE);
+    ("TRUE", CDFG_Parameter::eParamType::True);
   std::shared_ptr<CDFG_Node> p_false = std::make_shared<CDFG_Parameter>
-    ("FALSE", CDFG_Parameter::eParamType::FALSE);
+    ("FALSE", CDFG_Parameter::eParamType::False);
   std::shared_ptr<CDFG_Node> p_zero = std::make_shared<CDFG_Parameter>
     ("ZERO", CDFG_Parameter::eParamType::ZERO);
 
@@ -663,7 +663,8 @@ void CModuleGenerator::_generate_calculator(void)
       this->_cout.indent_right();
 
       // 入力の接続
-      for (auto at = 0;
+      unsigned at = 0;
+      for (at = 0;
            at < module->get_num_input();
            ++at)
         this->_cout << '.'
@@ -674,7 +675,8 @@ void CModuleGenerator::_generate_calculator(void)
                     << std::endl;
 
       // 出力の接続
-      for (auto at = 0;
+
+      for (at = 0;
            at < module->get_num_output() - 1;
            ++at)
         this->_cout << '.'
@@ -713,8 +715,8 @@ void CModuleGenerator::_generate_always(void)
   auto prev_state = this->get_node(CDFG_Reg::eRegType::PREV_STATE);
   auto step_node  = this->get_node(CDFG_Reg::eRegType::STEP);
   auto fin_name   = this->get_node(CDFG_Reg::eRegType::FIN)->get_verilog_name();
-  auto true_node  = this->get_node(CDFG_Parameter::eParamType::TRUE);
-  auto false_node = this->get_node(CDFG_Parameter::eParamType::FALSE);
+  auto true_node  = this->get_node(CDFG_Parameter::eParamType::True);
+  auto false_node = this->get_node(CDFG_Parameter::eParamType::False);
   auto zero_node  = this->get_node(CDFG_Parameter::eParamType::ZERO);
   auto out_node   = this->get_node(CDFG_Reg::eRegType::OUT);
 

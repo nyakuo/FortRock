@@ -97,14 +97,14 @@ CDFG_Parameter::CDFG_Parameter
               "pb_")
 {
   switch (param_type) {
-  case eParamType::TRUE:
+  case eParamType::True:
     if (CDFG_Parameter::IS_POSITIVE_LOGIC)
       this->_data.param = 1L;
     else
       this->_data.param = 0L;
     break;
 
-  case eParamType::FALSE:
+  case eParamType::False:
     if (CDFG_Parameter::IS_POSITIVE_LOGIC)
       this->_data.param = 0L;
     else
@@ -180,8 +180,8 @@ CDFG_Parameter::to_string
 
   switch (this->_param_type) {
   case eParamType::INTEGER:
-  case eParamType::TRUE:
-  case eParamType::FALSE:
+  case eParamType::True:
+  case eParamType::False:
   case eParamType::BOOL:
   case eParamType::ZERO:
     snprintf(buf, sizeof(buf), "%lx"
