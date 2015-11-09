@@ -654,10 +654,10 @@ void FortRock::_add_fcmp_inst
   switch (condition)
     {
     case CmpInst::Predicate::FCMP_FALSE:
-      cond = CDFG_FcmpElem::eCond::FALSE; break;
+      cond = CDFG_FcmpElem::eCond::False; break;
 
     case CmpInst::Predicate::FCMP_TRUE:
-      cond = CDFG_FcmpElem::eCond::TRUE; break;
+      cond = CDFG_FcmpElem::eCond::True; break;
 
     case CmpInst::Predicate::FCMP_OEQ:
       cond = CDFG_FcmpElem::eCond::OEQ; break;

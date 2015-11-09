@@ -14,8 +14,8 @@ public:
 
   /** 比較条件 */
   enum class eCond : unsigned char {
-    FALSE,  ///< always false
-      TRUE, ///< always true
+    False,  ///< always false
+      True, ///< always true
       OEQ,  ///< orderd and equal
       OGT,  ///< orderd and greater than
       OGE,  ///< orderd and greater than or equal

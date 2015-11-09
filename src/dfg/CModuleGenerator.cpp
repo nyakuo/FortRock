@@ -1179,7 +1179,7 @@ void CModuleGenerator::_generate_always(void)
           {
             auto cond = fcmp->get_condition();
 
-            if (cond == CDFG_FcmpElem::eCond::TRUE)
+            if (cond == CDFG_FcmpElem::eCond::True)
               process_str.assign
                 (this->_cout.output_indent()
                  + out->get_verilog_name()
@@ -1187,7 +1187,7 @@ void CModuleGenerator::_generate_always(void)
                  + true_node->get_verilog_name()
                  + ";\n");
 
-            else if (cond == CDFG_FcmpElem::eCond::FALSE)
+            else if (cond == CDFG_FcmpElem::eCond::False)
               process_str.assign
                 (this->_cout.output_indent()
                  + out->get_verilog_name()
