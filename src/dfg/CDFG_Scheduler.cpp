@@ -205,6 +205,12 @@ CDFG_Scheduler::_min_step_data
   if (target_elem->get_num_output() > 0)
     {
       auto output = target_elem->get_output_at(0);
+
+      // SREMの場合は余剰に接続
+      if (target_elem->get_operator()->get_type()
+          == CDFG_Operator::eType::Srem)
+        output = target_elem->get_output_at(1);
+
       if (output->get_type()
           == CDFG_Node::eNode::Addr)
         {
@@ -230,6 +236,7 @@ CDFG_Scheduler::_min_step_data
             } // for : elem
         } // if : output->get_type()
     } // if : target_elem
+
   return min_step;
 } // _min_step_data
 

@@ -71,7 +71,7 @@ FortRock::_get_module_name
    @param[in] v 取得対象のValue型変数
    @return 変数名
    @note 引数vが定数の場合は定数値のstringを返す
- */
+*/
 std::string
 FortRock::_get_value_name
 (const Value * v)
@@ -361,18 +361,18 @@ void FortRock::_parse_instructions
     case Instruction::FSub:   this->_add_fsub_inst(inst);   break;
     case Instruction::Switch: this->_add_switch_inst(inst); break;
     case Instruction::Shl:    this->_add_shift_inst(inst,
-                             /* is left shift == */ true,
-                          /* is logical shift == */ true);
+                                                    /* is left shift == */ true,
+                                                    /* is logical shift == */ true);
       break;
 
     case Instruction::LShr:   this->_add_shift_inst(inst,
-                             /* is left shift == */ false,
-                          /* is logical shift == */ true);
+                                                    /* is left shift == */ false,
+                                                    /* is logical shift == */ true);
       break;
 
     case Instruction::AShr:   this->_add_shift_inst(inst,
-                             /* is left shift == */ false,
-                          /* is logical shift == */ false);
+                                                    /* is left shift == */ false,
+                                                    /* is logical shift == */ false);
       break;
 
     case Instruction::And:    this->_add_and_inst(inst);    break;
@@ -403,8 +403,8 @@ void FortRock::_parse_instructions
 /**
    ADD命令をモジュールのDFGに追加する
    @brief b = load a
-          b <= a; // latency == 0
- */
+   b <= a; // latency == 0
+*/
 void FortRock::_add_load_inst
 (const Instruction * inst)
 {
@@ -497,7 +497,7 @@ void FortRock::_add_load_inst
 /**
    STORE命令をモジュールのDFGに追加する
    @brief store a b
-          b <= a; // latency == 0
+   b <= a; // latency == 0
 */
 void FortRock::_add_store_inst
 (const Instruction * inst)
@@ -553,7 +553,7 @@ void FortRock::_add_store_inst
    ICMP命令をモジュールのDFGに追加する
    @brief b = icmp cond a0 a1
    b = (a0 cond a1)
- */
+*/
 void FortRock::_add_icmp_inst
 (const Instruction * inst)
 {
@@ -640,7 +640,7 @@ void FortRock::_add_icmp_inst
    fcmp命令をモジュールのDFGに追加する
    @brief b = fcmp cond a0 a1
    b = (a0 cond a1)
- */
+*/
 void FortRock::_add_fcmp_inst
 (const Instruction * inst)
 {
@@ -702,7 +702,7 @@ void FortRock::_add_fcmp_inst
       cond = CDFG_FcmpElem::eCond::Une; break;
 
     default:;
-  }
+    }
 
   auto ope = this->_module_gen->get_operator
     (CDFG_Operator::eType::Fcmp);
@@ -748,7 +748,7 @@ void FortRock::_add_fcmp_inst
    SELECT命令をモジュールのDFGに追加する
    @brief b = select t/f a0 a1
    b <= (a0 t/f a1)
- */
+*/
 void FortRock::_add_select_inst
 (const Instruction * inst)
 {
@@ -801,11 +801,11 @@ void FortRock::_add_select_inst
 /**
    SREM命令を module の DFG に追加
    @brief b = srem a0 a1
-         演算器の信号線による接続
+   演算器の信号線による接続
    @todo 使用した演算器にフラグを立てる
-         div命令と演算器の共有
+   div命令と演算器の共有
    @note dividerのfractionalに接続
- */
+*/
 void FortRock::_add_srem_inst
 (const Instruction * inst)
 {
@@ -821,7 +821,7 @@ void FortRock::_add_srem_inst
     (inst->getOperand(0)->getName(),
      CDFG_Node::eNode::Reg);
 
- auto a1 = this->_module_gen->get_node
+  auto a1 = this->_module_gen->get_node
     (inst->getOperand(1)->getName(),
      CDFG_Node::eNode::Reg);
 
@@ -853,11 +853,11 @@ void FortRock::_add_srem_inst
 /**
    SDIV命令を module の DFG に追加
    @brief b = sdiv a0 a1
-         演算器の信号線による接続
+   演算器の信号線による接続
    @todo 使用した演算器にフラグを立てる
-         rem命令と演算器の共有
+   rem命令と演算器の共有
    @note dividerのquotientに接続
- */
+*/
 void FortRock::_add_sdiv_inst
 (const Instruction * inst)
 {
@@ -904,11 +904,11 @@ void FortRock::_add_sdiv_inst
 /**
    fdiv命令を module の DFG に追加
    @brief b = fdiv a0 a1
-         演算器の信号線による接続
+   演算器の信号線による接続
    @todo 使用した演算器にフラグを立てる
-         frem命令と演算器の共有
+   frem命令と演算器の共有
    @note dividerのquotientに接続
- */
+*/
 void FortRock::_add_fdiv_inst
 (const Instruction * inst)
 {
@@ -956,10 +956,10 @@ void FortRock::_add_fdiv_inst
 /**
    mul命令をモジュールの DFG に追加
    @brief b = fmul a0 a1
-         演算器の信号線による接続
+   演算器の信号線による接続
 
    @todo 使用した演算器にフラグを立てる
- */
+*/
 void FortRock::_add_mul_inst
 (const Instruction * inst)
 {
@@ -1008,10 +1008,10 @@ void FortRock::_add_mul_inst
 /**
    fmul命令をモジュールの DFG に追加
    @brief b = fmul a0 a1
-         演算器の信号線による接続
+   演算器の信号線による接続
 
    @todo 使用した演算器にフラグを立てる
- */
+*/
 void FortRock::_add_fmul_inst
 (const Instruction * inst)
 {
@@ -1027,7 +1027,7 @@ void FortRock::_add_fmul_inst
     (inst->getOperand(0)->getName(),
      CDFG_Node::eNode::Reg);
 
- auto a1 = this->_module_gen->get_node
+  auto a1 = this->_module_gen->get_node
     (inst->getOperand(1)->getName(),
      CDFG_Node::eNode::Reg);
 
@@ -1037,7 +1037,7 @@ void FortRock::_add_fmul_inst
       (this->_get_value_name(inst->getOperand(0)),
        CDFG_Node::eNode::Param);
 
- if (!inst->getOperand(1)->hasName())
+  if (!inst->getOperand(1)->hasName())
     a1 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(1)),
        CDFG_Node::eNode::Param);
@@ -1060,7 +1060,7 @@ void FortRock::_add_fmul_inst
    BR命令をモジュールのDFGに追加する
    @brief br cond ltrue, lfalse
    state <= (cond) ? ltrue : lfalse;
- */
+*/
 void FortRock::_add_br_inst
 (const Instruction * inst)
 {
@@ -1119,19 +1119,19 @@ void FortRock::_add_br_inst
    @brief b = phi [a0 x] [a1 y] ...
 
    function [bit-width] phi_b;
-     input [bit-width] prev_state;
-     begin
-       case (prev_state)
-         x : b = a0;
-         y : b = a1;
-       endcase
-     end
+   input [bit-width] prev_state;
+   begin
+   case (prev_state)
+   x : b = a0;
+   y : b = a1;
+   endcase
+   end
    endfunction
 
    ...
 
    b = phi_b(prev_state);
- */
+*/
 void FortRock::_add_phi_inst
 (const Instruction * inst)
 {
@@ -1170,7 +1170,7 @@ void FortRock::_add_phi_inst
 
       elem->set_input(prev_label, i << 1);
       elem->set_input(in, (i << 1) + 1);
-  }
+    }
 
   auto destination_node =
     this->_module_gen->
@@ -1186,7 +1186,7 @@ void FortRock::_add_phi_inst
 
 /**
    RET命令をモジュールのDFGに追加する
- */
+*/
 void FortRock::_add_ret_inst
 (const Instruction * inst)
 {
@@ -1210,7 +1210,7 @@ void FortRock::_add_ret_inst
 /**
    ADD命令をモジュールのDFGに追加する
    @brief b = add a0, a1
- */
+*/
 void FortRock::_add_add_inst
 (const Instruction * inst)
 {
@@ -1257,7 +1257,7 @@ void FortRock::_add_add_inst
 /**
    fadd命令をモジュールのDFGに追加する
    @brief b = fadd a0, a1
- */
+*/
 void FortRock::_add_fadd_inst
 (const Instruction * inst)
 {
@@ -1273,7 +1273,7 @@ void FortRock::_add_fadd_inst
     (inst->getOperand(0)->getName(),
      CDFG_Node::eNode::Reg);
 
- auto a1 = this->_module_gen->get_node
+  auto a1 = this->_module_gen->get_node
     (inst->getOperand(1)->getName(),
      CDFG_Node::eNode::Reg);
 
@@ -1283,7 +1283,7 @@ void FortRock::_add_fadd_inst
       (this->_get_value_name(inst->getOperand(0)),
        CDFG_Node::eNode::Param);
 
- if (!inst->getOperand(1)->hasName())
+  if (!inst->getOperand(1)->hasName())
     a1 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(1)),
        CDFG_Node::eNode::Param);
@@ -1304,7 +1304,7 @@ void FortRock::_add_fadd_inst
 /**
    SUB命令をモジュールのDFGに追加する
    @brief b = sub a0, a1
- */
+*/
 void FortRock::_add_sub_inst
 (const Instruction * inst)
 {
@@ -1320,7 +1320,7 @@ void FortRock::_add_sub_inst
     (inst->getOperand(0)->getName(),
      CDFG_Node::eNode::Reg);
 
- auto a1 = this->_module_gen->get_node
+  auto a1 = this->_module_gen->get_node
     (inst->getOperand(1)->getName(),
      CDFG_Node::eNode::Reg);
 
@@ -1330,7 +1330,7 @@ void FortRock::_add_sub_inst
       (this->_get_value_name(inst->getOperand(0)),
        CDFG_Node::eNode::Param);
 
- if (!inst->getOperand(1)->hasName())
+  if (!inst->getOperand(1)->hasName())
     a1 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(1)),
        CDFG_Node::eNode::Param);
@@ -1351,7 +1351,7 @@ void FortRock::_add_sub_inst
 /**
    fsub命令をモジュールのDFGに追加する
    @brief b = fsub a0, a1
- */
+*/
 void FortRock::_add_fsub_inst
 (const Instruction * inst)
 {
@@ -1398,18 +1398,18 @@ void FortRock::_add_fsub_inst
 /**
    switch命令をモジュールのDFGに追加する
    @brief switch %val, label %otherwise
-            [ 0, label %onzero
-              1, label %onone
-              2, label %ontwo
-              ...]
+   [ 0, label %onzero
+   1, label %onone
+   2, label %ontwo
+   ...]
 
-          case (val)
-            0: state <= onzero;
-            1: state <= onone;
-            2: state <= ontwo;
-            default: state <= otherwise;
-          endcase
- */
+   case (val)
+   0: state <= onzero;
+   1: state <= onone;
+   2: state <= ontwo;
+   default: state <= otherwise;
+   endcase
+*/
 void FortRock::_add_switch_inst
 (const Instruction * inst)
 {
@@ -1462,11 +1462,11 @@ void FortRock::_add_switch_inst
 /**
    シフト演算(shl, lshr, ashr命令)をモジュールのDFGに追加する
    @brief b = shl a0, a1
-          b <= a0 << a1
+   b <= a0 << a1
    @param[in] inst 命令の参照
    @param[in] is_left 左シフトか否か
    @param[in] is_logical 論理シフトか否か
- */
+*/
 void FortRock::_add_shift_inst
 (const Instruction * inst,
  const bool is_left,
@@ -1529,8 +1529,8 @@ void FortRock::_add_shift_inst
    and命令をDFGに追加
    @param[in] inst 命令の参照
    @brief b = a0 and a1
-          b <= a0 && a1
- */
+   b <= a0 && a1
+*/
 void FortRock::_add_and_inst
 (const Instruction * inst)
 {
@@ -1578,8 +1578,8 @@ void FortRock::_add_and_inst
    or命令をDFGに追加
    @param[in] inst 命令の参照
    @brief b = a0 or a1
-          b <= a0 || a1
- */
+   b <= a0 || a1
+*/
 void FortRock::_add_or_inst
 (const Instruction * inst)
 {
@@ -1627,8 +1627,8 @@ void FortRock::_add_or_inst
    xor命令をDFGに追加
    @param[in] inst 命令の参照
    @brief b = a0 xor a1
-          b <= a0 ^ a1
- */
+   b <= a0 ^ a1
+*/
 void FortRock::_add_xor_inst
 (const Instruction * inst)
 {
@@ -1676,9 +1676,9 @@ void FortRock::_add_xor_inst
    trunc命令をDFGに追加
    @param[in] inst 命令の参照
    @brief b = trunc type a to type2
-          b <= a[type2-1:0];
+   b <= a[type2-1:0];
    @note ビット幅を指定して切り詰めた代入
- */
+*/
 void FortRock::_add_trunc_inst
 (const Instruction * inst)
 {
@@ -1716,7 +1716,7 @@ void FortRock::_add_trunc_inst
 /**
    getelemntptr命令をDFGに追加
    @param[in] inst 命令の参照
- */
+*/
 void FortRock::_add_getelementptr_inst
 (const Instruction * inst)
 {
@@ -1811,7 +1811,7 @@ void FortRock::_add_zext_inst
    プログラムで使用するすべてのレジスタを取得し
    variablesに格納する
    Labelについても列挙し，格納する
- */
+*/
 void FortRock::_grub_variables
 (const Module::FunctionListType::iterator & funct)
 {
@@ -1968,57 +1968,67 @@ void FortRock::_grub_variables
               // 定数の場合
               if (!value->hasName())
                 {
-                // 整数
-                if (type->isIntegerTy())
-                  {
-                    auto int_value
-                      = dyn_cast<ConstantInt>(value);
+                  // 整数
+                  if (type->isIntegerTy())
+                    {
+                      auto int_value
+                        = dyn_cast<ConstantInt>(value);
 
-                    node = std::make_shared<CDFG_Parameter>
-                      (name,
-                       type->getPrimitiveSizeInBits(),
-                       int_value->getValue().getSExtValue());
-                  }
-                // 単精度浮動小数点
-                else if (type->isFloatTy())
-                  {
-                    auto fp_value
-                      = dyn_cast<ConstantFP>(value);
+                      node = std::make_shared<CDFG_Parameter>
+                        (name,
+                         type->getPrimitiveSizeInBits(),
+                         int_value->getValue().getSExtValue());
+                    }
+                  // 単精度浮動小数点
+                  else if (type->isFloatTy())
+                    {
+                      auto fp_value
+                        = dyn_cast<ConstantFP>(value);
 
-                    node
-                      = std::make_shared<CDFG_Parameter>
-                      (name,
-                       (float)fp_value->getValueAPF().convertToFloat());
-                  }
-                // 倍精度浮動小数点
-                else if (type->isDoubleTy())
-                  {
-                    auto fp_value
-                      = dyn_cast<ConstantFP>(value);
+                      node
+                        = std::make_shared<CDFG_Parameter>
+                        (name,
+                         (float)fp_value->getValueAPF().convertToFloat());
+                    }
+                  // 倍精度浮動小数点
+                  else if (type->isDoubleTy())
+                    {
+                      auto fp_value
+                        = dyn_cast<ConstantFP>(value);
 
-                    node
-                      = std::make_shared<CDFG_Parameter>
-                      (name,
-                       (float)fp_value->getValueAPF().convertToDouble());
-                  }
+                      node
+                        = std::make_shared<CDFG_Parameter>
+                        (name,
+                         (float)fp_value->getValueAPF().convertToDouble());
+                    }
                 }
 
               // 未定義のregの追加
-            if (!this->_module_gen->find_node(node))
-              this->_module_gen->add_node(node);
-          } // for : ite
+              if (!this->_module_gen->find_node(node))
+                this->_module_gen->add_node(node);
+            } // for : ite
           continue;
         } // if : isa<GEPOperator>
       } // if : Instruction::Load
 
+      // 引数のインスタンス化
       for (auto i=0; i<getop; ++i)
         {
           value = it->getOperand(i);
           type = value->getType();
 
           auto name = this->_get_value_name(value);
+
+          // ポインタ
+          if (type->isPointerTy()) {
+            // ポインタに対する参照の追加
+            type = type->getPointerElementType();
+            node = std::make_shared<CDFG_Addr>
+              (name,
+               type->getPrimitiveSizeInBits());
+          }
           // 定数
-          if(!value->hasName())
+          else if(!value->hasName())
             {
               // 整数型
               if (type->isIntegerTy())
@@ -2054,6 +2064,14 @@ void FortRock::_grub_variables
                      (float)fp_value->getValueAPF().convertToDouble());
                 }
             } // if : !value->hasName()
+          // 変数
+          else {
+            node = std::make_shared<CDFG_Reg>
+              (name,
+               type->getPrimitiveSizeInBits(),
+               true, //! @todo is signedが常にtrue
+               CDFG_Reg::eRegType::Reg);
+          }
 
           // 未定義の定数の追加
           if (!this->_module_gen->find_node(node))
@@ -2073,60 +2091,60 @@ void FortRock::_grub_variables
             // 未定義の定数の追加
             for(auto i=0; i<2; ++i)
               {
-              value = it->getOperand(i);
-              type = value->getType();
+                value = it->getOperand(i);
+                type = value->getType();
 
-              auto name = this->_get_value_name(value);
-              // 定数
-              if(!value->hasName())
-                {
-                  // 整数型
-                  if (type->isIntegerTy())
-                    {
-                      auto int_value
-                        = dyn_cast<ConstantInt>(value);
+                auto name = this->_get_value_name(value);
+                // 定数
+                if(!value->hasName())
+                  {
+                    // 整数型
+                    if (type->isIntegerTy())
+                      {
+                        auto int_value
+                          = dyn_cast<ConstantInt>(value);
 
-                      node = std::make_shared<CDFG_Parameter>
-                        (name,
-                         type->getPrimitiveSizeInBits(),
-                         int_value->getValue().getSExtValue());
-                    }
-                  // 単精度浮動小数点
-                  else if (type->isFloatTy())
-                    {
-                      auto fp_value
-                        = dyn_cast<ConstantFP>(value);
+                        node = std::make_shared<CDFG_Parameter>
+                          (name,
+                           type->getPrimitiveSizeInBits(),
+                           int_value->getValue().getSExtValue());
+                      }
+                    // 単精度浮動小数点
+                    else if (type->isFloatTy())
+                      {
+                        auto fp_value
+                          = dyn_cast<ConstantFP>(value);
 
-                      node
-                        = std::make_shared<CDFG_Parameter>
-                        (name,
-                         (float)fp_value->getValueAPF().convertToFloat());
-                    }
-                  // 倍精度浮動小数点
-                  else if (type->isDoubleTy())
-                    {
-                      auto fp_value
-                        = dyn_cast<ConstantFP>(value);
+                        node
+                          = std::make_shared<CDFG_Parameter>
+                          (name,
+                           (float)fp_value->getValueAPF().convertToFloat());
+                      }
+                    // 倍精度浮動小数点
+                    else if (type->isDoubleTy())
+                      {
+                        auto fp_value
+                          = dyn_cast<ConstantFP>(value);
 
-                      node
-                        = std::make_shared<CDFG_Parameter>
-                        (name,
-                         (float)fp_value->getValueAPF().convertToDouble());
-                    }
-                }
-              if (!this->_module_gen->find_node(node))
-                this->_module_gen->add_node(node);
+                        node
+                          = std::make_shared<CDFG_Parameter>
+                          (name,
+                           (float)fp_value->getValueAPF().convertToDouble());
+                      }
+                  }
+                if (!this->_module_gen->find_node(node))
+                  this->_module_gen->add_node(node);
               } // for
             break;
           } // store
 
         default:
-            throw std::string(std::string("ERROR (") + __func__ + "):"
-                              + std::string(it->getOpcodeName())
-                              + " "
-                              + std::to_string(it->getOpcode())
-                              + " 未定義のオペランド\n");
-            break;
+          throw std::string(std::string("ERROR (") + __func__ + "):"
+                            + std::string(it->getOpcodeName())
+                            + " "
+                            + std::to_string(it->getOpcode())
+                            + " 未定義のオペランド\n");
+          break;
         } // switch
       } // try
       catch(std::string err)
@@ -2139,7 +2157,7 @@ void FortRock::_grub_variables
 
 /**
    グローバル変数のインスタンス化
- */
+*/
 void FortRock::_grub_global_variables
 (const Module & M)
 {
