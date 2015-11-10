@@ -251,6 +251,7 @@ CModule::find_node(const std::string & asm_name,
                    return obj->get_asm_name() == asm_name
                      && obj->get_type() == type;
                  });
+
   return ite != this->_node_list.end();
 }
 

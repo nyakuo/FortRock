@@ -8,7 +8,8 @@ COperatorGenerator::~COperatorGenerator(void){}
    @param[in] module_gen モジュールへの参照
  */
 void COperatorGenerator::generate_operator
-(std::shared_ptr<CModuleGenerator> & module_gen ) {
+(std::shared_ptr<CModuleGenerator> & module_gen )
+{
   for (auto i=0; i<this->_num_operator; ++i) {
     this->set_instance_name(this->_name + std::to_string(i));
     auto ope = std::make_shared<CDFG_Operator>
