@@ -175,17 +175,15 @@ CDFG_Ram::define_string
 /**
    ポートにアクセスする
    @param[in] addr アクセスするポートへの参照
+   @note get_address() は最後尾が最新のアドレス (一次元の場合)
+   @todo 多次元配列に対応
  */
 std::string
 CDFG_Ram::access_string
 (const std::shared_ptr<CDFG_Addr> & addr)
 {
-  std::string ret_str("");
-
-  ret_str
-    += addr->get_address(1)->get_verilog_name();
-
-  return ret_str;
+  auto dim = addr->get_addr_dim();
+  return addr->get_address(dim-1)->get_verilog_name();
 } // access_string
 
 /**
