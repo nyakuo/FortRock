@@ -11,7 +11,7 @@ void COperatorGenerator::generate_operator
 (std::shared_ptr<CModuleGenerator> & module_gen )
 {
   for (auto i=0; i<this->_num_operator; ++i) {
-    this->set_instance_name(this->_name + std::to_string(i));
+    this->set_instance_name(this->_instance_name + std::to_string(i));
     auto ope = std::make_shared<CDFG_Operator>
       (this->_instance_name,
        this->_name,
