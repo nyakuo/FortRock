@@ -409,8 +409,15 @@ void FortRock::_add_load_inst
 (const Instruction * inst)
 {
   std::shared_ptr<CDFG_Addr> a;
-  bool is_gepope
-    = dyn_cast<LoadInst>(inst)->isVolatile();
+  bool is_gepope;
+
+  // getelementptr inbounds の判定
+  {
+    auto load = dyn_cast<LoadInst>(inst);
+    auto p = load->getPointerOperand();
+    is_gepope
+      = dyn_cast<GEPOperator>(p)->isInBounds();
+  }
 
   // 入力
   // getelementptr の場合
