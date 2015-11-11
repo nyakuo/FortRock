@@ -6,7 +6,7 @@
       <latency>      1      </latency>
       <module_name>  Add  </module_name>
       <instance_name> add    </instance_name>
-      <num_module>   2      </num_module>
+      <num_module>   1      </num_module>
 
       <io>
         <info>
@@ -136,7 +136,7 @@
     </fsub>
 
     <mul>
-      <use_ip_core>  false      </use_ip_core>
+      <use_ip_core>  true      </use_ip_core>
       <latency>      1          </latency>
       <module_name>  multiplier </module_name>
       <instance_name> mul        </instance_name>
@@ -205,10 +205,11 @@
     </fmul>
 
     <s_div>
-      <use_ip_core>  false    </use_ip_core>
+      <use_ip_core>  true    </use_ip_core>
       <latency>      36      </latency>
       <module_name>  Divider </module_name>
       <instance_name> div     </instance_name>
+      <num_module>   1       </num_module>
 
       <io>
         <info>
@@ -277,10 +278,11 @@
     </fdiv>
 
     <s_rem>
-      <use_ip_core> false    </use_ip_core>
+      <use_ip_core> true    </use_ip_core>
       <latency>      36      </latency>
       <module_name>  Divider </module_name>
       <instance_name> divrem  </instance_name>
+      <num_module>   1 </num_module>
 
       <io>
         <info>
