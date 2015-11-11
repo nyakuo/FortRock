@@ -1567,8 +1567,8 @@ void CModuleGenerator::_generate_always(void)
       this->_cout << step_node->get_verilog_name()
                   << " <= "
                   << step_node->get_verilog_name()
-                  << " + 1'h1;\n"
-                  << "case ("
+                  << " + 1'h1;\n";
+      this->_cout << "case ("
                   << step_node->get_verilog_name()
                   << ")\n";
 
