@@ -10,8 +10,9 @@ COperatorGenerator::~COperatorGenerator(void){}
 void COperatorGenerator::generate_operator
 (std::shared_ptr<CModuleGenerator> & module_gen )
 {
+  auto tmp_instance_name = this->_instance_name;
   for (auto i=0; i<this->_num_operator; ++i) {
-    this->set_instance_name(this->_instance_name + std::to_string(i));
+    this->set_instance_name(tmp_instance_name + std::to_string(i));
     auto ope = std::make_shared<CDFG_Operator>
       (this->_instance_name,
        this->_name,
