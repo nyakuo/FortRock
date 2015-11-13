@@ -49,8 +49,16 @@ private:
   unsigned _get_last_step
   (const std::list<std::shared_ptr<CDFG_Element> > & list);
 
-  bool used_in_phi(std::shared_ptr<CDFG_Node> & node,
-                   std::list<std::shared_ptr<CDFG_Element> > & phi_list);
+  bool used_in_phi(const std::shared_ptr<CDFG_Node> & node,
+                   const std::list<std::shared_ptr<CDFG_Element> > & phi_list);
+
+  bool used_in_another_state(const unsigned & state,
+                             const std::shared_ptr<CDFG_Node> & node,
+                             const std::list<std::shared_ptr<CDFG_Element> > & dfg);
+
+  bool is_multiple_use(const unsigned & state,
+                       const std::shared_ptr<CDFG_Operator> & ope,
+                       const std::list<std::shared_ptr<CDFG_Element> > & dfg);
 
   void _show_list // for debug
   (const std::list<std::shared_ptr<CDFG_Element> > & list);

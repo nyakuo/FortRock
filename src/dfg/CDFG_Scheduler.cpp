@@ -403,24 +403,78 @@ CDFG_Scheduler::_get_last_step
 /**
    Node(Param, Reg) がPhi命令のトリガとして
    参照されているかを判定
-   @param[in] node Param か Reg の参照
+   @param[in] node Reg の参照
    @param[in] phi_list Phi命令のリスト
-   @return Node(Param, Reg) がPhi命令のトリガとして参照されているか
+   @return Node(Reg) がPhi命令のトリガとして参照されているか
  */
 bool
 CDFG_Scheduler::used_in_phi
-(std::shared_ptr<CDFG_Node> & node,
- std::list<std::shared_ptr<CDFG_Element> > & phi_list)
+(const std::shared_ptr<CDFG_Node> & node,
+ const std::list<std::shared_ptr<CDFG_Element> > & phi_list)
 {
   for (auto & phi : phi_list) {
+    // Phi のトリガと判定
     for (auto i=0; i<phi->get_num_input(); ++i) {
       auto val = phi->get_input_at((i << 1) + i);
+
       if (val == node)
         return true;
     }
   }
   return false;
 } // used_in_phi
+
+/**
+   Nodeが複数のステートで参照されていないか判定
+   @param[in] state Nodeが参照されるステート
+   @param[in] node 判定対象のNodeの参照
+   @param[in] dfg モジュールのDFG
+   @return Nodeが複数のステートで参照されていないか
+ */
+bool
+CDFG_Scheduler::used_in_another_state
+(const unsigned & state,
+ const std::shared_ptr<CDFG_Node> & node,
+ const std::list<std::shared_ptr<CDFG_Element> > & dfg)
+{
+  for (auto & state_dfg : dfg) {
+    for (auto & elem : state_dfg) {
+      // 同一ステートはスキップ
+      if (elem->get_state() == state)
+        continue;
+
+      // 入力と判定
+      for (auto i=0; i<elem->get_num_input(); ++i)
+        if (elem->get_input_at(i) == node)
+          return true;
+
+      // 出力と判定
+      for (auto i=0; i<elem->get_num_output(); ++i)
+        if (elem->get_output_at(i) == node)
+          return true;
+    }
+  }
+
+  return false;
+} // used_in_another_state
+
+/**
+   演算器が同一ステートで複数回使用されるか判定
+   @param[in] state 演算器が使用されるステート
+   @param[in] ope 演算器の参照
+   @param[in] dfg モジュールのDFG
+   @return 演算器が同一ステートで複数回使用されるか
+ */
+bool
+is_multiple_use
+(const unsigned & state,
+ const std::shared_ptr<CDFG_Operator> & ope,
+ const std::list<std::shared_ptr<CDFG_Element> > & dfg)
+{
+  for (auto & elem : dfg) {
+  }
+} // is_multiple_use
+
 
 // for debug
 #include <iostream>
