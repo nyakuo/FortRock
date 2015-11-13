@@ -9,6 +9,9 @@
 #include "CModule.hpp"
 #include "CDFG_Element.hpp"
 #include "CDFG_Addr.hpp"
+#include "CDFG_Ram.hpp"
+
+class CDFG_Ram;
 
 /**
    @class CDFG_Scheduler
@@ -38,9 +41,16 @@ private:
   bool _can_use(const unsigned & step,
                 const std::shared_ptr<CDFG_Operator> & ope,
                 const std::list<std::shared_ptr<CDFG_Element> > & dfg);
-
+#if 0
+  bool _can_use(const unsigned & step,
+                const std::shared_ptr<CDFG_Ram> & ram,
+                const std::list<std::shared_ptr<CDFG_Element> > & dfg);
+#endif
   unsigned _get_last_step
   (const std::list<std::shared_ptr<CDFG_Element> > & list);
+
+  bool used_in_phi(std::shared_ptr<CDFG_Node> & node,
+                   std::list<std::shared_ptr<CDFG_Element> > & phi_list);
 
   void _show_list // for debug
   (const std::list<std::shared_ptr<CDFG_Element> > & list);

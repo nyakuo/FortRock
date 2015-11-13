@@ -12,13 +12,16 @@ CDFG_Scheduler::do_schedule
 (void) {
   std::list<std::list
             <std::shared_ptr<CDFG_Element> >
-            > dfg;
-  std::list<std::shared_ptr<CDFG_Element> > tmp_dfg;
+            > dfg; // ステートのDFGのリスト
+  std::list<std::shared_ptr<CDFG_Element> > tmp_dfg; // ステートのDFG
 
   std::map<CDFG_Operator::eType,
-           std::list<std::shared_ptr<CDFG_Operator> > > ope_list;
+           std::list<std::shared_ptr<CDFG_Operator> > > ope_list; // 演算器のリスト
+
+  std::list<std::shared_ptr<CDFG_Element> > phi_list; // PHI命令のリスト
 
   // DFGを各ステートで切り出す
+  // PHI命令のリストを作成
   {
     auto state = 0;
     for (auto & elem
@@ -33,6 +36,11 @@ CDFG_Scheduler::do_schedule
           } // if
 
         tmp_dfg.emplace_back(elem);
+
+        // PHI命令をリストに追加
+        if (elem->get_operator()->get_type()
+            == CDFG_Operator::eType::Phi)
+          phi_list.emplace_back(elem);
       } // for
   }
 
@@ -274,7 +282,7 @@ CDFG_Scheduler::_min_step_operator
                      target_elem))
     return data_depend_step;
 
-  auto step = data_depend_step+1;
+  auto step = data_depend_step + 1;
   auto last_step = this->_get_last_step(target_elem);
 
   for (;step < this->_get_last_step(target_elem);
@@ -392,12 +400,34 @@ CDFG_Scheduler::_get_last_step
     + (((*last_elem)->get_operator()->get_latency() == 0) ? 0 : 1);
 } // get_last_step
 
+/**
+   Node(Param, Reg) がPhi命令のトリガとして
+   参照されているかを判定
+   @param[in] node Param か Reg の参照
+   @param[in] phi_list Phi命令のリスト
+   @return Node(Param, Reg) がPhi命令のトリガとして参照されているか
+ */
+bool
+CDFG_Scheduler::used_in_phi
+(std::shared_ptr<CDFG_Node> & node,
+ std::list<std::shared_ptr<CDFG_Element> > & phi_list)
+{
+  for (auto & phi : phi_list) {
+    for (auto i=0; i<phi->get_num_input(); ++i) {
+      auto val = phi->get_input_at((i << 1) + i);
+      if (val == node)
+        return true;
+    }
+  }
+  return false;
+} // used_in_phi
+
 // for debug
 #include <iostream>
 void
 CDFG_Scheduler::_show_list
 (const std::list<std::shared_ptr<CDFG_Element> > & list)
- {
+{
   for (auto & elem : list)
     std::cout << elem->get_operator()->get_latency()
               << ": "
