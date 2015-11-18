@@ -381,7 +381,7 @@ void FortRock::_parse_instructions
     case Instruction::Trunc:  this->_add_trunc_inst(inst);  break;
 
     case Instruction::GetElementPtr:
-      this->_add_getelementptr_inst(inst);
+      // nothing to do
       break;
 
     case Instruction::ZExt:   this->_add_zext_inst(inst); break;
@@ -401,7 +401,7 @@ void FortRock::_parse_instructions
 } // _parse_instructions
 
 /**
-   ADD命令をモジュールのDFGに追加する
+   LOAD命令をモジュールのDFGに追加する
    @brief b = load a
    b <= a; // latency == 0
 */
@@ -412,31 +412,32 @@ void FortRock::_add_load_inst
   bool is_gepope;
 
   // getelementptr inbounds の判定
-  {
-    auto load = dyn_cast<LoadInst>(inst);
-    auto p = load->getPointerOperand();
-    is_gepope
-      = dyn_cast<GEPOperator>(p)->isInBounds();
-  }
+  auto load = dyn_cast<LoadInst>(inst);
+  auto p = load->getPointerOperand();
+
+  if (isa<GEPOperator>(p))
+    is_gepope = true;
+  else
+    is_gepope = false;
 
   // 入力
   // getelementptr の場合
   if (is_gepope) {
     auto gepope
-      = dyn_cast<GEPOperator>
-      (dyn_cast<LoadInst>(inst)->getPointerOperand());
+      = dyn_cast<GEPOperator>(p);
+
     auto ptr
       = gepope->getPointerOperand();
+
     auto array
       = this->_module_gen->get_node
       (ptr->getName(),
        CDFG_Node::eNode::Mem);
 
-    a = std::dynamic_pointer_cast<CDFG_Addr>
-      (this->_module_gen->get_node
-       (gepope->getPointerOperand()->getName(),
-        CDFG_Node::eNode::Addr));
-    a->set_ref(array);
+    a = std::make_shared<CDFG_Addr>
+      ("tmp_addr",
+       array->get_bit_width(),
+       array);
 
     // アドレスの追加
     for (auto ite = gepope->idx_begin() + 1; // 最初は無視
@@ -465,9 +466,7 @@ void FortRock::_add_load_inst
 
   // BRAMの場合
   auto latency = 0;
-  auto refer
-    = std::dynamic_pointer_cast<CDFG_Addr>
-    (a)->get_reference();
+  auto refer = a->get_reference();
 
   if (refer->get_type()
       == CDFG_Node::eNode::Mem) {
@@ -509,6 +508,8 @@ void FortRock::_add_load_inst
 void FortRock::_add_store_inst
 (const Instruction * inst)
 {
+  std::shared_ptr<CDFG_Addr> b;
+
   // 入力
   auto a = this->_module_gen->get_node
     (this->_get_value_name(inst->getOperand(0)),
@@ -521,15 +522,33 @@ void FortRock::_add_store_inst
        CDFG_Node::eNode::Param);
 
   // 出力
-  auto b = this->_module_gen->get_node
-    (this->_get_value_name(inst->getOperand(1)),
-     CDFG_Node::eNode::Addr);
+  // 出力の getelementptr 対応
+  auto p = inst->getOperand(1);
+  if (isa<GEPOperator>(p)) {
+    auto gep = dyn_cast<GEPOperator>(p);
+
+    auto ptr
+      = gep->getPointerOperand();
+
+    auto array
+      = this->_module_gen->get_node
+      (ptr->getName(),
+       CDFG_Node::eNode::Mem);
+
+    b = std::make_shared<CDFG_Addr>
+      ("tmp_addr",
+       array->get_bit_width(),
+       array);
+  }
+  else
+    b = std::dynamic_pointer_cast<CDFG_Addr>
+      (this->_module_gen->get_node
+      (this->_get_value_name(inst->getOperand(1)),
+       CDFG_Node::eNode::Addr));
 
   // BRAMの場合
   auto latency = 0;
-  auto refer
-    = std::dynamic_pointer_cast<CDFG_Addr>
-    (b)->get_reference();
+  auto refer = b->get_reference();
 
   if (refer->get_type()
       == CDFG_Node::eNode::Mem) {
@@ -1721,60 +1740,6 @@ void FortRock::_add_trunc_inst
 } // _add_trunc_inst
 
 /**
-   getelemntptr命令をDFGに追加
-   @param[in] inst 命令の参照
-*/
-void FortRock::_add_getelementptr_inst
-(const Instruction * inst)
-{
-  auto elem = std::make_shared<CDFG_Element>
-    (CDFG_Operator::eType::Getelementptr,
-     1, // num inputs
-     this->_state,
-     this->_step);
-
-  auto getelemptr_inst
-    = dynamic_cast<GetElementPtrInst*>
-    (const_cast<Instruction*>(inst));
-
-  auto ptr
-    = getelemptr_inst->getPointerOperand();
-
-  auto array
-    = this->_module_gen->get_node
-    (ptr->getName(),
-     CDFG_Node::eNode::Mem);
-
-  auto addr
-    = std::dynamic_pointer_cast<CDFG_Addr>
-    (this->_module_gen->get_node
-     (getelemptr_inst->getName(),
-      CDFG_Node::eNode::Addr));
-
-  addr->set_ref(array);
-
-  // アドレスの追加
-  for (auto ite = getelemptr_inst->idx_begin() + 1; // 最初は無視
-       ite != getelemptr_inst->idx_end();
-       ++ite)
-    {
-      auto value = ite->get();
-      auto type = CDFG_Node::eNode::Reg;
-
-      if (!value->hasName()) // 定数の場合
-        type = CDFG_Node::eNode::Param;
-
-      addr->add_addr
-        (this->_module_gen->get_node
-         (value->getName(),
-          type));
-    }
-
-  elem->set_input(addr, 0);
-  this->_module_gen->add_element(elem);
-} // _add_getelementptr_inst
-
-/**
    zext命令をDFGに追加
    @param[in] inst 命令の参照
    @brief b <= a | 0
@@ -1872,21 +1837,6 @@ void FortRock::_grub_variables
       }
 
     case Instruction::GetElementPtr:
-      {
-        auto name = this->_get_value_name(&(*it));
-        auto type = (*it).getType();
-
-        auto node = std::make_shared<CDFG_Addr>
-          (name,
-           type->getPrimitiveSizeInBits());
-
-        // 未定義のregの追加
-        if (!this->_module_gen->find_node(node))
-          this->_module_gen->add_node(node);
-
-        break;
-      }
-
     case Instruction::Br:
     case Instruction::Store:
     case Instruction::Ret:
@@ -2101,10 +2051,15 @@ void FortRock::_grub_variables
                 value = it->getOperand(i);
                 type = value->getType();
 
-                auto name = this->_get_value_name(value);
+                // GetElementPtr が引数の場合はパス
+                if (isa<GEPOperator>(value)) {
+                  break;
+                }
+
                 // 定数
                 if(!value->hasName())
                   {
+                    auto name = this->_get_value_name(value);
                     // 整数型
                     if (type->isIntegerTy())
                       {
@@ -2139,6 +2094,7 @@ void FortRock::_grub_variables
                            (float)fp_value->getValueAPF().convertToDouble());
                       }
                   }
+
                 if (!this->_module_gen->find_node(node))
                   this->_module_gen->add_node(node);
               } // for
