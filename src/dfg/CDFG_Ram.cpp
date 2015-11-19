@@ -162,9 +162,7 @@ CDFG_Ram::define_string
 
     for (auto & rw : this->_rw_ports)
       ret_str.append
-        ("  reg ["
-         + std::to_string(rw->get_bit_width() - 1)
-         + ":0] "
+        ("  reg "
          + rw->get_verilog_name()
          + ";\n");
   }
