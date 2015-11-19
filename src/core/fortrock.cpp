@@ -423,14 +423,9 @@ void FortRock::_add_load_inst
   // 入力
   // getelementptr の場合
   if (is_gepope) {
-    auto gepope
-      = dyn_cast<GEPOperator>(p);
-
-    auto ptr
-      = gepope->getPointerOperand();
-
-    auto array
-      = this->_module_gen->get_node
+    auto gepope = dyn_cast<GEPOperator>(p);
+    auto ptr = gepope->getPointerOperand();
+    auto array = this->_module_gen->get_node
       (ptr->getName(),
        CDFG_Node::eNode::Mem);
 
@@ -439,7 +434,7 @@ void FortRock::_add_load_inst
        array->get_bit_width(),
        array);
 
-    // アドレスの追加
+    // 読み込むアドレス(配列の添字)の追加
     for (auto ite = gepope->idx_begin() + 1; // 最初は無視
          ite != gepope->idx_end();
          ++ite) {
@@ -455,14 +450,12 @@ void FortRock::_add_load_inst
           type));
     } // for : ite
   } // if : isa<GEPOperator>
-  // 通常のload命令
-  else {
+  else
     a = std::dynamic_pointer_cast<CDFG_Addr>
       (this->_module_gen->get_node
        (this->_get_value_name
         (inst->getOperand(0)),
         CDFG_Node::eNode::Addr));
-  }
 
   // BRAMの場合
   auto latency = 0;
@@ -476,9 +469,9 @@ void FortRock::_add_load_inst
     // 読み込みレイテンシの設定
     latency = mem->get_latency();
 
-    // 読み込みポートの設定
-    std::dynamic_pointer_cast<CDFG_Addr>
-      (a)->add_addr(mem->get_read_port(0));
+    // アクセスポートの設定
+    //! @note アクセスポートはアドレスリストの末尾に指定
+    a->add_addr(mem->get_read_port(0));
   }
 
   // 出力
@@ -497,7 +490,7 @@ void FortRock::_add_load_inst
 
   this->_module_gen->add_element(elem);
 
-  ++this->_step;
+  this->_step += 1 + latency;
 } // _add_load_inst
 
 /**
@@ -526,12 +519,8 @@ void FortRock::_add_store_inst
   auto p = inst->getOperand(1);
   if (isa<GEPOperator>(p)) {
     auto gep = dyn_cast<GEPOperator>(p);
-
-    auto ptr
-      = gep->getPointerOperand();
-
-    auto array
-      = this->_module_gen->get_node
+    auto ptr = gep->getPointerOperand();
+    auto array = this->_module_gen->get_node
       (ptr->getName(),
        CDFG_Node::eNode::Mem);
 
@@ -539,6 +528,22 @@ void FortRock::_add_store_inst
       ("tmp_addr",
        array->get_bit_width(),
        array);
+
+    // 書き込むアドレス(配列の添字)の指定
+    for (auto ite = gep->idx_begin() + 1; // 最初は無視
+         ite != gep->idx_end();
+         ++ite) {
+      auto value = ite->get();
+      auto type = CDFG_Node::eNode::Reg;
+
+      if (!value->hasName())
+        type = CDFG_Node::eNode::Param;
+
+      b->add_addr
+        (this->_module_gen->get_node
+         (this->_get_value_name(value),
+          type));
+    }
   }
   else
     b = std::dynamic_pointer_cast<CDFG_Addr>
@@ -549,17 +554,17 @@ void FortRock::_add_store_inst
   // BRAMの場合
   auto latency = 0;
   auto refer = b->get_reference();
-
   if (refer->get_type()
       == CDFG_Node::eNode::Mem) {
-    auto mem = std::dynamic_pointer_cast<CDFG_Mem>(refer);
+    auto mem = std::dynamic_pointer_cast<CDFG_Mem>
+      (refer);
 
     // 書き込みレイテンシの設定
     latency = mem->get_latency();
 
-    // 書き込みポートの設定
-    std::dynamic_pointer_cast<CDFG_Addr>
-      (b)->add_addr(mem->get_write_port(0));
+    // アクセスポートの指定
+    //! @note アクセスポートはアドレスリストの末尾に指定
+    b->add_addr(mem->get_write_port(0));
   }
 
   auto elem = std::make_shared<CDFG_StoreElem>
@@ -572,7 +577,7 @@ void FortRock::_add_store_inst
 
   this->_module_gen->add_element(elem);
 
-  ++this->_step;
+  this->_step += 1 + latency;
 } // _add_store_inst
 
 /**
