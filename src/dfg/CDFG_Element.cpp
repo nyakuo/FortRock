@@ -3,8 +3,10 @@
 /**
    デフォルトコンストラクタ
    @param[in] type 演算の種類
+   @param[in] num_input 演算の入力の数
    @param[in] state 演算の実行ステート
    @param[in] step 演算の実行ステップ
+   @param[in] latency 演算にかかるレイテンシ (default: 0)
    @note load命令やphi命令など演算器を必要としない
    命令のDFG化にに使用
 */
