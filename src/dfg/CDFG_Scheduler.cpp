@@ -5,7 +5,7 @@
    @brief データの依存性の確認
    演算器の使用状況の確認
    @return スケジューリング前後での演算器全体での
-   レイテンシの変化
+     レイテンシの減少数
 */
 unsigned
 CDFG_Scheduler::do_schedule
@@ -18,10 +18,7 @@ CDFG_Scheduler::do_schedule
   std::map<CDFG_Operator::eType,
            std::list<std::shared_ptr<CDFG_Operator> > > ope_list; // 演算器のリスト
 
-  std::list<std::shared_ptr<CDFG_Element> > phi_list; // PHI命令のリスト
-
   // DFGを各ステートで切り出す
-  // PHI命令のリストを作成
   {
     auto state = 0;
     for (auto & elem
@@ -34,14 +31,11 @@ CDFG_Scheduler::do_schedule
             tmp_dfg.clear();
             state = elem->get_state();
           } // if
-
         tmp_dfg.emplace_back(elem);
-
-        // PHI命令をリストに追加
-        if (elem->get_operator()->get_type()
-            == CDFG_Operator::eType::Phi)
-          phi_list.emplace_back(elem);
       } // for
+    // 最後のステートを追加
+    dfg.emplace_back(tmp_dfg);
+    tmp_dfg.clear();
   }
 
   // 演算器の種類ごとの一覧の作成
@@ -51,7 +45,6 @@ CDFG_Scheduler::do_schedule
   auto ret_change_ltc = 0; // 演算器全体のレイテンシの変化
 
   // 各ステートに対してスケジューリング
-  tmp_dfg.clear();
   for (auto & state_dfg : dfg)
     {
       for (auto elem = state_dfg.cbegin();
@@ -95,7 +88,6 @@ CDFG_Scheduler::do_schedule
                       }
                   } // for : ope
               } // if : ope_list.size() > 0
-
             else
               min_step = data_depend_step;
           }
@@ -116,16 +108,19 @@ CDFG_Scheduler::do_schedule
                        });
         } // for : elem
 
-      // br命令をDFGの最後に移動
-      for (auto & elem : tmp_dfg)
-        if (elem->get_operator()->get_type()
-            == CDFG_Operator::eType::Br)
+      // br命令, ret命令をDFGの最後に移動
+      for (auto & elem : tmp_dfg) {
+        auto type = elem->get_operator()->get_type();
+
+        if (type == CDFG_Operator::eType::Br
+            || type == CDFG_Operator::eType::Ret)
           {
             elem->set_step(this->_get_last_step(tmp_dfg));
             break;
           }
+      }
 
-      //    _show_list(tmp_dfg);
+      //_show_list(tmp_dfg);
 
       // ステートのDFGを更新
       state_dfg = tmp_dfg;
@@ -148,6 +143,10 @@ CDFG_Scheduler::_min_step_data
 (const std::list<std::shared_ptr<CDFG_Element> > & list,
  const std::shared_ptr<CDFG_Element> & target_elem)
 {
+  if (target_elem->get_operator()->get_type()
+      == CDFG_Operator::eType::Ret)
+    return target_elem->get_step();
+
   auto cp_list = list;
 
   // データ依存の判定の簡単化のために実行ステップでソート
@@ -164,10 +163,13 @@ CDFG_Scheduler::_min_step_data
   for (auto i=0; i<target_elem->get_num_input();
        ++i) {
     auto input = target_elem->get_input_at(i);
+
     // 入力が即値の場合は考慮しない
     if (input->get_type()
         == CDFG_Node::eNode::Param)
       continue;
+
+    // 入力がモジュールの入力の場合は考慮しない
 
     // 命令の出力との比較
     for (auto & elem : cp_list)
@@ -185,6 +187,7 @@ CDFG_Scheduler::_min_step_data
                        + 1
                        + ((elem->get_operator()->get_latency() == 0)
                           ? 0 : 1)); // IPCoreは出力と同一クロックでは読めない
+
 
         // 配列の添字が確定する最小ステップで更新
         if (input->get_type()
@@ -230,19 +233,34 @@ CDFG_Scheduler::_min_step_data
               if (elem->get_num_output() ==0)
                 continue;
 
-              for (auto i=0; i<addr->get_addr_dim();
-                   ++i)
+              // Mem の場合はdimを見る
+              if (addr->is_mem_ref()) {
+                for (auto i=0; i<addr->get_addr_dim();
+                     ++i)
+                  if (elem->get_output_at(0)
+                      == addr->get_address(i))
+                    min_step
+                      = std::max(min_step,
+                                 elem->get_step()
+                                 + elem->get_operator()->get_latency()
+                                 + 1
+                                 + ((elem->get_operator()->get_latency() == 0)
+                                    ? 0 : 1));
+              } // if : is_mem_ref
+              // Addr の場合は直接参照を見る
+              else if (addr->is_reg_ref()) {
                 if (elem->get_output_at(0)
-                    == addr->get_address(i))
+                    == addr->get_reference())
                   min_step
                     = std::max(min_step,
                                elem->get_step()
                                + elem->get_operator()->get_latency()
                                + 1
-                               + ((elem->get_operator()->get_latency() == 0)
+                               + ((elem->get_operator()->get_latency() ==0)
                                   ? 0 : 1));
+              } // if : is_reg_ref
             } // for : elem
-        } // if : output->get_type()
+        } // if : CDFG_Node::eNode::Addr
     } // if : target_elem
 
   return min_step;
@@ -399,82 +417,6 @@ CDFG_Scheduler::_get_last_step
     + (*last_elem)->get_operator()->get_latency()
     + (((*last_elem)->get_operator()->get_latency() == 0) ? 0 : 1);
 } // get_last_step
-
-/**
-   Node(Param, Reg) がPhi命令のトリガとして
-   参照されているかを判定
-   @param[in] node Reg の参照
-   @param[in] phi_list Phi命令のリスト
-   @return Node(Reg) がPhi命令のトリガとして参照されているか
- */
-bool
-CDFG_Scheduler::used_in_phi
-(const std::shared_ptr<CDFG_Node> & node,
- const std::list<std::shared_ptr<CDFG_Element> > & phi_list)
-{
-  for (auto & phi : phi_list) {
-    // Phi のトリガと判定
-    for (auto i=0; i<phi->get_num_input(); ++i) {
-      auto val = phi->get_input_at((i << 1) + i);
-
-      if (val == node)
-        return true;
-    }
-  }
-  return false;
-} // used_in_phi
-
-/**
-   Nodeが複数のステートで参照されていないか判定
-   @param[in] state Nodeが参照されるステート
-   @param[in] node 判定対象のNodeの参照
-   @param[in] dfg モジュールのDFG
-   @return Nodeが複数のステートで参照されていないか
- */
-bool
-CDFG_Scheduler::used_in_another_state
-(const unsigned & state,
- const std::shared_ptr<CDFG_Node> & node,
- const std::list<std::shared_ptr<CDFG_Element> > & dfg)
-{
-  for (auto & state_dfg : dfg) {
-    for (auto & elem : state_dfg) {
-      // 同一ステートはスキップ
-      if (elem->get_state() == state)
-        continue;
-
-      // 入力と判定
-      for (auto i=0; i<elem->get_num_input(); ++i)
-        if (elem->get_input_at(i) == node)
-          return true;
-
-      // 出力と判定
-      for (auto i=0; i<elem->get_num_output(); ++i)
-        if (elem->get_output_at(i) == node)
-          return true;
-    }
-  }
-
-  return false;
-} // used_in_another_state
-
-/**
-   演算器が同一ステートで複数回使用されるか判定
-   @param[in] state 演算器が使用されるステート
-   @param[in] ope 演算器の参照
-   @param[in] dfg モジュールのDFG
-   @return 演算器が同一ステートで複数回使用されるか
- */
-bool
-is_multiple_use
-(const unsigned & state,
- const std::shared_ptr<CDFG_Operator> & ope,
- const std::list<std::shared_ptr<CDFG_Element> > & dfg)
-{
-  for (auto & elem : dfg) {
-  }
-} // is_multiple_use
-
 
 // for debug
 #include <iostream>
