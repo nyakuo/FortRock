@@ -101,7 +101,7 @@ int CDFG_Element::set_operator
    @return 0 セットする位置が有効, -1 セットする位置が無効
 */
 int CDFG_Element::set_input
-(std::shared_ptr<CDFG_Node> input,
+(const std::shared_ptr<CDFG_Node> & input,
  const unsigned & number)
 {
   if (number > this->_input_list.size())
@@ -118,7 +118,7 @@ int CDFG_Element::set_input
    @return 0 セットする位置が有効, -1 セットする位置が無効
 */
 int CDFG_Element::set_output
-(std::shared_ptr<CDFG_Node> output,
+(const std::shared_ptr<CDFG_Node> & output,
  const unsigned & number)
 {
   if (number > this->_output_list.size())
