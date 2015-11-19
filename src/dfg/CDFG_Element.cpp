@@ -17,7 +17,8 @@ CDFG_Element::CDFG_Element
  const unsigned & step,
  const unsigned & latency)
   : _state(state),
-    _step(step)
+    _step(step),
+    CDFG_Node(CDFG_Node::eType::Elem)
 {
   auto phony_ope
     = std::make_shared<CDFG_Operator>
@@ -46,7 +47,8 @@ CDFG_Element::CDFG_Element
  const unsigned & state,
  const unsigned & step)
   : _state(state),
-    _step(step)
+    _step(step),
+    CDFG_Node(CDFG_Node::eType::Elem)
 {
   this->set_operator(ope);
 } // CDFG_Element
@@ -76,7 +78,7 @@ int CDFG_Element::set_operator
     {
       auto input = ope->get_input_node_at(i);
 
-      if (input->get_type() == CDFG_Node::eNode::Wire)
+      if (input->get_type() == CDFG_Node::eType::Wire)
         {
           auto reg = std::dynamic_pointer_cast<CDFG_Wire>(input);
 
@@ -146,6 +148,17 @@ void CDFG_Element::set_step
 (const unsigned & step)
 {
   this->_step = step;
+}
+
+/**
+   Elementの種類を設定
+   @param[in] type Elementの種類
+ */
+void
+CDFG_Element::set_type
+(const eType & type)
+{
+  this->_type = type;
 }
 
 /**
