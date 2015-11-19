@@ -427,7 +427,7 @@ void FortRock::_add_load_inst
     auto ptr = gepope->getPointerOperand();
     auto array = this->_module_gen->get_node
       (ptr->getName(),
-       CDFG_Node::eNode::Mem);
+       CDFG_Node::eType::Mem);
 
     a = std::make_shared<CDFG_Addr>
       ("tmp_addr",
@@ -439,10 +439,10 @@ void FortRock::_add_load_inst
          ite != gepope->idx_end();
          ++ite) {
       auto value = ite->get();
-      auto type = CDFG_Node::eNode::Reg;
+      auto type = CDFG_Node::eType::Reg;
 
       if (!value->hasName())
-        type = CDFG_Node::eNode::Param;
+        type = CDFG_Node::eType::Param;
 
       a->add_addr
         (this->_module_gen->get_node
@@ -455,14 +455,14 @@ void FortRock::_add_load_inst
       (this->_module_gen->get_node
        (this->_get_value_name
         (inst->getOperand(0)),
-        CDFG_Node::eNode::Addr));
+        CDFG_Node::eType::Addr));
 
   // BRAMの場合
   auto latency = 0;
   auto refer = a->get_reference();
 
   if (refer->get_type()
-      == CDFG_Node::eNode::Mem) {
+      == CDFG_Node::eType::Mem) {
     auto mem
       = std::dynamic_pointer_cast<CDFG_Mem>(refer);
 
@@ -477,7 +477,7 @@ void FortRock::_add_load_inst
   // 出力
   auto b = this->_module_gen
     ->get_node(inst->getName().str(),
-               CDFG_Node::eNode::Reg);
+               CDFG_Node::eType::Reg);
 
   auto elem = std::make_shared<CDFG_LoadElem>
     (is_gepope,
@@ -506,13 +506,13 @@ void FortRock::_add_store_inst
   // 入力
   auto a = this->_module_gen->get_node
     (this->_get_value_name(inst->getOperand(0)),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   // 入力の定数対応
   if (!inst->getOperand(0)->hasName())
     a = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(0)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   // 出力
   // 出力の getelementptr 対応
@@ -522,7 +522,7 @@ void FortRock::_add_store_inst
     auto ptr = gep->getPointerOperand();
     auto array = this->_module_gen->get_node
       (ptr->getName(),
-       CDFG_Node::eNode::Mem);
+       CDFG_Node::eType::Mem);
 
     b = std::make_shared<CDFG_Addr>
       ("tmp_addr",
@@ -534,10 +534,10 @@ void FortRock::_add_store_inst
          ite != gep->idx_end();
          ++ite) {
       auto value = ite->get();
-      auto type = CDFG_Node::eNode::Reg;
+      auto type = CDFG_Node::eType::Reg;
 
       if (!value->hasName())
-        type = CDFG_Node::eNode::Param;
+        type = CDFG_Node::eType::Param;
 
       b->add_addr
         (this->_module_gen->get_node
@@ -549,13 +549,13 @@ void FortRock::_add_store_inst
     b = std::dynamic_pointer_cast<CDFG_Addr>
       (this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(1)),
-       CDFG_Node::eNode::Addr));
+       CDFG_Node::eType::Addr));
 
   // BRAMの場合
   auto latency = 0;
   auto refer = b->get_reference();
   if (refer->get_type()
-      == CDFG_Node::eNode::Mem) {
+      == CDFG_Node::eType::Mem) {
     auto mem = std::dynamic_pointer_cast<CDFG_Mem>
       (refer);
 
@@ -638,25 +638,25 @@ void FortRock::_add_icmp_inst
   // 入力
   auto a0 = this->_module_gen->get_node
     (this->_get_value_name(inst->getOperand(0)),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
   auto a1 = this->_module_gen->get_node
     (this->_get_value_name(inst->getOperand(1)),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   // 入力の定数対応
   if (!inst->getOperand(0)->hasName())
     a0 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(0)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
   if (!inst->getOperand(1)->hasName())
     a1 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(1)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   // 出力
   auto b = this->_module_gen->get_node
     (inst->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   elem->set_input(a0, 0);
   elem->set_input(a1, 1);
@@ -744,27 +744,27 @@ void FortRock::_add_fcmp_inst
   // 入力
   auto a0 = this->_module_gen->get_node
     (this->_get_value_name(inst->getOperand(0)),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   auto a1 = this->_module_gen->get_node
     (this->_get_value_name(inst->getOperand(1)),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   // 入力の定数対応
   if (!inst->getOperand(0)->hasName())
     a0 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(0)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   if (!inst->getOperand(1)->hasName())
     a1 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(1)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   // 出力
   auto b = this->_module_gen->get_node
     (inst->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   elem->set_input(a0, 0);
   elem->set_input(a1, 1);
@@ -792,32 +792,32 @@ void FortRock::_add_select_inst
   // cond
   auto tf = this->_module_gen->get_node
     (this->_get_value_name(inst->getOperand(0)),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   // 入力
   auto a0 = this->_module_gen->get_node
     (this->_get_value_name(inst->getOperand(1)),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   auto a1 = this->_module_gen->get_node
     (this->_get_value_name(inst->getOperand(2)),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   // 入力の定数対応
   if (!inst->getOperand(1)->hasName())
     a0 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(1)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   if (!inst->getOperand(2)->hasName())
     a1 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(2)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   // 出力
   auto b = this->_module_gen->get_node
     (inst->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   elem->set_input(tf, 0);
   elem->set_input(a0, 1);
@@ -850,27 +850,27 @@ void FortRock::_add_srem_inst
   // 入力
   auto a0 = this->_module_gen->get_node
     (inst->getOperand(0)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   auto a1 = this->_module_gen->get_node
     (inst->getOperand(1)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   // 入力の定数対応
   if (!inst->getOperand(0)->hasName())
     a0 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(0)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   if (!inst->getOperand(1)->hasName())
     a1 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(1)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   // 出力
   auto b = this->_module_gen->get_node
     (inst->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   elem->set_input(a0, 0);
   elem->set_input(a1, 1);
@@ -902,26 +902,26 @@ void FortRock::_add_sdiv_inst
   // 入力
   auto a0 = this->_module_gen->get_node
     (inst->getOperand(0)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
   auto a1 = this->_module_gen->get_node
     (inst->getOperand(1)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   // 入力の定数対応
   if (!inst->getOperand(0)->hasName())
     a0 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(0)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   if (!inst->getOperand(1)->hasName())
     a1 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(1)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   // 出力
   auto b = this->_module_gen->get_node
     (inst->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   elem->set_input(a0, 0);
   elem->set_input(a1, 1);
@@ -953,27 +953,27 @@ void FortRock::_add_fdiv_inst
   // 入力
   auto a0 = this->_module_gen->get_node
     (inst->getOperand(0)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   auto a1 = this->_module_gen->get_node
     (inst->getOperand(1)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   // 入力の定数対応
   if (!inst->getOperand(0)->hasName())
     a0 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(0)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   if (!inst->getOperand(1)->hasName())
     a1 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(1)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   // 出力
   auto b = this->_module_gen->get_node
     (inst->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   elem->set_input(a0, 0);
   elem->set_input(a1, 1);
@@ -1004,27 +1004,27 @@ void FortRock::_add_mul_inst
   // 入力
   auto a0 = this->_module_gen->get_node
     (inst->getOperand(0)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   auto a1 = this->_module_gen->get_node
     (inst->getOperand(1)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   // 入力の定数対応
   if (!inst->getOperand(0)->hasName())
     a0 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(0)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   if (!inst->getOperand(1)->hasName())
     a1 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(1)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   // 出力
   auto b = this->_module_gen->get_node
     (inst->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   elem->set_input(a0, 0);
   elem->set_input(a1, 1);
@@ -1056,27 +1056,27 @@ void FortRock::_add_fmul_inst
   // 入力
   auto a0 = this->_module_gen->get_node
     (inst->getOperand(0)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   auto a1 = this->_module_gen->get_node
     (inst->getOperand(1)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   // 入力の定数対応
   if (!inst->getOperand(0)->hasName())
     a0 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(0)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   if (!inst->getOperand(1)->hasName())
     a1 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(1)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   // 出力
   auto b = this->_module_gen->get_node
     (inst->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   elem->set_input(a0, 0);
   elem->set_input(a1, 1);
@@ -1111,15 +1111,15 @@ void FortRock::_add_br_inst
   if (binst->isConditional()) { // 条件付き分岐
     auto tf = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(0)),
-       CDFG_Node::eNode::Reg);
+       CDFG_Node::eType::Reg);
 
     auto lfalse = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(1)),
-       CDFG_Node::eNode::Label);
+       CDFG_Node::eType::Label);
 
     auto ltrue = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(2)),
-       CDFG_Node::eNode::Label);
+       CDFG_Node::eType::Label);
 
     elem->set_input(tf, 0);
     elem->set_input(ltrue, 1);
@@ -1129,7 +1129,7 @@ void FortRock::_add_br_inst
     auto label
       = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(0)),
-       CDFG_Node::eNode::Label);
+       CDFG_Node::eType::Label);
 
     elem->set_input(label, 0);
   }
@@ -1186,18 +1186,18 @@ void FortRock::_add_phi_inst
       auto prev_label
         = this->_module_gen->get_node
         (label_name,
-         CDFG_Node::eNode::Label);
+         CDFG_Node::eType::Label);
 
       auto value_name = phinode->getIncomingValue(i)->getName();
       auto in
         = this->_module_gen->get_node(value_name,
-                                      CDFG_Node::eNode::Reg);
+                                      CDFG_Node::eType::Reg);
 
       // 入力の定数対応
       if (!phinode->getIncomingValue(i)->hasName())
         in = this->_module_gen->get_node
           (this->_get_value_name(phinode->getIncomingValue(i)),
-           CDFG_Node::eNode::Param);
+           CDFG_Node::eType::Param);
 
       elem->set_input(prev_label, i << 1);
       elem->set_input(in, (i << 1) + 1);
@@ -1206,7 +1206,7 @@ void FortRock::_add_phi_inst
   auto destination_node =
     this->_module_gen->
     get_node(inst->getName(),
-             CDFG_Node::eNode::Reg);
+             CDFG_Node::eType::Reg);
 
   elem->set_output(destination_node, 0);
 
@@ -1255,27 +1255,27 @@ void FortRock::_add_add_inst
   // 入力
   auto a0 = this->_module_gen->get_node
     (inst->getOperand(0)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   auto a1 = this->_module_gen->get_node
     (inst->getOperand(1)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   // 入力の定数対応
   if (!inst->getOperand(0)->hasName())
     a0 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(0)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   if (!inst->getOperand(1)->hasName())
     a1 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(1)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   // 出力
   auto b = this->_module_gen->get_node
     (inst->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   elem->set_input(a0, 0);
   elem->set_input(a1, 1);
@@ -1302,27 +1302,27 @@ void FortRock::_add_fadd_inst
   // 入力
   auto a0 = this->_module_gen->get_node
     (inst->getOperand(0)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   auto a1 = this->_module_gen->get_node
     (inst->getOperand(1)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   // 入力の定数対応
   if (!inst->getOperand(0)->hasName())
     a0 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(0)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   if (!inst->getOperand(1)->hasName())
     a1 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(1)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   // 出力
   auto b = this->_module_gen->get_node
     (inst->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   elem->set_input(a0, 0);
   elem->set_input(a1, 1);
@@ -1349,27 +1349,27 @@ void FortRock::_add_sub_inst
   // 入力
   auto a0 = this->_module_gen->get_node
     (inst->getOperand(0)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   auto a1 = this->_module_gen->get_node
     (inst->getOperand(1)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   // 入力の定数対応
   if (!inst->getOperand(0)->hasName())
     a0 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(0)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   if (!inst->getOperand(1)->hasName())
     a1 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(1)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   // 出力
   auto b = this->_module_gen->get_node
     (inst->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   elem->set_input(a0, 0);
   elem->set_input(a1, 1);
@@ -1396,27 +1396,27 @@ void FortRock::_add_fsub_inst
   // 入力
   auto a0 = this->_module_gen->get_node
     (inst->getOperand(0)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   auto a1 = this->_module_gen->get_node
     (inst->getOperand(1)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   // 入力の定数対応
   if (!inst->getOperand(0)->hasName())
     a0 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(0)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   if (!inst->getOperand(1)->hasName())
     a1 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(1)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   // 出力
   auto b = this->_module_gen->get_node
     (inst->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   elem->set_input(a0, 0);
   elem->set_input(a1, 1);
@@ -1455,13 +1455,13 @@ void FortRock::_add_switch_inst
   // 条件変数
   auto condition_node = this->_module_gen->get_node
     (sw_inst->getCondition()->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
   elem->set_input(condition_node, 0);
 
   // default遷移先
   auto default_label = this->_module_gen->get_node
     (sw_inst->getDefaultDest()->getName(),
-     CDFG_Node::eNode::Label);
+     CDFG_Node::eType::Label);
   elem->set_input(default_label, 1);
 
   // case文内の出力
@@ -1480,7 +1480,7 @@ void FortRock::_add_switch_inst
 
     auto label_node = this->_module_gen->get_node
       (label->getName(),
-       CDFG_Node::eNode::Label);
+       CDFG_Node::eType::Label);
 
     elem->set_input(val_node, i);
     elem->set_input(label_node, i+1);
@@ -1525,27 +1525,27 @@ void FortRock::_add_shift_inst
   // 入力
   auto a0 = this->_module_gen->get_node
     (this->_get_value_name(inst->getOperand(0)),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   auto a1 = this->_module_gen->get_node
     (this->_get_value_name(inst->getOperand(1)),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   // 入力の定数対応
   if (!inst->getOperand(0)->hasName())
     a0 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(0)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   if (!inst->getOperand(1)->hasName())
     a1 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(0)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   // 出力
   auto b = this->_module_gen->get_node
     (inst->getName().str(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   elem->set_input(a0, 0);
   elem->set_input(a1, 1);
@@ -1574,27 +1574,27 @@ void FortRock::_add_and_inst
   // 入力
   auto a0 = this->_module_gen->get_node
     (inst->getOperand(0)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   auto a1 = this->_module_gen->get_node
     (inst->getOperand(1)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   // 入力の定数対応
   if (!inst->getOperand(0)->hasName())
     a0 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(0)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   if (!inst->getOperand(1)->hasName())
     a1 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(1)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   // 出力
   auto b = this->_module_gen->get_node
     (inst->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   elem->set_input(a0, 0);
   elem->set_input(a1, 1);
@@ -1623,27 +1623,27 @@ void FortRock::_add_or_inst
   // 入力
   auto a0 = this->_module_gen->get_node
     (inst->getOperand(0)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   auto a1 = this->_module_gen->get_node
     (inst->getOperand(1)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   // 入力の定数対応
   if (!inst->getOperand(0)->hasName())
     a0 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(0)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   if (!inst->getOperand(1)->hasName())
     a1 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(1)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   // 出力
   auto b = this->_module_gen->get_node
     (inst->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   elem->set_input(a0, 0);
   elem->set_input(a1, 1);
@@ -1672,27 +1672,27 @@ void FortRock::_add_xor_inst
   // 入力
   auto a0 = this->_module_gen->get_node
     (inst->getOperand(0)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   auto a1 = this->_module_gen->get_node
     (inst->getOperand(1)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   // 入力の定数対応
   if (!inst->getOperand(0)->hasName())
     a0 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(0)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   if (!inst->getOperand(1)->hasName())
     a1 = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(1)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   // 出力
   auto b = this->_module_gen->get_node
     (inst->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   elem->set_input(a0, 0);
   elem->set_input(a1, 1);
@@ -1724,18 +1724,18 @@ void FortRock::_add_trunc_inst
   // 入力
   auto a = this->_module_gen->get_node
     (inst->getOperand(0)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   // 入力が定数の場合
   if (!inst->getOperand(0)->hasName())
     a = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(0)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   // 出力
   auto b = this->_module_gen->get_node
     (inst->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   elem->set_input(a, 0);
   elem->set_output(b, 0);
@@ -1763,18 +1763,18 @@ void FortRock::_add_zext_inst
   auto a
     = this->_module_gen->get_node
     (inst->getOperand(0)->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   // 入力の定数対応
   if (!inst->getOperand(0)->hasName())
     a = this->_module_gen->get_node
       (this->_get_value_name(inst->getOperand(0)),
-       CDFG_Node::eNode::Param);
+       CDFG_Node::eType::Param);
 
   // 出力
   auto b = this->_module_gen->get_node
     (inst->getName(),
-     CDFG_Node::eNode::Reg);
+     CDFG_Node::eType::Reg);
 
   elem->set_input(a, 0);
   elem->set_output(b, 0);

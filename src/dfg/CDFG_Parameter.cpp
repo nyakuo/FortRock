@@ -21,7 +21,7 @@ CDFG_Parameter::CDFG_Parameter
     CDFG_Node(asm_name,
               bit_width,
               true, // is signed
-              CDFG_Node::eNode::Param,
+              CDFG_Node::eType::Param,
               "p_")
 {
   this->_data.param = parameter;
@@ -39,7 +39,7 @@ CDFG_Parameter::CDFG_Parameter
     CDFG_Node(asm_name,
               CDFG_Parameter::Double_fp_bit_width,
               true, // 浮動小数点は常にsigned
-              CDFG_Node::eNode::Param,
+              CDFG_Node::eType::Param,
               "pf_")
 {
   this->_data.lfparam = parameter;
@@ -57,7 +57,7 @@ CDFG_Parameter::CDFG_Parameter
     CDFG_Node(asm_name,
               CDFG_Parameter::Single_fp_bit_width,
               true, // 浮動小数点は常にsigned
-              CDFG_Node::eNode::Param,
+              CDFG_Node::eType::Param,
               "pf_")
 {
   this->_data.fparam = parameter;
@@ -75,7 +75,7 @@ CDFG_Parameter::CDFG_Parameter
     CDFG_Node(asm_name,
               1, // bit width
               false,
-              CDFG_Node::eNode::Param,
+              CDFG_Node::eType::Param,
               "pb_")
 {
   this->_data.param = (long)parameter;
@@ -93,7 +93,7 @@ CDFG_Parameter::CDFG_Parameter
     CDFG_Node(asm_name,
               1, // bit width
               true, // signed
-              CDFG_Node::eNode::Param,
+              CDFG_Node::eType::Param,
               "pb_")
 {
   switch (param_type) {

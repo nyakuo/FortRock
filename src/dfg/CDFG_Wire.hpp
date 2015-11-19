@@ -37,7 +37,7 @@ public:
       CDFG_Node(asm_name,
                 bit_width,
                 is_signed,
-                CDFG_Node::eNode::Wire,
+                CDFG_Node::eType::Wire,
                 this->_get_prefix(type))
   {}
 

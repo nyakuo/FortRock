@@ -142,13 +142,13 @@ CDFG_Array::access_string
       auto address = addr->get_address(i);
 
       if (address->get_type()
-          == CDFG_Node::eNode::Reg)
+          == CDFG_Node::eType::Reg)
         ret_str.append("["
                        + address->get_verilog_name()
                        + "]");
 
       else if (address->get_type()
-               == CDFG_Node::eNode::Param)
+               == CDFG_Node::eType::Param)
         {
           auto param
             = std::dynamic_pointer_cast

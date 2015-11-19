@@ -32,7 +32,7 @@ CDFG_Mem::CDFG_Mem
     CDFG_Node(name,
               word_length,
               true, // is_signed
-              CDFG_Node::eNode::Mem,
+              CDFG_Node::eType::Mem,
               "m_")
 {
   // 書き込みポートのインスタンス化

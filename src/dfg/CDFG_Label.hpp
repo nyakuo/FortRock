@@ -24,7 +24,7 @@ public:
       CDFG_Node(asm_name,
                 bit_width,
                 false, // == is signed
-                CDFG_Node::eNode::Label,
+                CDFG_Node::eType::Label,
                 "l_") {}
 
   ~CDFG_Label(void) {}

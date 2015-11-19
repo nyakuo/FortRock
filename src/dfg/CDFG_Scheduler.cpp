@@ -166,7 +166,7 @@ CDFG_Scheduler::_min_step_data
 
     // 入力が即値の場合は考慮しない
     if (input->get_type()
-        == CDFG_Node::eNode::Param)
+        == CDFG_Node::eType::Param)
       continue;
 
     // 入力がモジュールの入力の場合は考慮しない
@@ -191,7 +191,7 @@ CDFG_Scheduler::_min_step_data
 
         // 配列の添字が確定する最小ステップで更新
         if (input->get_type()
-            == CDFG_Node::eNode::Addr)
+            == CDFG_Node::eType::Addr)
           {
             auto addr
               = std::dynamic_pointer_cast<CDFG_Addr>
@@ -223,7 +223,7 @@ CDFG_Scheduler::_min_step_data
         output = target_elem->get_output_at(1);
 
       if (output->get_type()
-          == CDFG_Node::eNode::Addr)
+          == CDFG_Node::eType::Addr)
         {
           auto addr
             = std::dynamic_pointer_cast<CDFG_Addr>(output);
@@ -260,7 +260,7 @@ CDFG_Scheduler::_min_step_data
                                   ? 0 : 1));
               } // if : is_reg_ref
             } // for : elem
-        } // if : CDFG_Node::eNode::Addr
+        } // if : CDFG_Node::eType::Addr
     } // if : target_elem
 
   return min_step;

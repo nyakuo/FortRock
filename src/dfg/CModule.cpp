@@ -93,7 +93,7 @@ CModule::get_operator_list(void)
  */
 std::shared_ptr<CDFG_Node> &
 CModule::get_node
-(const CDFG_Node::eNode & type)
+(const CDFG_Node::eType & type)
 {
   auto ite =
     std::find_if(this->_node_list.begin(),
@@ -119,7 +119,7 @@ CModule::get_node
                  this->_node_list.end(),
                  [type](const std::shared_ptr<CDFG_Node> & obj) -> bool
                  {
-                   return obj->get_type() == CDFG_Node::eNode::Label
+                   return obj->get_type() == CDFG_Node::eType::Label
                      && std::dynamic_pointer_cast<CDFG_Label>
                      (obj)->get_type() == type;
                  });
@@ -140,7 +140,7 @@ CModule::get_node
                  this->_node_list.end(),
                  [type](const std::shared_ptr<CDFG_Node> & obj) -> bool
                  {
-                   return obj->get_type() == CDFG_Node::eNode::Param
+                   return obj->get_type() == CDFG_Node::eType::Param
                      && std::dynamic_pointer_cast<CDFG_Parameter>
                      (obj)->get_type() == type;
                  });
@@ -161,7 +161,7 @@ CModule::get_node
                  this->_node_list.end(),
                  [type](const std::shared_ptr<CDFG_Node> & obj) -> bool
                  {
-                   return obj->get_type() == CDFG_Node::eNode::Reg
+                   return obj->get_type() == CDFG_Node::eType::Reg
                      && std::dynamic_pointer_cast<CDFG_Reg>
                      (obj)->get_type() == type;
                  });
@@ -182,7 +182,7 @@ CModule::get_node
                  this->_node_list.end(),
                  [type](const std::shared_ptr<CDFG_Node> & obj) -> bool
                  {
-                   return obj->get_type() == CDFG_Node::eNode::Wire
+                   return obj->get_type() == CDFG_Node::eType::Wire
                      && std::dynamic_pointer_cast<CDFG_Wire>
                      (obj)->get_type() == type;
                  });
@@ -198,7 +198,7 @@ CModule::get_node
 std::shared_ptr<CDFG_Node> &
 CModule::get_node
 (const std::string & node_name,
- const CDFG_Node::eNode & type)
+ const CDFG_Node::eType & type)
 {
   auto ite =
     std::find_if(this->_node_list.begin(),
@@ -226,7 +226,7 @@ CModule::get_label_node
                  this->_node_list.end(),
                  [state](const std::shared_ptr<CDFG_Node> & obj) -> bool
                  {
-                   return (obj->get_type() == CDFG_Node::eNode::Label)
+                   return (obj->get_type() == CDFG_Node::eType::Label)
                      && (std::dynamic_pointer_cast<CDFG_Label>
                          (obj)->get_state() == state);
                  });
@@ -241,7 +241,7 @@ CModule::get_label_node
  */
 bool
 CModule::find_node(const std::string & asm_name,
-                   const CDFG_Node::eNode & type)
+                   const CDFG_Node::eType & type)
 {
   auto ite =
     std::find_if(this->_node_list.begin(),

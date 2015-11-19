@@ -12,7 +12,7 @@
 CDFG_Node::CDFG_Node(const std::string & asm_name,
                      const unsigned & bit_width,
                      const bool & is_signed,
-                     const CDFG_Node::eNode & type,
+                     const CDFG_Node::eType & type,
                      const std::string & prefix)
   : _asm_name(asm_name),
     _bit_width(bit_width),
@@ -90,7 +90,7 @@ CDFG_Node::get_is_signed(void)
    Nodeの種類を取得
    @return Nodeの種類
  */
-CDFG_Node::eNode &
+CDFG_Node::eType &
 CDFG_Node::get_type(void)
 {
   return this->_type;
@@ -102,7 +102,7 @@ CDFG_Node::get_type(void)
    @note fortrock.cpp(FortRockの本体)で利用するためだけに実装
  */
 void CDFG_Node::set_type
-(const CDFG_Node::eNode & type)
+(const CDFG_Node::eType & type)
 {
   this->_type = type;
 }

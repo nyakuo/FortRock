@@ -33,7 +33,7 @@ public:
   std::list<std::shared_ptr<CDFG_Element> > & get_element_list(void);
   std::list<std::shared_ptr<CDFG_Operator> > & get_operator_list(void);
   std::shared_ptr<CDFG_Node> &
-  get_node (const CDFG_Node::eNode & type);
+  get_node (const CDFG_Node::eType & type);
 
   std::shared_ptr<CDFG_Node> &
   get_node (const CDFG_Label::eLabelType & type);
@@ -49,11 +49,11 @@ public:
 
   std::shared_ptr<CDFG_Node> &
   get_node (const std::string & node_name,
-            const CDFG_Node::eNode & type);
+            const CDFG_Node::eType & type);
 
   std::shared_ptr<CDFG_Node> & get_label_node(const unsigned & state);
   bool find_node(const std::string & asm_name,
-                 const CDFG_Node::eNode & type);
+                 const CDFG_Node::eType & type);
 
   unsigned get_max_step(void);
 
