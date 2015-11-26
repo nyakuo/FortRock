@@ -8,7 +8,7 @@
    @param[in] step 演算の実行ステップ
    @param[in] latency 演算にかかるレイテンシ (default: 0)
    @note load命令やphi命令など演算器を必要としない
-   命令のDFG化にに使用
+         命令のDFG化に使用
 */
 CDFG_Element::CDFG_Element
 (const CDFG_Operator::eType & type,
@@ -27,15 +27,15 @@ CDFG_Element::CDFG_Element
      latency,
      type);
 
-  this->_input_list.resize(num_input);
-  this->_output_list.resize(1);
-
   // getElementPtr inst の場合は出力は無し
   if (type == CDFG_Operator::eType::Getelementptr)
     this->_output_list.resize(0);
+  else
+    this->_output_list.resize(1);
 
   this->_ope = phony_ope;
-  this->_ope->set_num_input(num_input);
+
+  this->set_num_input(num_input);
 } // CDFG_Element
 
 /**
@@ -102,7 +102,8 @@ int CDFG_Element::set_operator
    @param[in] number セットする位置
    @return 0 セットする位置が有効, -1 セットする位置が無効
 */
-int CDFG_Element::set_input
+int
+CDFG_Element::set_input
 (const std::shared_ptr<CDFG_Node> & input,
  const unsigned & number)
 {
@@ -112,6 +113,18 @@ int CDFG_Element::set_input
   this->_input_list[number] = input;
   return 0;
 } // set_input
+
+/**
+   命令の入力の数を変更する
+   @param[in] num_input 入力の数
+ */
+void
+CDFG_Element::set_num_input
+(const unsigned & num_input)
+{
+  this->_ope->set_num_input(num_input);
+  this->_input_list.resize(num_input);
+} // set_num_input
 
 /**
    出力のセット
@@ -138,7 +151,7 @@ void CDFG_Element::set_state
 (const unsigned & state)
 {
   this->_state = state;
-}
+} // set_state
 
 /**
    実行ステップ(clockベースのタイミング)のセット
@@ -148,7 +161,7 @@ void CDFG_Element::set_step
 (const unsigned & step)
 {
   this->_step = step;
-}
+} // set_step
 
 /**
    Elementの種類を設定
@@ -159,82 +172,173 @@ CDFG_Element::set_type
 (const eType & type)
 {
   this->_type = type;
-}
+} // set_type
 
 /**
    指定した位置の入力ノードの取得
    @param[in] at 入力ノードの位置
    @return 入力ノード
 */
-std::shared_ptr<CDFG_Node> &
+const std::shared_ptr<CDFG_Node> &
 CDFG_Element::get_input_at
-(const unsigned & at)
+(const unsigned & at) const
 {
   return this->_input_list.at(at);
-}
+} // get_input_at
 
 /**
    指定した位置の出力ノードの取得
    @param[in] at 出力ノードの位置
    @return 出力ノード
 */
-std::shared_ptr<CDFG_Node> &
+const std::shared_ptr<CDFG_Node> &
 CDFG_Element::get_output_at
-(const unsigned & at)
+(const unsigned & at) const
 {
   return this->_output_list.at(at);
-}
+} // get_output_at
 
 /**
    接続されている演算器の入力の数を取得
    @return 接続されている演算器の入力の数
    @note 演算器に接続されているCLK，CEは含まない
 */
-unsigned
+const unsigned
 CDFG_Element::get_num_input
-(void)
+(void) const
 {
   return this->_input_list.size();
-}
+} // get_num_input
 
 /**
    接続されている演算器の出力の数を取得
    @return 接続されている演算器の出力の数
 */
-unsigned
+const unsigned
 CDFG_Element::get_num_output
-(void)
+(void) const
 {
   return this->_output_list.size();
-}
+} // get_num_output
 
 /**
    演算に用いる演算器の取得
    @return 演算に用いる演算器
 */
-std::shared_ptr<CDFG_Operator> &
+const std::shared_ptr<CDFG_Operator> &
 CDFG_Element::get_operator
-(void)
+(void) const
 {
   return this->_ope;
-}
+} // get_operator
 
 /**
    演算ステート(CFGのベースのタイミング)の取得
    @return 演算ステート
 */
-unsigned CDFG_Element::get_state
-(void)
+const unsigned &
+CDFG_Element::get_state
+(void) const
 {
   return this->_state;
-}
+} // get_state
 
 /**
    演算ステップ(DFGベースのタイミング)の取得
    @return 演算ステップ
 */
-unsigned CDFG_Element::get_step
-(void)
+const unsigned &
+CDFG_Element::get_step
+(void) const
 {
   return this->_step;
-}
+} // get_step
+
+/**
+   入力元のコード(Verilog HDL)の取得
+   @param[in] at 取得する入力の位置
+   @return 入力元のコード(Verilog HDL)
+ */
+std::string
+CDFG_Element::input_from_str
+(const unsigned & at)
+{
+  return this->_get_input_str(at);
+} // input_from_str
+
+/**
+   入力先(演算器の入力部)のコード(Verilog HDL)の取得
+   @param[in] at 取得する入力の位置
+   @return 入力先(演算器の入力部)のコード(Verilog HDL)
+ */
+std::string
+CDFG_Element::input_to_str
+(const unsigned & at)
+{
+  return this->get_operator()
+    ->get_input_node_at(at)
+    ->get_verilog_name();
+
+} // input_to_str
+
+/**
+   出力元のコード(Verilog HDL)の取得
+   @return 出力元のコード(Verilog HDL)
+ */
+std::string
+CDFG_Element::output_from_str
+(void)
+{
+  auto at = 0;
+
+  // 2入力2出力演算の場合
+  if (this->get_operator()->get_type()
+      == CDFG_Operator::eType::Srem)
+    at = 1;
+
+  return this->get_operator()
+    ->get_output_node_at(at)
+    ->get_verilog_name();
+} // output_from_str
+
+/**
+   出力先のレジスタ名(Verilog HDL)の取得
+   @return 出力先のレジスタ名(Verilog HDL)
+ */
+std::string
+CDFG_Element::output_to_str
+(void)
+{
+  return this->get_output_at(0)->get_verilog_name();
+} // output_to_str
+
+/**
+   入力ノードからコード(Verilog HDL)を取得する
+   @brief 入力がElementの場合はElementの出力部を取得
+   @param[in] node 入力ノードの参照
+   @return 入力ノードのコード(Verilog HDL)
+ */
+std::string
+CDFG_Element::_get_input_str
+(const std::shared_ptr<CDFG_Node> & node)
+{
+  if (node->get_type() == CDFG_Node::eType::Elem)
+    return std::dynamic_pointer_cast<CDFG_Element>
+      (node)->output_from_str();
+
+  return node->get_verilog_name();
+} // _get_input_str
+
+/**
+   入力ノードからコード(Verilog HDL)を取得する
+   @brief 入力がElementの場合はElementの出力部を取得
+   @note get_input_at()を省略するために使用
+   @param[in] node 入力ノードの参照
+   @return 入力ノードのコード(Verilog HDL)
+ */
+std::string
+CDFG_Element::_get_input_str
+(const unsigned & at)
+{
+  return this->_get_input_str(this->get_input_at(at));
+} // _get_input_str

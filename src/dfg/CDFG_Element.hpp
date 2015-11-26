@@ -39,6 +39,7 @@ public:
   int set_operator(const std::shared_ptr<CDFG_Operator> & ope);
   int set_input(const std::shared_ptr<CDFG_Node> & input,
                 const unsigned & number);
+  void set_num_input(const unsigned & num_input);
   int set_output(const std::shared_ptr<CDFG_Node> & input,
                  const unsigned & number);
   void set_state(const unsigned & state);
@@ -46,24 +47,37 @@ public:
   void set_type(const eType & type);
 
   // Getter
-  std::shared_ptr<CDFG_Node> & get_input_at(const unsigned & at);
-  std::shared_ptr<CDFG_Node> & get_output_at(const unsigned & at);
-  unsigned get_num_input(void);
-  unsigned get_num_output(void);
-  std::shared_ptr<CDFG_Operator> & get_operator(void);
-  unsigned get_state(void);
-  unsigned get_step(void);
+  const std::shared_ptr<CDFG_Node> & get_input_at(const unsigned & at) const;
+  const std::shared_ptr<CDFG_Node> & get_output_at(const unsigned & at) const;
+  const unsigned get_num_input(void) const;
+  const unsigned get_num_output(void) const;
+  const std::shared_ptr<CDFG_Operator> & get_operator(void) const;
+  const unsigned & get_state(void) const;
+  const unsigned & get_step(void) const;
 
-  // override
+  // Override
   virtual bool is_input(void) override final
   { return (this->_type == eType::Input); }
   virtual bool is_output(void) override final
   { return (this->_type == eType::Output); }
 
+  // Virtual
+  virtual std::string input_from_str(const unsigned & at=0);
+  virtual std::string input_to_str(const unsigned & at=0);
+  virtual std::string output_from_str(void);
+  virtual std::string output_to_str(void);
+  virtual std::string other_str(const std::string & indent) { return "";}
+
+protected:
+  std::shared_ptr<CDFG_Operator> _ope; ///< 実行する演算器の参照
+
+  std::string _get_input_str(const std::shared_ptr<CDFG_Node> & node);
+  std::string _get_input_str(const unsigned & at);
+
 private:
   std::vector<std::shared_ptr<CDFG_Node> > _input_list;  ///< 入力リスト
   std::vector<std::shared_ptr<CDFG_Node> > _output_list; ///< 出力リスト
-  std::shared_ptr<CDFG_Operator> _ope;                   ///< 実行する演算器の参照
+
   unsigned _state;  ///< 実行ステート (CFG)
   unsigned _step;   ///< 実行ステップ (clock)
   eType _type;      ///< Elementの種類 (通常，入力，出力)

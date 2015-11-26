@@ -9,21 +9,9 @@
  */
 class CDFG_TruncElem : public CDFG_Element {
 public:
-  /**
-     コンストラクタ
-     @param[in] bit_width 変換後のビット幅
-     @param[in] state 命令を実行するステート
-     @param[in] step 命令を実行するステップ
-   */
   CDFG_TruncElem(const unsigned & bit_width,
                  const unsigned & state,
-                 const unsigned & step)
-    : _bit_width(bit_width),
-      CDFG_Element(CDFG_Operator::eType::Trunc,
-                   1, // num input
-                   state,
-                   step)
-  {}
+                 const unsigned & step);
   ~CDFG_TruncElem(void) {}
 
   /**
@@ -32,6 +20,12 @@ public:
   */
   const unsigned & get_dest_bit_width(void)
   { return this->_bit_width; }
+
+  // override
+  virtual std::string input_from_str(const unsigned & at=0) override final;
+  virtual std::string input_to_str(const unsigned & at=0) override final;
+  virtual std::string output_from_str(void) override final;
+  virtual std::string output_to_str(void) override final;
 
 private:
   const unsigned _bit_width; ///< 変更後のビット幅
