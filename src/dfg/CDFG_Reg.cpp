@@ -1,5 +1,12 @@
 #include "CDFG_Reg.hpp"
 
+void
+CDFG_Reg::set_bit_width
+(const unsigned & w)
+{
+  this->_bit_width = w;
+} // set_bit_width
+
 /**
    入力信号かどうかを取得
    @return 常にfalse

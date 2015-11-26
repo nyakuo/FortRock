@@ -40,7 +40,10 @@ public:
                 this->_get_prefix(type))
   {}
 
-  // getter
+  // Setter
+  void set_bit_width(const unsigned & w);
+
+  // Getter
   eRegType get_type(void) { return this->_type; }
   virtual bool is_input(void) override final;
   virtual bool is_output(void) override final;
