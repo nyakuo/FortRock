@@ -20,7 +20,6 @@ public:
       Sub,
       Fsub,
       Add_sub,
-      Div,
       Func,
       Mul,
       Fmul,
