@@ -67,8 +67,7 @@ CDFG_Scheduler::do_schedule
           // 演算器依存の判定
           auto min_step = this->_get_last_step(state_dfg);
           {
-            std::shared_ptr<CDFG_Operator> & min_ope
-              = (*elem)->get_operator();
+            auto min_ope = (*elem)->get_operator();
 
             if (ope_list[min_ope->get_type()].size() > 0)
               {
@@ -150,12 +149,13 @@ CDFG_Scheduler::_min_step_data
   auto cp_list = list;
 
   // データ依存の判定の簡単化のために実行ステップでソート
-  cp_list.sort([](const std::shared_ptr<CDFG_Element> & elem1,
-                  const std::shared_ptr<CDFG_Element> & elem2)
-               -> bool
-               {
-                 return elem1->get_step() < elem1->get_step();
-               });
+  cp_list.sort
+    ([](const std::shared_ptr<CDFG_Element> & elem1,
+        const std::shared_ptr<CDFG_Element> & elem2)
+     -> bool
+     {
+       return elem1->get_step() < elem1->get_step();
+     });
 
   auto min_step = 0U;
 
@@ -165,8 +165,7 @@ CDFG_Scheduler::_min_step_data
     auto input = target_elem->get_input_at(i);
 
     // 入力が即値の場合は考慮しない
-    if (input->get_type()
-        == CDFG_Node::eType::Param)
+    if (input->get_type() == CDFG_Node::eType::Param)
       continue;
 
     // 入力がモジュールの入力の場合は考慮しない
@@ -216,11 +215,6 @@ CDFG_Scheduler::_min_step_data
   if (target_elem->get_num_output() > 0)
     {
       auto output = target_elem->get_output_at(0);
-
-      // SREMの場合は余剰に接続
-      if (target_elem->get_operator()->get_type()
-          == CDFG_Operator::eType::Srem)
-        output = target_elem->get_output_at(1);
 
       if (output->get_type()
           == CDFG_Node::eType::Addr)
