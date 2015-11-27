@@ -30,6 +30,12 @@
 #include "../dfg/CDFG_TruncElem.hpp"
 #include "../dfg/CDFG_LoadElem.hpp"
 #include "../dfg/CDFG_StoreElem.hpp"
+#include "../dfg/CDFG_SelectElem.hpp"
+#include "../dfg/CDFG_BrElem.hpp"
+#include "../dfg/CDFG_RetElem.hpp"
+#include "../dfg/CDFG_ShiftElem.hpp"
+#include "../dfg/CDFG_LogicalElem.hpp"
+#include "../dfg/CDFG_ZextElem.hpp"
 #include "../xml/CInstancingOperator.hpp"
 #include "CDebug.hpp"
 using namespace llvm;
@@ -77,6 +83,7 @@ private:
   // 補助関数
   std::string _get_module_name(const Module & M);
   std::string _get_value_name(const Value * v);
+  std::shared_ptr<CDFG_Node> _get_reg_param(const Value * v);
   unsigned _get_required_bit_width(const unsigned & num);
 
   // モジュール定義
