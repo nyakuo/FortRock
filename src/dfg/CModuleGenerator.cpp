@@ -78,7 +78,7 @@ void CModuleGenerator::add_element
 */
 bool CModuleGenerator::find_node
 (const std::string & node_name,
- const CDFG_Node::eNode & type)
+ const CDFG_Node::eType & type)
 {
   return this->_module->find_node(node_name,
                                   type);
@@ -101,10 +101,10 @@ bool CModuleGenerator::find_node
    @param[in] type ノードの種類
    @note FortRock 本体から呼び出すために使用
 */
-std::shared_ptr<CDFG_Node>
+std::shared_ptr<CDFG_Node> &
 CModuleGenerator::get_node
 (const std::string & node_name,
- const CDFG_Node::eNode & type)
+ const CDFG_Node::eType & type)
 {
   return this->_module->get_node(node_name, type);
 } // get_node (name, type)
@@ -115,9 +115,9 @@ CModuleGenerator::get_node
    @note FortRock 本体から呼び出すために使用
    (stateなどの取得に使用)
 */
-std::shared_ptr<CDFG_Node>
+std::shared_ptr<CDFG_Node> &
 CModuleGenerator::get_node
-(const CDFG_Node::eNode & type)
+(const CDFG_Node::eType & type)
 {
   return this->_module->get_node(type);
 } // get_node (type)
@@ -127,7 +127,7 @@ CModuleGenerator::get_node
    @brief Labelを取得するために使用
    @param[in] type ラベルの種類
 */
-std::shared_ptr<CDFG_Node>
+std::shared_ptr<CDFG_Node> &
 CModuleGenerator::get_node
 (const CDFG_Label::eLabelType & type)
 {
@@ -139,7 +139,7 @@ CModuleGenerator::get_node
    @brief Parameterを取得するために使用
    @param[in] type ラベルの種類
 */
-std::shared_ptr<CDFG_Node>
+std::shared_ptr<CDFG_Node> &
 CModuleGenerator::get_node
 (const CDFG_Parameter::eParamType & type)
 {
@@ -151,7 +151,7 @@ CModuleGenerator::get_node
    @brief regを取得するために使用
    @param[in] type regの種類
 */
-std::shared_ptr<CDFG_Node>
+std::shared_ptr<CDFG_Node> &
 CModuleGenerator::get_node
 (const CDFG_Reg::eRegType & type)
 {
@@ -163,7 +163,7 @@ CModuleGenerator::get_node
    @brief wireを取得するために使用
    @param[in] type wireの種類
 */
-std::shared_ptr<CDFG_Node>
+std::shared_ptr<CDFG_Node> &
 CModuleGenerator::get_node
 (const CDFG_Wire::eWireType & type)
 {
@@ -176,17 +176,17 @@ CModuleGenerator::get_node
    @todo 取得する演算器の番号による指定など
    @attention 暫定版
 */
-std::shared_ptr<CDFG_Operator>
+std::shared_ptr<CDFG_Operator> &
 CModuleGenerator::get_operator
 (const CDFG_Operator::eType & type)
 {
   auto l = this->_module->get_operator_list();
-  auto ite =
-    std::find_if(l.begin(), l.end(),
-                 [type](std::shared_ptr<CDFG_Operator> obj) -> bool
-                 {
-                   return obj->get_type() == type;
-                 });
+  auto ite = std::find_if
+    (l.begin(), l.end(),
+     [type](std::shared_ptr<CDFG_Operator> obj) -> bool
+     {
+       return obj->get_type() == type;
+     });
 
   return *ite;
 } // get_operator
@@ -386,14 +386,14 @@ void CModuleGenerator::_generate_header(void)
       std::string io_str;
 
       switch (io->get_type()) {
-      case CDFG_Node::eNode::Wire:
+      case CDFG_Node::eType::Wire:
         if (io->is_input())
           io_str = "input wire ";
         else
           continue;
         break;
 
-      case CDFG_Node::eNode::Reg:
+      case CDFG_Node::eType::Reg:
         if (io->is_output())
           io_str = "output reg ";
         else
@@ -449,16 +449,16 @@ void CModuleGenerator::_generate_define(void)
   for (auto & node : this->_module->get_node_list())
     {
       switch(node->get_type()) {
-      case CDFG_Node::eNode::Reg:
+      case CDFG_Node::eType::Reg:
         type = reg;
         break;
 
-      case CDFG_Node::eNode::Wire:
+      case CDFG_Node::eType::Wire:
         type = wire;
         break;
 
-      case CDFG_Node::eNode::Label:
-      case CDFG_Node::eNode::Param:
+      case CDFG_Node::eType::Label:
+      case CDFG_Node::eType::Param:
         type = param;
         break;
 
@@ -503,7 +503,7 @@ void CModuleGenerator::_generate_define_array(void)
 {
   for (auto & node : this->_module->get_node_list())
     {
-      if (node->get_type() != CDFG_Node::eNode::Mem)
+      if (node->get_type() != CDFG_Node::eType::Mem)
         continue;
 
       auto type = std::dynamic_pointer_cast<CDFG_Mem>
@@ -535,34 +535,64 @@ void CModuleGenerator::_generate_define_array(void)
    moduleのassign文の定義
    @note function文の assign に使用
 */
+// void CModuleGenerator::_generate_assign(void)
+// {
+//   auto prev_state_node = this->get_node
+//     (CDFG_Reg::eRegType::Prev_state);
+
+//   for (auto & elem : this->_module->get_element_list())
+//     {
+//       if (elem->get_operator()->get_type()
+//           == CDFG_Operator::eType::Phi) {
+//         auto dest_node = elem->get_output_at(0);
+
+//         this->_cout << "wire ["
+//                     << dest_node->get_bit_width() - 1
+//                     << ":0] w_phi_"
+//                     << dest_node->get_safe_name()
+//                     << ";\n";
+
+//         this->_cout << "assign w_phi_"
+//                     << dest_node->get_safe_name()
+//                     << " = phi_"
+//                     << dest_node->get_verilog_name()
+//                     << "("
+//                     << prev_state_node->get_verilog_name();
+
+//         for (auto i=1;
+//              i < elem->get_num_input();
+//              i += 2)
+//           this->_cout <<= ", " + elem->get_input_at(i)->get_verilog_name();
+
+//         this->_cout <<= ");\n\n";
+//       } // if : PHI
+//     } // for : elem
+// } // _generate_assign
 void CModuleGenerator::_generate_assign(void)
 {
-  auto prev_state_node = this->get_node
-    (CDFG_Reg::eRegType::Prev_state);
-
   for (auto & elem : this->_module->get_element_list())
     {
       if (elem->get_operator()->get_type()
           == CDFG_Operator::eType::Phi) {
-        auto dest_node = elem->get_output_at(0);
+        auto phi = std::dynamic_pointer_cast<CDFG_PhiElem>(elem);
 
         this->_cout << "wire ["
-                    << dest_node->get_bit_width() - 1
-                    << ":0] w_phi_"
-                    << dest_node->get_safe_name()
+                    << phi->get_output_at(0)->get_bit_width() - 1
+                    << ":0] "
+                    << phi->output_from_str()
                     << ";\n";
 
-        this->_cout << "assign w_phi_"
-                    << dest_node->get_safe_name()
+        this->_cout << "assign "
+                    << phi->output_from_str()
                     << " = phi_"
-                    << dest_node->get_verilog_name()
+                    << phi->output_to_str()
                     << "("
-                    << prev_state_node->get_verilog_name();
+                    << phi->get_prev_state()->get_verilog_name();
 
-        for (auto i=1;
-             i < elem->get_num_input();
-             i += 2)
-          this->_cout <<= ", " + elem->get_input_at(i)->get_verilog_name();
+        for (auto i=0;
+             i < phi->get_num_input();
+             ++i)
+          this->_cout <<= ", " + phi->input_from_str(i);
 
         this->_cout <<= ");\n\n";
       } // if : PHI
@@ -573,6 +603,7 @@ void CModuleGenerator::_generate_assign(void)
    module の function 文の定義
    @note PHI命令の実装に用いる
    @attention 少なくとも2つ以上の条件が存在すると仮定
+   @todo 同一の定数が使用される場合に対応
 */
 void CModuleGenerator::_generate_function(void)
 {
@@ -587,15 +618,18 @@ void CModuleGenerator::_generate_function(void)
       if (ope->get_type() != CDFG_Operator::eType::Phi)
         continue;
 
-      auto dest_node = elem->get_output_at(0);
+      auto phi = std::dynamic_pointer_cast<CDFG_PhiElem>
+        (elem);
 
       this->_cout << "function ["
-                  << dest_node->get_bit_width() - 1
+                  << phi->get_output_at(0)->get_bit_width() - 1
                   << ":0] phi_"
-                  << dest_node->get_verilog_name()
+                  << phi->output_to_str()
                   << ";\n";
 
       this->_cout.indent_right();
+
+      auto prev_state = phi->get_prev_state();
 
       this->_cout << "input ["
                   << prev_state->get_bit_width() - 1
@@ -603,45 +637,47 @@ void CModuleGenerator::_generate_function(void)
                   << prev_state->get_verilog_name()
                   << ";\n";
 
-      for (auto i=1;
-           i < elem->get_num_input();
-           i += 2)
+      for (auto i=0; i < elem->get_num_input();
+           ++i)
         this->_cout << "input ["
-                    << elem->get_input_at(i)->get_bit_width() - 1
+                    << phi->get_input_at(i)->get_bit_width() - 1
                     << ":0] "
-                    << elem->get_input_at(i)->get_verilog_name()
+                    << phi->input_from_str(i)
                     << ";\n";
 
-      this->_cout << "case ("
-                  << prev_state->get_verilog_name()
-                  << ")\n";
+      // case文の出力
+      {
+        this->_cout << "case ("
+                    << prev_state->get_verilog_name()
+                    << ")\n";
 
-      this->_cout.indent_right();
+        this->_cout.indent_right();
 
-      // 条件による代入文
-      for (auto i = 0;
-           i < ope->get_num_input();
-           i += 2)
-        this->_cout << elem->get_input_at(i)->get_verilog_name()
-                    << ": phi_"
-                    << dest_node->get_verilog_name()
+        // 条件による代入文
+        for (auto i = 0; i < ope->get_num_input();
+             ++i)
+          this->_cout << phi->get_label_str(i)
+                      << ": "
+                      << phi->input_to_str(i)
+                      << " = "
+                      << phi->input_from_str(i)
+                      << ";\n";
+
+        auto zero_node = this->get_node
+          (CDFG_Parameter::eParamType::Zero);
+
+        this->_cout << "default: phi_"
+                    << phi->output_to_str()
                     << " = "
-                    << elem->get_input_at(i+1)->get_verilog_name()
+                    << zero_node->get_verilog_name()
                     << ";\n";
 
-      auto zero_node = this->get_node(CDFG_Parameter::eParamType::Zero);
+        this->_cout.indent_left();
 
-      this->_cout << "default: phi_"
-                  << dest_node->get_verilog_name()
-                  << " = "
-                  << zero_node->get_verilog_name()
-                  << ";\n";
+        this->_cout << "endcase\n";
 
-      this->_cout.indent_left();
-
-      this->_cout << "endcase\n";
-
-      this->_cout.indent_left();
+        this->_cout.indent_left();
+      }
 
       this->_cout << "endfunction\n\n";
     } // for : elem
@@ -850,7 +886,7 @@ void CModuleGenerator::_generate_always(void)
   // 配列の初期化
   //! @todo 配列以外の対応
   for (auto & node : this->_module->get_node_list())
-    if (node->get_type() == CDFG_Node::eNode::Mem)
+    if (node->get_type() == CDFG_Node::eType::Mem)
       {
         auto mem
           = std::dynamic_pointer_cast<CDFG_Mem>(node);
@@ -874,6 +910,10 @@ void CModuleGenerator::_generate_always(void)
   CDFG_Scheduler scheduler(this->_module);
   scheduler.do_schedule();
 
+  // 最適化
+  CDFG_Optimizer optimizer(this->_module);
+  //  optimizer.do_optimize();
+
   // ステートマシンの出力
   for (auto & elem : this->_module->get_element_list())
     {
@@ -881,6 +921,7 @@ void CModuleGenerator::_generate_always(void)
       auto state   = elem->get_state();
       auto step    = elem->get_step();
       auto latency = ope->get_latency();
+      auto indent  = this->_cout.output_indent();
       std::string process_str ("");
 
       switch (ope->get_type()) {
@@ -890,13 +931,12 @@ void CModuleGenerator::_generate_always(void)
       case CDFG_Operator::eType::Sub:
       case CDFG_Operator::eType::Fsub:
       case CDFG_Operator::eType::Add_sub:
-      case CDFG_Operator::eType::Div:
       case CDFG_Operator::eType::Fdiv:
-      case CDFG_Operator::eType::Func:
+      case CDFG_Operator::eType::Sdiv:
+        //      case CDFG_Operator::eType::Func:
       case CDFG_Operator::eType::Mul:
       case CDFG_Operator::eType::Fmul:
       case CDFG_Operator::eType::Srem:
-      case CDFG_Operator::eType::Sdiv:
         {
           // 入力の接続
           for (auto i=0; i<ope->get_num_input(); ++i)
@@ -904,12 +944,12 @@ void CModuleGenerator::_generate_always(void)
               auto node = ope->get_input_node_at(i);
 
               // clk, res, req, ceの入力の回避
-              if (node->get_type() == CDFG_Node::eNode::Reg)
+              if (node->get_type() == CDFG_Node::eType::Reg)
                 process_str.append
-                  (this->_cout.output_indent()
-                   + node->get_verilog_name()
+                  (indent
+                   + elem->input_to_str(i)
                    + " <= "
-                   + elem->get_input_at(i)->get_verilog_name()
+                   + elem->input_from_str(i)
                    + ";\n");
 
             } // for : i
@@ -917,17 +957,11 @@ void CModuleGenerator::_generate_always(void)
           sm_gen.add_state_process(state, step, process_str);
 
           // 出力の接続
-          auto at = 0;
-          if (ope->get_type() == CDFG_Operator::eType::Srem) // 2入力2出力演算器
-            at = 1;
-
-          auto ope_node = ope->get_output_node_at(at);
-
           process_str.assign
-            (this->_cout.output_indent()
-             + elem->get_output_at(at)->get_verilog_name()
+            (indent
+             + elem->output_to_str()
              + " <= "
-             + ope_node->get_verilog_name()
+             + elem->output_from_str()
              + ";\n");
 
           sm_gen.add_state_process
@@ -937,603 +971,843 @@ void CModuleGenerator::_generate_always(void)
           break;
         }
 
+        // {
+        //   // 入力の接続
+        //   for (auto i=0; i<ope->get_num_input(); ++i)
+        //     {
+        //       auto node = ope->get_input_node_at(i);
+
+        //       // clk, res, req, ceの入力の回避
+        //       if (node->get_type() == CDFG_Node::eType::Reg)
+        //         process_str.append
+        //           (this->_cout.output_indent()
+        //            + node->get_verilog_name()
+        //            + " <= "
+        //            + elem->get_input_at(i)->get_verilog_name()
+        //            + ";\n");
+
+        //     } // for : i
+
+        //   sm_gen.add_state_process(state, step, process_str);
+
+        //   // 出力の接続
+        //   auto at = 0;
+        //   if (ope->get_type() == CDFG_Operator::eType::Srem) // 2入力2出力演算器
+        //     at = 1;
+
+        //   auto ope_node = ope->get_output_node_at(at);
+
+        //   process_str.assign
+        //     (this->_cout.output_indent()
+        //      + elem->get_output_at(at)->get_verilog_name()
+        //      + " <= "
+        //      + ope_node->get_verilog_name()
+        //      + ";\n");
+
+        //   sm_gen.add_state_process
+        //     (state,
+        //      step + latency + 1,
+        //      process_str);
+        //   break;
+        // }
+
       case CDFG_Operator::eType::Load:
         {
-          auto in = std::dynamic_pointer_cast<CDFG_Addr>
-            (elem->get_input_at(0));
-          auto out = elem->get_output_at(0);
+          auto load = std::dynamic_pointer_cast<CDFG_LoadElem>(elem);
 
-          // レジスタおよびパラメータ参照の場合
-          if (in->is_reg_ref() || in->is_param_ref())
-              process_str.append
-                (this->_cout.output_indent()
-                 + out->get_verilog_name()
-                 + " <= "
-                 + in->get_reference()->get_verilog_name()
-                 + ";\n");
+          // メモリアクセス制御
+          if (load->is_mem_load())
+            sm_gen.add_state_process
+              (state, step,
+               load->other_str(indent));
 
-          // メモリ参照の場合
-          else if (in->is_mem_ref())
-            {
-              auto mem
-                = std::dynamic_pointer_cast<CDFG_Mem>
-                (in->get_reference());
-
-              switch (mem->get_mem_type()) {
-              case CDFG_Mem::eMemType::Array:
-                process_str.append(this->_cout.output_indent()
-                                   + out->get_verilog_name()
-                                   + " <= "
-                                   + mem->access_string(in)
-                                   + ";\n");
-                break;
-
-              case CDFG_Mem::eMemType::Ram:
-                {
-                  auto ram
-                    = std::dynamic_pointer_cast<CDFG_Ram>(mem);
-                  auto port_num = 0;
-                  auto addr
-                    = std::dynamic_pointer_cast<CDFG_Addr>(in);
-
-                  // rw の値を read mode(0) に
-                  process_str.append
-                    (this->_cout.output_indent()
-                     + ram->get_rw_port(port_num)->get_verilog_name()
-                     + " <= 0;\n");
-
-                  // アドレスポートに読み出すアドレスを指定
-                  process_str.append
-                    (this->_cout.output_indent()
-                     + ram->get_address_port(port_num)->get_verilog_name()
-                     + " <= "
-                     + addr->get_address(0)->get_verilog_name()
-                     + ";\n");
-
-                  // latency 後にRAMから出力されたデータを受けとる
-                  auto read
-                    = std::string
-                    (this->_cout.output_indent()
-                     + out->get_verilog_name()
-                     + " <= "
-                     + ram->access_string(in)
-                     + ";\n");
-
-                  sm_gen.add_state_process
-                    (state, step + ram->get_latency(),
-                     read);
-                  break;
-                } // Ram
-
-              case CDFG_Mem::eMemType::Other:
-              default:
-                break;
-              } // switch
-            } // if : is_mem_ref()
-
+          // 出力の代入
           sm_gen.add_state_process
-            (state, step, process_str);
+            (state, step + load->get_operator()->get_latency(),
+             indent
+             + load->output_to_str()
+             + " <= "
+             + load->output_from_str()
+             + ";\n");
+
           break;
         } // Load
 
+      // case CDFG_Operator::eType::Load:
+      //   {
+      //     auto in = std::dynamic_pointer_cast<CDFG_Addr>
+      //       (elem->get_input_at(0));
+      //     auto out = elem->get_output_at(0);
+
+      //     // レジスタおよびパラメータ参照の場合
+      //     if (in->is_reg_ref() || in->is_param_ref())
+      //         process_str.append
+      //           (this->_cout.output_indent()
+      //            + out->get_verilog_name()
+      //            + " <= "
+      //            + in->get_reference()->get_verilog_name()
+      //            + ";\n");
+
+      //     // メモリ参照の場合
+      //     else if (in->is_mem_ref())
+      //       {
+      //         auto mem
+      //           = std::dynamic_pointer_cast<CDFG_Mem>
+      //           (in->get_reference());
+
+      //         switch (mem->get_mem_type()) {
+      //         case CDFG_Mem::eMemType::Array:
+      //           process_str.append(this->_cout.output_indent()
+      //                              + out->get_verilog_name()
+      //                              + " <= "
+      //                              + mem->access_string(in)
+      //                              + ";\n");
+      //           break;
+
+      //         case CDFG_Mem::eMemType::Ram:
+      //           {
+      //             auto ram
+      //               = std::dynamic_pointer_cast<CDFG_Ram>(mem);
+      //             auto port_num = 0;
+      //             auto addr
+      //               = std::dynamic_pointer_cast<CDFG_Addr>(in);
+
+      //             // rw の値を read mode(0) に
+      //             process_str.append
+      //               (this->_cout.output_indent()
+      //                + ram->get_rw_port(port_num)->get_verilog_name()
+      //                + " <= 0;\n");
+
+      //             // アドレスポートに読み出すアドレスを指定
+      //             process_str.append
+      //               (this->_cout.output_indent()
+      //                + ram->get_address_port(port_num)->get_verilog_name()
+      //                + " <= "
+      //                + addr->get_address(0)->get_verilog_name()
+      //                + ";\n");
+
+      //             // latency 後にRAMから出力されたデータを受けとる
+      //             auto read
+      //               = std::string
+      //               (this->_cout.output_indent()
+      //                + out->get_verilog_name()
+      //                + " <= "
+      //                + ram->access_string(in)
+      //                + ";\n");
+
+      //             sm_gen.add_state_process
+      //               (state, step + ram->get_latency(),
+      //                read);
+      //             break;
+      //           } // Ram
+
+      //         case CDFG_Mem::eMemType::Other:
+      //         default:;
+      //         } // switch
+      //       } // if : is_mem_ref()
+
+      //     sm_gen.add_state_process
+      //       (state, step, process_str);
+      //     break;
+      //   } // Load
+
+      // case CDFG_Operator::eType::Store:
+      //   {
+
+      //     auto in = elem->get_input_at(0);
+      //     auto out = std::dynamic_pointer_cast<CDFG_Addr>
+      //       (elem->get_output_at(0));
+
+      //     // レジスタ参照の場合
+      //     if (out->is_reg_ref())
+      //       process_str.append
+      //         (this->_cout.output_indent()
+      //          + out->get_reference()->get_verilog_name()
+      //          + " <= "
+      //          + in->get_verilog_name()
+      //          + ";\n");
+
+      //     // メモリ参照の場合
+      //     else if (out->is_mem_ref())
+      //       {
+      //         auto mem =
+      //           std::dynamic_pointer_cast<CDFG_Mem>
+      //           (out->get_reference());
+
+      //         switch (mem->get_mem_type())
+      //           {
+      //           case CDFG_Mem::eMemType::Array:
+      //             process_str.append
+      //               (this->_cout.output_indent()
+      //                + mem->access_string(out)
+      //                + " <= "
+      //                + in->get_verilog_name()
+      //                + ";\n");
+      //             break;
+
+      //           case CDFG_Mem::eMemType::Ram:
+      //             {
+      //               auto ram
+      //                 = std::dynamic_pointer_cast<CDFG_Ram>(mem);
+      //               auto addr
+      //                 = std::dynamic_pointer_cast<CDFG_Addr>(out);
+      //               auto port_num = 0;
+
+      //               // rw の値を write mode(1) に
+      //               process_str.append
+      //                 (this->_cout.output_indent()
+      //                  + ram->get_rw_port(port_num)->get_verilog_name()
+      //                  + " <= 1;\n");
+
+      //               // アドレスポートに書き込むアドレスを指定
+      //               process_str.append
+      //                 (this->_cout.output_indent()
+      //                  + ram->get_address_port(port_num)->get_verilog_name()
+      //                  + " <= "
+      //                  + addr->get_address(0)->get_verilog_name()
+      //                  + ";\n");
+
+      //               // 書き込む値を書き込みポートにセット
+      //               process_str.append
+      //                 (this->_cout.output_indent()
+      //                  + ram->access_string(out)
+      //                  + " <= "
+      //                  + in->get_verilog_name()
+      //                  + ";\n");
+
+      //               break;
+      //             } // Ram
+
+      //           case CDFG_Mem::eMemType::Other:
+      //           default:
+      //             break;
+      //           } // switch
+      //       } // if : is_mem_ref()
+
+      //     sm_gen.add_state_process(state,
+      //                              step,
+      //                              process_str);
+      //     break;
+      //   } // Store
+
       case CDFG_Operator::eType::Store:
         {
-          auto in = elem->get_input_at(0);
-          auto out = std::dynamic_pointer_cast<CDFG_Addr>
-            (elem->get_output_at(0));
+          auto store = std::dynamic_pointer_cast<CDFG_StoreElem>(elem);
 
-          // レジスタ参照の場合
-          if (out->is_reg_ref())
-            process_str.append
-              (this->_cout.output_indent()
-               + out->get_reference()->get_verilog_name()
-               + " <= "
-               + in->get_verilog_name()
-               + ";\n");
+          // メモリのアクセス制御の出力
+          if (store->is_mem_store())
+            sm_gen.add_state_process
+              (state, step, store->other_str(indent));
 
-          // メモリ参照の場合
-          else if (out->is_mem_ref())
-            {
-              auto mem =
-                std::dynamic_pointer_cast<CDFG_Mem>
-                (out->get_reference());
-
-              switch (mem->get_mem_type())
-                {
-                case CDFG_Mem::eMemType::Array:
-                  process_str.append
-                    (this->_cout.output_indent()
-                     + mem->access_string(out)
-                     + " <= "
-                     + in->get_verilog_name()
-                     + ";\n");
-                  break;
-
-                case CDFG_Mem::eMemType::Ram:
-                  {
-                    auto ram
-                      = std::dynamic_pointer_cast<CDFG_Ram>(mem);
-                    auto addr
-                      = std::dynamic_pointer_cast<CDFG_Addr>(out);
-                    auto port_num = 0;
-
-                    // rw の値を write mode(1) に
-                    process_str.append
-                      (this->_cout.output_indent()
-                       + ram->get_rw_port(port_num)->get_verilog_name()
-                       + " <= 1;\n");
-
-                    // アドレスポートに書き込むアドレスを指定
-                    process_str.append
-                      (this->_cout.output_indent()
-                       + ram->get_address_port(port_num)->get_verilog_name()
-                       + " <= "
-                       + addr->get_address(0)->get_verilog_name()
-                       + ";\n");
-
-                    // 書き込む値を書き込みポートにセット
-                    process_str.append
-                      (this->_cout.output_indent()
-                       + ram->access_string(out)
-                       + " <= "
-                       + in->get_verilog_name()
-                       + ";\n");
-
-                    break;
-                  } // Ram
-
-                case CDFG_Mem::eMemType::Other:
-                default:
-                  break;
-                } // switch
-            } // if : is_mem_ref()
-
-          sm_gen.add_state_process(state,
-                                   step,
-                                   process_str);
+          // 入出力
+          sm_gen.add_state_process
+            (state, step,
+             indent
+             + store->output_to_str()
+             + " <= "
+             + store->input_from_str()
+             + ";\n");
           break;
         } // Store
 
       case CDFG_Operator::eType::Icmp:
         {
-          auto icmp = std::dynamic_pointer_cast<CDFG_IcmpElem>(elem);
-          auto in_0 = elem->get_input_at(0);
-          auto in_1 = elem->get_input_at(1);
-          auto out  = elem->get_output_at(0);
-
-          // 比較演算子
-          std::string cond_str;
-          switch (icmp->get_condition())
-            {
-            case CDFG_IcmpElem::eCond::Eq:
-              cond_str = " == "; break;
-
-            case CDFG_IcmpElem::eCond::Ne:
-              cond_str = " != "; break;
-
-            case CDFG_IcmpElem::eCond::Ugt:
-            case CDFG_IcmpElem::eCond::Sgt:
-              cond_str = " > "; break;
-
-            case CDFG_IcmpElem::eCond::Uge:
-            case CDFG_IcmpElem::eCond::Sge:
-              cond_str = " >= "; break;
-
-            case CDFG_IcmpElem::eCond::Ule:
-            case CDFG_IcmpElem::eCond::Sle:
-              cond_str = " <= "; break;
-
-            case CDFG_IcmpElem::eCond::Ult:
-            case CDFG_IcmpElem::eCond::Slt:
-              cond_str = " < "; break;
-
-            default:;
-            }
-
-          process_str.append
-            (this->_cout.output_indent()
-             + out->get_verilog_name()
-             + " <= ("
-             + in_0->get_verilog_name()
-             + cond_str
-             + in_1->get_verilog_name()
-             + ");\n");
-
-          sm_gen.add_state_process(state,
-                                   step,
-                                   process_str);
+          sm_gen.add_state_process
+            (state, step,
+             indent
+             + elem->output_to_str()
+             + " <= "
+             + elem->output_from_str()
+             + ";\n");
           break;
         } // Icmp
 
+      // case CDFG_Operator::eType::Icmp:
+      //   {
+      //     auto icmp = std::dynamic_pointer_cast<CDFG_IcmpElem>(elem);
+      //     auto in_0 = elem->get_input_at(0);
+      //     auto in_1 = elem->get_input_at(1);
+      //     auto out  = elem->get_output_at(0);
+
+      //     // 比較演算子
+      //     std::string cond_str;
+      //     switch (icmp->get_condition())
+      //       {
+      //       case CDFG_IcmpElem::eCond::Eq:
+      //         cond_str = " == "; break;
+
+      //       case CDFG_IcmpElem::eCond::Ne:
+      //         cond_str = " != "; break;
+
+      //       case CDFG_IcmpElem::eCond::Ugt:
+      //       case CDFG_IcmpElem::eCond::Sgt:
+      //         cond_str = " > "; break;
+
+      //       case CDFG_IcmpElem::eCond::Uge:
+      //       case CDFG_IcmpElem::eCond::Sge:
+      //         cond_str = " >= "; break;
+
+      //       case CDFG_IcmpElem::eCond::Ule:
+      //       case CDFG_IcmpElem::eCond::Sle:
+      //         cond_str = " <= "; break;
+
+      //       case CDFG_IcmpElem::eCond::Ult:
+      //       case CDFG_IcmpElem::eCond::Slt:
+      //         cond_str = " < "; break;
+
+      //       default:;
+      //       }
+
+      //     process_str.append
+      //       (this->_cout.output_indent()
+      //        + out->get_verilog_name()
+      //        + " <= ("
+      //        + in_0->get_verilog_name()
+      //        + cond_str
+      //        + in_1->get_verilog_name()
+      //        + ");\n");
+
+      //     sm_gen.add_state_process(state,
+      //                              step,
+      //                              process_str);
+      //     break;
+      //   } // Icmp
+
+      // case CDFG_Operator::eType::Fcmp:
+      //   {
+      //     auto fcmp
+      //       = std::dynamic_pointer_cast<CDFG_FcmpElem>(elem);
+
+      //     auto in_0 = elem->get_input_at(0);
+      //     auto in_1 = elem->get_input_at(1);
+      //     auto out  = elem->get_output_at(0);
+      //     auto ope  = elem->get_operator();
+
+      //     // 入力の接続
+      //     {
+      //       process_str.append
+      //         (this->_cout.output_indent()
+      //          + ope->get_input_node_at(0)->get_verilog_name()
+      //          + " <= "
+      //          + in_0->get_verilog_name()
+      //          + ";\n"
+      //          + this->_cout.output_indent()
+      //          + ope->get_input_node_at(1)->get_verilog_name()
+      //          + " <= "
+      //          + in_1->get_verilog_name()
+      //          + ";\n");
+
+      //       sm_gen.add_state_process
+      //         (state,
+      //          step,
+      //          process_str);
+      //     }
+
+      //     // 出力の接続
+      //     {
+      //       auto cond = fcmp->get_condition();
+
+      //       if (cond == CDFG_FcmpElem::eCond::True)
+      //         process_str.assign
+      //           (this->_cout.output_indent()
+      //            + out->get_verilog_name()
+      //            + " <= "
+      //            + true_node->get_verilog_name()
+      //            + ";\n");
+
+      //       else if (cond == CDFG_FcmpElem::eCond::False)
+      //         process_str.assign
+      //           (this->_cout.output_indent()
+      //            + out->get_verilog_name()
+      //            + " <= "
+      //            + false_node->get_verilog_name()
+      //            + ";\n");
+
+      //       else
+      //         process_str.assign
+      //           (this->_cout.output_indent()
+      //            + out->get_verilog_name()
+      //            + " <= "
+      //            + fcmp->get_condition_code()
+      //            + ";\n");
+
+      //       sm_gen.add_state_process
+      //         (state,
+      //          step + latency + 1,
+      //          process_str);
+      //     }
+      //     break;
+      //   } // Fcmp
+
       case CDFG_Operator::eType::Fcmp:
         {
-          auto fcmp
-            = std::dynamic_pointer_cast<CDFG_FcmpElem>(elem);
-
-          auto in_0 = elem->get_input_at(0);
-          auto in_1 = elem->get_input_at(1);
-          auto out  = elem->get_output_at(0);
-          auto ope  = elem->get_operator();
-
-          // 入力の接続
-          {
-            process_str.append
-              (this->_cout.output_indent()
-               + ope->get_input_node_at(0)->get_verilog_name()
+          // IPコアに入力を接続
+          for (auto i=0; i<2; ++i)
+            sm_gen.add_state_process
+              (state, step,
+               indent
+               + elem->input_to_str(i)
                + " <= "
-               + in_0->get_verilog_name()
-               + ";\n"
-               + this->_cout.output_indent()
-               + ope->get_input_node_at(1)->get_verilog_name()
-               + " <= "
-               + in_1->get_verilog_name()
+               + elem->input_from_str(i)
                + ";\n");
 
-            sm_gen.add_state_process
-              (state,
-               step,
-               process_str);
-          }
+          // IPコアの出力を接続
+          sm_gen.add_state_process
+            (state, step + latency + 1,
+             indent
+             + elem->output_to_str()
+             + " <= "
+             + elem->output_from_str());
 
-          // 出力の接続
-          {
-            auto cond = fcmp->get_condition();
-
-            if (cond == CDFG_FcmpElem::eCond::True)
-              process_str.assign
-                (this->_cout.output_indent()
-                 + out->get_verilog_name()
-                 + " <= "
-                 + true_node->get_verilog_name()
-                 + ";\n");
-
-            else if (cond == CDFG_FcmpElem::eCond::False)
-              process_str.assign
-                (this->_cout.output_indent()
-                 + out->get_verilog_name()
-                 + " <= "
-                 + false_node->get_verilog_name()
-                 + ";\n");
-
-            else
-              process_str.assign
-                (this->_cout.output_indent()
-                 + out->get_verilog_name()
-                 + " <= "
-                 + fcmp->get_condition_code()
-                 + ";\n");
-
-            sm_gen.add_state_process
-              (state,
-               step + latency + 1,
-               process_str);
-          }
           break;
         } // Fcmp
 
     case CDFG_Operator::eType::Select:
+      {
+        sm_gen.add_state_process
+          (state, step,
+           indent + elem->output_to_str()
+           + " <= "
+           + elem->output_from_str()
+           + ";\n");
+      } // Select
+
     case CDFG_Operator::eType::Br:
       {
-        auto out  = elem->get_output_at(0);
-
-        // 条件付き分岐の場合
-        if (elem->get_num_input() == 3)
-          {
-            auto tf   = elem->get_input_at(0);
-            auto in_0 = elem->get_input_at(1);
-            auto in_1 = elem->get_input_at(2);
-
-            process_str.append
-              (this->_cout.output_indent()
-               + out->get_verilog_name()
-               + " <= ( " + tf->get_verilog_name() + " ) ? "
-               + in_0->get_verilog_name()
-               + " : "
-               + in_1->get_verilog_name()
-               + ";\n");
-          }
-        // 無条件分岐の場合
-        else
-          {
-            auto label = elem->get_input_at(0);
-
-            process_str.append
-              (this->_cout.output_indent()
-               + out->get_verilog_name()
-               + " <= "
-               + label->get_verilog_name()
-               + ";\n");
-          }
-
         sm_gen.add_state_process
-          (state,
-           step,
-           process_str);
-
-        if (ope->get_type() == CDFG_Operator::eType::Br)
-          {
-            // prev_stateの変更
-            process_str.assign(this->_cout.output_indent()
-                               + prev_state->get_verilog_name()
-                               + " <= "
-                               + out->get_verilog_name()
-                               + ";\n");
-
-            sm_gen.add_state_process(state,
-                                     step,
-                                     process_str);
-
-            // stepの初期化
-            process_str.assign(this->_cout.output_indent()
-                               + step_node->get_verilog_name()
-                               + " <= 0;\n");
-
-            sm_gen.add_state_process(state,
-                                     step,
-                                     process_str);
-          }
+          (state, step, elem->other_str(indent));
         break;
-      } // Select, Br
+      } // Br
+
+      // {
+      //   auto out  = elem->get_output_at(0);
+
+      //   // 条件付き分岐の場合
+      //   if (elem->get_num_input() == 3)
+      //     {
+      //       auto tf   = elem->get_input_at(0);
+      //       auto in_0 = elem->get_input_at(1);
+      //       auto in_1 = elem->get_input_at(2);
+
+      //       process_str.append
+      //         (this->_cout.output_indent()
+      //          + out->get_verilog_name()
+      //          + " <= ( " + tf->get_verilog_name() + " ) ? "
+      //          + in_0->get_verilog_name()
+      //          + " : "
+      //          + in_1->get_verilog_name()
+      //          + ";\n");
+      //     }
+      //   // 無条件分岐の場合
+      //   else
+      //     {
+      //       auto label = elem->get_input_at(0);
+
+      //       process_str.append
+      //         (this->_cout.output_indent()
+      //          + out->get_verilog_name()
+      //          + " <= "
+      //          + label->get_verilog_name()
+      //          + ";\n");
+      //     }
+
+      //   sm_gen.add_state_process
+      //     (state,
+      //      step,
+      //      process_str);
+
+      //   if (ope->get_type() == CDFG_Operator::eType::Br)
+      //     {
+      //       // prev_stateの変更
+      //       process_str.assign(this->_cout.output_indent()
+      //                          + prev_state->get_verilog_name()
+      //                          + " <= "
+      //                          + out->get_verilog_name()
+      //                          + ";\n");
+
+      //       sm_gen.add_state_process(state,
+      //                                step,
+      //                                process_str);
+
+      //       // stepの初期化
+      //       process_str.assign(this->_cout.output_indent()
+      //                          + step_node->get_verilog_name()
+      //                          + " <= 0;\n");
+
+      //       sm_gen.add_state_process(state,
+      //                                step,
+      //                                process_str);
+      //     }
+      //   break;
+      // } // Select, Br
 
     case CDFG_Operator::eType::Ret:
       {
-        auto finish_state_label
-          = std::dynamic_pointer_cast
-          <CDFG_Label>(elem->get_input_at(0));
+        auto ret = std::dynamic_pointer_cast<CDFG_RetElem>
+          (elem);
 
         // 終了状態への遷移
-        process_str.append
-          (this->_cout.output_indent()
-           + state_node->get_verilog_name()
-           + " <= "
-           + finish_state_label->get_verilog_name()
-           + ";\n"
-           + this->_cout.output_indent()
-           + step_node->get_verilog_name()
-           + " <= 0;\n");
-
         sm_gen.add_state_process
-          (state, step, process_str);
+          (state, step, ret->other_str(indent));
 
-        // 終了状態
-        process_str.assign
-          (this->_cout.output_indent()
-           + fin_name
-           + " <= "
-           + true_node->get_verilog_name()
-           + ";\n"
-           + this->_cout.output_indent()
-           + state_node->get_verilog_name()
-           + " <= "
-           + zero_node->get_verilog_name()
-           + ";\n");
-
+        // 終了ステートの処理
         sm_gen.add_state_process
-          (finish_state_label->get_state(),
+          (ret->get_finish_state(),
            0 /* step */,
-           process_str);
+           ret->finish_state_str(indent));
         break;
       } // Ret
+      // {
+      //   auto finish_state_label
+      //     = std::dynamic_pointer_cast
+      //     <CDFG_Label>(elem->get_input_at(0));
+
+      //   // 終了状態への遷移
+      //   process_str.append
+      //     (this->_cout.output_indent()
+      //      + state_node->get_verilog_name()
+      //      + " <= "
+      //      + finish_state_label->get_verilog_name()
+      //      + ";\n"
+      //      + this->_cout.output_indent()
+      //      + step_node->get_verilog_name()
+      //      + " <= 0;\n");
+
+      //   sm_gen.add_state_process
+      //     (state, step, process_str);
+
+      //   // 終了状態
+      //   process_str.assign
+      //     (this->_cout.output_indent()
+      //      + fin_name
+      //      + " <= "
+      //      + true_node->get_verilog_name()
+      //      + ";\n"
+      //      + this->_cout.output_indent()
+      //      + state_node->get_verilog_name()
+      //      + " <= "
+      //      + zero_node->get_verilog_name()
+      //      + ";\n");
+
+      //   sm_gen.add_state_process
+      //     (finish_state_label->get_state(),
+      //      0 /* step */,
+      //      process_str);
+      //   break;
+      // } // Ret
 
     case CDFG_Operator::eType::Phi:
       {
-        auto dest_node = elem->get_output_at(0);
-
-        process_str.append
-          (this->_cout.output_indent()
-           + dest_node->get_verilog_name()
-           + " <= w_phi_"
-           + dest_node->get_safe_name()
-           + ";\n");
-
         sm_gen.add_state_process
-          (state,
-           step,
-           process_str);
-
+          (state, step,
+           indent
+           + elem->output_to_str()
+           + " <= "
+           + elem->output_from_str()
+           + ";\n");
         break;
       } // Phi
 
     case CDFG_Operator::eType::Switch:
       {
-        auto condition_node = elem->get_input_at(0);
-        auto default_label = elem->get_input_at(1);
+        auto sw_inst = std::dynamic_pointer_cast<CDFG_SwitchElem>
+          (elem);
 
+        // case文の条件部を出力
         process_str.append
-          (this->_cout.output_indent()
+          (indent
            + "case ("
-           + condition_node->get_verilog_name()
+           + sw_inst->get_condition_code()
            + ")\n");
 
         this->_cout.indent_right();
 
-        // case文の内部を出力
-        for (auto i=2; i<elem->get_num_input(); i+=2)
+        // case文の内部(分岐)を出力
+        for (auto i=0; i<sw_inst->get_num_input(); ++i)
           {
-            auto val_node =
-              std::dynamic_pointer_cast<CDFG_Parameter>
-              (elem->get_input_at(i));
-
-            auto label_node = elem->get_input_at(i+1);
-
-            process_str.append(this->_cout.output_indent());
-
-            if (val_node->get_parameter() < 0) // 負の数
-              process_str.append("-");
-
-            auto asm_name = val_node->get_asm_name();
-            asm_name.erase
-              (std::remove(asm_name.begin(),
-                           asm_name.end(),
-                           '-'),
-               asm_name.end());
-
             process_str.append
-              (val_node->to_string()
+              (this->_cout.output_indent()
+               + sw_inst->get_condition_at(i)
                + ": "
-               + state_node->get_verilog_name()
+               + sw_inst->output_to_str()
                + " <= "
-               + label_node->get_verilog_name()
+               + sw_inst->input_from_str(i)
                + ";\n");
-          }
+          } // for : i
 
         // defaultの出力
         process_str.append
           (this->_cout.output_indent()
            + "default: "
-           + state_node->get_verilog_name()
+           + sw_inst->output_to_str()
            + " <= "
-           + default_label->get_verilog_name()
+           + sw_inst->get_default_label()
            + ";\n");
 
+        // endcaseの出力
         this->_cout.indent_left();
-
         process_str.append
           (this->_cout.output_indent()
            + "endcase\n");
 
-        // prev_stateの保存
+        // prev_stateの更新, stepの初期化
         process_str.append
-          (this->_cout.output_indent()
-           + prev_state->get_verilog_name()
-           + " <= "
-           + state_node->get_verilog_name()
-           + ";\n");
-
-        // stepノードの初期化
-        process_str.append
-          (this->_cout.output_indent()
-           + step_node->get_verilog_name()
-           + " <= 0;\n");
+          (sw_inst->other_str(indent));
 
         sm_gen.add_state_process
-          (state,
-           step,
-           process_str);
-
+          (state, step, process_str);
         break;
-      } // SWITCH
+      } // Switch
+
+    // case CDFG_Operator::eType::Switch:
+    //   {
+    //     auto condition_node = elem->get_input_at(0);
+    //     auto default_label = elem->get_input_at(1);
+
+    //     process_str.append
+    //       (this->_cout.output_indent()
+    //        + "case ("
+    //        + condition_node->get_verilog_name()
+    //        + ")\n");
+
+    //     this->_cout.indent_right();
+
+    //     // case文の内部を出力
+    //     for (auto i=2; i<elem->get_num_input(); i+=2)
+    //       {
+    //         auto val_node =
+    //           std::dynamic_pointer_cast<CDFG_Parameter>
+    //           (elem->get_input_at(i));
+
+    //         auto label_node = elem->get_input_at(i+1);
+
+    //         process_str.append(this->_cout.output_indent());
+
+    //         if (val_node->get_parameter() < 0) // 負の数
+    //           process_str.append("-");
+
+    //         auto asm_name = val_node->get_asm_name();
+    //         asm_name.erase
+    //           (std::remove(asm_name.begin(),
+    //                        asm_name.end(),
+    //                        '-'),
+    //            asm_name.end());
+
+    //         process_str.append
+    //           (val_node->to_string()
+    //            + ": "
+    //            + state_node->get_verilog_name()
+    //            + " <= "
+    //            + label_node->get_verilog_name()
+    //            + ";\n");
+    //       }
+
+    //     // defaultの出力
+    //     process_str.append
+    //       (this->_cout.output_indent()
+    //        + "default: "
+    //        + state_node->get_verilog_name()
+    //        + " <= "
+    //        + default_label->get_verilog_name()
+    //        + ";\n");
+
+    //     this->_cout.indent_left();
+
+    //     process_str.append
+    //       (this->_cout.output_indent()
+    //        + "endcase\n");
+
+    //     // prev_stateの保存
+    //     process_str.append
+    //       (this->_cout.output_indent()
+    //        + prev_state->get_verilog_name()
+    //        + " <= "
+    //        + state_node->get_verilog_name()
+    //        + ";\n");
+
+    //     // stepノードの初期化
+    //     process_str.append
+    //       (this->_cout.output_indent()
+    //        + step_node->get_verilog_name()
+    //        + " <= 0;\n");
+
+    //     sm_gen.add_state_process
+    //       (state,
+    //        step,
+    //        process_str);
+
+    //     break;
+    //   } // Switch
 
     case CDFG_Operator::eType::Lshiftl:
     case CDFG_Operator::eType::Lshiftr:
     case CDFG_Operator::eType::Ashiftr:
       {
-        std::string ope_str;
-
-        switch (ope->get_type())
-          {
-          case CDFG_Operator::eType::Lshiftl:
-            ope_str = " << "; break;
-
-          case CDFG_Operator::eType::Lshiftr:
-            ope_str = " >> "; break;
-
-          case CDFG_Operator::eType::Ashiftr:
-            ope_str = " >>> "; break;
-
-          default:;
-          }
-
-        auto a0 = elem->get_input_at(0);
-        auto a1 = elem->get_input_at(1);
-        auto b  = elem->get_output_at(0);
-
-        process_str.append
-          (this->_cout.output_indent()
-           + b->get_verilog_name()
-           + " <= "
-           + a0->get_verilog_name()
-           + ope_str
-           + a1->get_verilog_name()
-           + ";\n");
-
         sm_gen.add_state_process
-          (state,
-           step,
-           process_str);
-
+          (state, step,
+           indent
+           + elem->output_to_str()
+           + " <= "
+           + elem->output_from_str()
+           + ";\n");
         break;
       } // Lshiftl, Lshiftr, Ashiftr
+
+    // case CDFG_Operator::eType::Lshiftl:
+    // case CDFG_Operator::eType::Lshiftr:
+    // case CDFG_Operator::eType::Ashiftr:
+    //   {
+    //     std::string ope_str;
+
+    //     switch (ope->get_type())
+    //       {
+    //       case CDFG_Operator::eType::Lshiftl:
+    //         ope_str = " << "; break;
+
+    //       case CDFG_Operator::eType::Lshiftr:
+    //         ope_str = " >> "; break;
+
+    //       case CDFG_Operator::eType::Ashiftr:
+    //         ope_str = " >>> "; break;
+
+    //       default:;
+    //       }
+
+    //     auto a0 = elem->get_input_at(0);
+    //     auto a1 = elem->get_input_at(1);
+    //     auto b  = elem->get_output_at(0);
+
+    //     process_str.append
+    //       (this->_cout.output_indent()
+    //        + b->get_verilog_name()
+    //        + " <= "
+    //        + a0->get_verilog_name()
+    //        + ope_str
+    //        + a1->get_verilog_name()
+    //        + ";\n");
+
+    //     sm_gen.add_state_process
+    //       (state,
+    //        step,
+    //        process_str);
+
+    //     break;
+    //   } // Lshiftl, Lshiftr, Ashiftr
 
     case CDFG_Operator::eType::And:
     case CDFG_Operator::eType::Or:
     case CDFG_Operator::eType::Xor:
       {
-        std::string ope_str;
-
-        switch (ope->get_type())
-          {
-          case CDFG_Operator::eType::And:
-            ope_str = " & "; break;
-          case CDFG_Operator::eType::Or:
-            ope_str = " | "; break;
-          case CDFG_Operator::eType::Xor:
-            ope_str = " ^ "; break;
-          default:;
-          }
-
-        auto a0 = elem->get_input_at(0);
-        auto a1 = elem->get_input_at(1);
-        auto b  = elem->get_output_at(0);
-
-        process_str.append
-          (this->_cout.output_indent()
-           + b->get_verilog_name()
-           + " <= "
-           + a0->get_verilog_name()
-           + ope_str
-           + a1->get_verilog_name()
-           + ";\n");
-
         sm_gen.add_state_process
-          (state,
-           step,
-           process_str);
-
+          (state, step,
+           indent
+           + elem->output_to_str()
+           + elem->output_from_str()
+           + ";\n");
         break;
       } // And, Or, Xor
 
+    // case CDFG_Operator::eType::And:
+    // case CDFG_Operator::eType::Or:
+    // case CDFG_Operator::eType::Xor:
+    //   {
+    //     std::string ope_str;
+
+    //     switch (ope->get_type())
+    //       {
+    //       case CDFG_Operator::eType::And:
+    //         ope_str = " & "; break;
+    //       case CDFG_Operator::eType::Or:
+    //         ope_str = " | "; break;
+    //       case CDFG_Operator::eType::Xor:
+    //         ope_str = " ^ "; break;
+    //       default:;
+    //       }
+
+    //     auto a0 = elem->get_input_at(0);
+    //     auto a1 = elem->get_input_at(1);
+    //     auto b  = elem->get_output_at(0);
+
+    //     process_str.append
+    //       (this->_cout.output_indent()
+    //        + b->get_verilog_name()
+    //        + " <= "
+    //        + a0->get_verilog_name()
+    //        + ope_str
+    //        + a1->get_verilog_name()
+    //        + ";\n");
+
+    //     sm_gen.add_state_process
+    //       (state,
+    //        step,
+    //        process_str);
+
+    //     break;
+    //   } // And, Or, Xor
+
     case CDFG_Operator::eType::Trunc:
       {
-        auto trunc_elem
-          = std::dynamic_pointer_cast<CDFG_TruncElem>(elem);
-        auto a = trunc_elem->get_input_at(0);
-        auto b = trunc_elem->get_output_at(0);
-
-        process_str.append
-          (this->_cout.output_indent()
-           + b->get_verilog_name()
-           + " <= "
-           + a->get_verilog_name()
-           + "["
-           + std::to_string
-           (trunc_elem->get_dest_bit_width() - 1)
-           + ":0];\n");
-
         sm_gen.add_state_process
-          (state,
-           step,
-           process_str);
-
+          (state, step,
+           indent
+           + elem->output_to_str()
+           + " <= "
+           + elem->input_from_str()
+           + ";\n");
         break;
       } // Trunc
 
+      // case CDFG_Operator::eType::Trunc:
+      // {
+      //   auto trunc_elem
+      //     = std::dynamic_pointer_cast<CDFG_TruncElem>(elem);
+      //   auto a = trunc_elem->get_input_at(0);
+      //   auto b = trunc_elem->get_output_at(0);
+
+      //   process_str.append
+      //     (this->_cout.output_indent()
+      //      + b->get_verilog_name()
+      //      + " <= "
+      //      + a->get_verilog_name()
+      //      + "["
+      //      + std::to_string
+      //      (trunc_elem->get_dest_bit_width() - 1)
+      //      + ":0];\n");
+
+      //   sm_gen.add_state_process
+      //     (state,
+      //      step,
+      //      process_str);
+
+      //   break;
+      // } // Trunc
+
     case CDFG_Operator::eType::Zext:
       {
-        process_str.append
-          (this->_cout.output_indent()
-           + elem->get_output_at(0)->get_verilog_name()
-           + " <= "
-           + elem->get_input_at(0)->get_verilog_name()
-           + " | 0;\n");
-
         sm_gen.add_state_process
-          (state,
-           step,
-           process_str);
-
+          (state, step,
+           indent
+           + elem->output_to_str()
+           + " <= "
+           + elem->output_from_str()
+           + ";\n");
         break;
       } // Zext
+      // {
+      //   process_str.append
+      //     (this->_cout.output_indent()
+      //      + elem->get_output_at(0)->get_verilog_name()
+      //      + " <= "
+      //      + elem->get_input_at(0)->get_verilog_name()
+      //      + " | 0;\n");
+
+      //   sm_gen.add_state_process
+      //     (state,
+      //      step,
+      //      process_str);
+
+      //   break;
+      // } // Zext
 
     default:
       break;
