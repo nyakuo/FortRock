@@ -12,6 +12,9 @@
 #include "CDFG_IcmpElem.hpp"
 #include "CDFG_FcmpElem.hpp"
 #include "CDFG_TruncElem.hpp"
+#include "CDFG_PhiElem.hpp"
+#include "CDFG_RetElem.hpp"
+#include "CDFG_SwitchElem.hpp"
 #include "CDFG_Node.hpp"
 #include "CDFG_Parameter.hpp"
 #include "CDFG_Label.hpp"
@@ -22,6 +25,7 @@
 #include "CDFG_Mem.hpp"
 #include "CDFG_Addr.hpp"
 #include "CDFG_Operator.hpp"
+#include "CDFG_Optimizer.hpp"
 #include "CDFG_Scheduler.hpp"
 #include "CStateMachineGen.hpp"
 #include "COutput.hpp"
@@ -46,17 +50,16 @@ public:
 
   // getter
   bool find_node(const std::string & node_name,
-                 const CDFG_Node::eNode & type);
+                 const CDFG_Node::eType & type);
   bool find_node(std::shared_ptr<CDFG_Node> node);
-  std::shared_ptr<CDFG_Node>
-  get_node(const std::string & node_name,
-           const CDFG_Node::eNode & type);
-  std::shared_ptr<CDFG_Node> get_node(const CDFG_Node::eNode & type);
-  std::shared_ptr<CDFG_Node> get_node(const CDFG_Label::eLabelType & type);
-  std::shared_ptr<CDFG_Node> get_node(const CDFG_Parameter::eParamType & type);
-  std::shared_ptr<CDFG_Node> get_node(const CDFG_Reg::eRegType & type);
-  std::shared_ptr<CDFG_Node> get_node(const CDFG_Wire::eWireType & type);
-  std::shared_ptr<CDFG_Operator> get_operator(const CDFG_Operator::eType & type);
+  std::shared_ptr<CDFG_Node> & get_node
+  (const std::string & node_name, const CDFG_Node::eType & type);
+  std::shared_ptr<CDFG_Node> & get_node(const CDFG_Node::eType & type);
+  std::shared_ptr<CDFG_Node> & get_node(const CDFG_Label::eLabelType & type);
+  std::shared_ptr<CDFG_Node> & get_node(const CDFG_Parameter::eParamType & type);
+  std::shared_ptr<CDFG_Node> & get_node(const CDFG_Reg::eRegType & type);
+  std::shared_ptr<CDFG_Node> & get_node(const CDFG_Wire::eWireType & type);
+  std::shared_ptr<CDFG_Operator> & get_operator(const CDFG_Operator::eType & type);
   unsigned get_max_step(void);
 
   // for debug
