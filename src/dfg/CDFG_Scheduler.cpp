@@ -280,9 +280,19 @@ CDFG_Scheduler::_min_step_operator
 
   // 同一演算器の命令のリストを取得
   std::list<std::shared_ptr<CDFG_Element> > target_elem;
-  for (auto & elem : list)
-    if (elem->get_operator() == ope)
+  auto type = ope->get_type();
+
+  for (auto & elem : list) {
+    auto tmpope = elem->get_operator();
+
+    if (tmpope->get_type() != type)
+      continue;
+
+    if ((type == CDFG_Operator::eType::Load
+         || type == CDFG_Operator::eType::Store)
+      || elem->get_operator() == ope)
       target_elem.emplace_back(elem);
+  }
 
   // 他の演算が前に存在しない場合
   if (target_elem.empty())
