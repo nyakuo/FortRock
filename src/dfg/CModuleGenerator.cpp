@@ -914,6 +914,11 @@ void CModuleGenerator::_generate_always(void)
   CDFG_Optimizer optimizer(this->_module);
   //  optimizer.do_optimize();
 
+  // step信号のビット幅の修正
+  std::dynamic_pointer_cast<CDFG_Reg>(step_node)
+    ->set_bit_width(FortRock::get_required_bit_width
+                    (this->get_max_step()));
+
   // ステートマシンの出力
   for (auto & elem : this->_module->get_element_list())
     {

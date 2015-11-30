@@ -23,7 +23,7 @@ FortRock::_operator_config_filename = "./config/operator_config.xml";
    @attention unsignedのビット幅を32ビットと仮定
 */
 unsigned
-FortRock::_get_required_bit_width
+FortRock::get_required_bit_width
 (const unsigned & num)
 {
   unsigned val = num;
@@ -41,7 +41,7 @@ FortRock::_get_required_bit_width
   val += val >> 16;
 
   return val;
-} // _get_required_bit_width
+} // get_required_bit_width
 
 /**
    moduleの名前を取得
@@ -58,10 +58,10 @@ FortRock::_get_module_name
   std::regex_match(mod_name, match, pattern);
 
   // ファイル名の抽出
-  mod_name
-    = std::string(match[match.size()-1].str(),
-                  1,
-                  match[match.size()-1].str().length() - 3);
+  mod_name = std::string
+    (match[match.size()-1].str(),
+     1,
+     match[match.size()-1].str().length() - 3);
 
   return mod_name;
 } // _get_module_name
@@ -345,11 +345,6 @@ bool FortRock::runOnModule
     this->_step = 0;
     ++this->_state;
   } // for : bb_it
-
-  // step信号のビット幅の修正
-  auto step_bit_width = this->_get_required_bit_width
-    (this->_module_gen->get_max_step());
-  step_node->set_bit_width(step_bit_width);
 
   // モジュールのファイル出力
   this->_module_gen->generate();
@@ -1305,7 +1300,7 @@ void FortRock::_add_switch_inst
     //! @todo 常にINTEGER
     auto val_node = std::make_shared<CDFG_Parameter>
       (std::to_string(val),
-       this->_get_required_bit_width(val),
+       get_required_bit_width(val),
        val);
 
     auto label_node = this->_module_gen->get_node
@@ -1913,8 +1908,7 @@ void FortRock::_grub_global_variables
           (name,
            array->getNumElements(),
            elem_type->getPrimitiveSizeInBits(), // word length
-           this->_get_required_bit_width
-           (array->getNumElements()), // address width
+           get_required_bit_width(array->getNumElements()), // address width
            CDFG_Mem::eDataType::Integer,
            true,
            2); // latency
@@ -1972,11 +1966,10 @@ void
 FortRock::_grub_labels
 (const Module::FunctionListType::iterator & funct)
 {
-  int num_label
-    = std::distance(funct->begin(), funct->end());
+  int num_label = std::distance
+    (funct->begin(), funct->end());
 
-  auto label_bit_width
-    = this->_get_required_bit_width
+  auto label_bit_width = get_required_bit_width
     (num_label + 2 /* + (reset + finish) */);
 
   // labelの追加
