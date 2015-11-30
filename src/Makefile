@@ -5,6 +5,11 @@ INPUT_FORTRAN := ../fortran/lcm/lcm.f
 #INPUT_LLVM    := ../c/wave/wave.s
 #INPUT_FORTRAN := ../c/wave/wave.f95
 
+# Command
+OPT := opt-3.4
+GFORTRAN := gfortran-4.8
+DRAGONEGG := /usr/lib/gcc/x86_64-linux-gnu/4.8/plugin/dragonegg.so
+
 include Makefile.in
 
 SRCS := $(shell find ./ -type f -name '*.cpp')
@@ -27,12 +32,12 @@ core:
 	cd core; make -j
 
 use: ./fortrock.so
-	opt -load ./fortrock.so -instnamer -fortrock $(INPUT_LLVM) -S
+	$(OPT) -load ./fortrock.so -instnamer -fortrock $(INPUT_LLVM) -S
 	cat output.v
 
 llvm:
-	gfortran-4.7 -O1 $(INPUT_FORTRAN) \
-		-fplugin=/usr/lib/gcc/x86_64-linux-gnu/4.7/plugin/dragonegg.so \
+	$(GFORTRAN) -O1 $(INPUT_FORTRAN) \
+		-fplugin=$(DRAGONEGG) \
 		-fplugin-arg-dragonegg-emit-ir -S -o $(INPUT_LLVM)
 
 count:
