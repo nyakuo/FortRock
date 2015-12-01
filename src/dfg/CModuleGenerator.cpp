@@ -1028,7 +1028,8 @@ void CModuleGenerator::_generate_always(void)
              indent
              + elem->output_to_str()
              + " <= "
-             + elem->output_from_str());
+             + elem->output_from_str()
+             + ";\n");
 
           break;
         } // Fcmp
