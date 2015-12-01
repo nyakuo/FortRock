@@ -63,6 +63,8 @@ public:
   //! 演算器の設定ファイル名
   static const std::string _operator_config_filename;
 
+  static unsigned get_required_bit_width(const unsigned & num);
+
 private:
   std::shared_ptr<CModuleGenerator> _module_gen;
   unsigned _step;  //! 現在処理中の命令の実行ステップ番号
@@ -84,7 +86,6 @@ private:
   std::string _get_module_name(const Module & M);
   std::string _get_value_name(const Value * v);
   std::shared_ptr<CDFG_Node> _get_reg_param(const Value * v);
-  unsigned _get_required_bit_width(const unsigned & num);
 
   // モジュール定義
   void _set_IO(const Module::FunctionListType::iterator & funct);
