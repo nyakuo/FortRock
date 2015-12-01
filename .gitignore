@@ -1,11 +1,19 @@
-CBackend/*
-CppBackend/*
 fortran/*
-gomi/*
+c/*
 verilog/*
-verilog_test_space/*
+document/*
+cpp_test_code/*
 
 *.s
 *.v
 *.o
 *.so
+
+generator
+verilog/*
+\#*
+.\#*
+a.out
+*.vcd
+src/xml/xml_test
+/IPCore
