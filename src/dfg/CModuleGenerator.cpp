@@ -883,6 +883,22 @@ void CModuleGenerator::_generate_always(void)
   this->_cout.indent_right(4);
   CStateMachineGen sm_gen;
 
+<<<<<<< HEAD
+=======
+  // スケジューリング
+  CDFG_Scheduler scheduler(this->_module);
+  scheduler.do_schedule();
+
+  // 最適化
+  CDFG_Optimizer optimizer(this->_module);
+  //  optimizer.do_optimize();
+
+  // step信号のビット幅の修正
+  std::dynamic_pointer_cast<CDFG_Reg>(step_node)
+    ->set_bit_width(FortRock::get_required_bit_width
+                    (this->get_max_step()));
+
+>>>>>>> cb6968915e5684019a681ec896d1587166ef38e6
   // ステートマシンの出力
   for (auto & elem : this->_module->get_element_list())
     {
