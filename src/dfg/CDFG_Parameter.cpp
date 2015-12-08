@@ -196,7 +196,7 @@ CDFG_Parameter::to_string
          --i)
       {
         snprintf(buf, sizeof(buf)
-                 , "%02x", this->_data.c[i]);
+                 , "%02hhx", this->_data.c[i]);
         ret += buf;
       }
     break;
