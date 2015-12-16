@@ -69,26 +69,27 @@ CDFG_Scheduler::do_schedule
           {
             auto min_ope = (*elem)->get_operator();
 
+            // 実行演算器の変更
             if (ope_list[min_ope->get_type()].size() > 0)
               {
                 for (auto & ope : ope_list[min_ope->get_type()])
                   {
                     auto new_min_step
                       = this->_min_step_operator
-                      (tmp_dfg,
-                       ope,
-                       data_depend_step);
+                      (tmp_dfg, ope, data_depend_step);
 
                     if (new_min_step < min_step)
                       {
-                        // 実行演算器の変更
                         (*elem)->set_operator(ope);
                         min_step = new_min_step;
                       }
                   } // for : ope
               } // if : ope_list.size() > 0
             else
-              min_step = data_depend_step;
+              {
+                // 実態の無い演算器の場合
+                min_step = data_depend_step;
+              }
           }
 
           // 実行ステップの変更
@@ -107,12 +108,27 @@ CDFG_Scheduler::do_schedule
                        });
         } // for : elem
 
-      // br命令, ret命令をDFGの最後に移動
+      // Br, Ret命令の実行をdfgの末尾に移動
       for (auto & elem : tmp_dfg) {
         auto type = elem->get_operator()->get_type();
 
-        if (type == CDFG_Operator::eType::Br
-            || type == CDFG_Operator::eType::Ret)
+        // br命令
+        if (type == CDFG_Operator::eType::Br)
+          {
+            // 条件付きか判定
+            auto br = std::dynamic_pointer_cast<CDFG_BrElem>(elem);
+            if (br->is_conditional() == true) {
+              if (this->_get_last_elem(tmp_dfg)->get_output_at(0)
+                  == br->get_condition_node())
+                elem->set_step(this->_get_last_step(tmp_dfg) + 1);
+              else
+                elem->set_step(this->_get_last_step(tmp_dfg));
+              break;
+            }
+          }
+
+        // ret命令をDFGの最後に移動
+        if (type == CDFG_Operator::eType::Ret)
           {
             elem->set_step(this->_get_last_step(tmp_dfg));
             break;
@@ -124,7 +140,6 @@ CDFG_Scheduler::do_schedule
       // ステートのDFGを更新
       state_dfg = tmp_dfg;
       tmp_dfg.clear();
-
     } // for : state_dfg
 
   return ret_change_ltc;
@@ -142,9 +157,13 @@ CDFG_Scheduler::_min_step_data
 (const std::list<std::shared_ptr<CDFG_Element> > & list,
  const std::shared_ptr<CDFG_Element> & target_elem)
 {
-  if (target_elem->get_operator()->get_type()
-      == CDFG_Operator::eType::Ret)
-    return target_elem->get_step();
+  // データ依存が生じない演算
+  {
+    auto type = target_elem->get_operator()->get_type();
+  if (type == CDFG_Operator::eType::Ret ||
+      type == CDFG_Operator::eType::Phi)
+    return 0;
+  }
 
   auto cp_list = list;
 
@@ -406,7 +425,24 @@ unsigned
 CDFG_Scheduler::_get_last_step
 (const std::list<std::shared_ptr<CDFG_Element> > & list)
 {
-  auto last_elem = std::max_element
+  auto last_elem = this->_get_last_elem(list);
+
+  // 演算器を使用する場合は +1
+  return last_elem->get_step()
+    + last_elem->get_operator()->get_latency()
+    + ((last_elem->get_operator()->get_latency() == 0) ? 0 : 1);
+} // get_last_step
+
+/**
+   DFGの最後に実行されるElementの取得
+   @param[in] list 取得対象のDFG
+   @return 最後に実行が完了する命令の参照
+ */
+std::shared_ptr<CDFG_Element>
+CDFG_Scheduler::_get_last_elem
+(const std::list<std::shared_ptr<CDFG_Element> > & list)
+{
+  return (*std::max_element
     (list.begin(), list.end(),
      [](const std::shared_ptr<CDFG_Element> & elem1,
         const std::shared_ptr<CDFG_Element> & elem2)
@@ -414,13 +450,9 @@ CDFG_Scheduler::_get_last_step
      {
        return elem1->get_step() + elem1->get_operator()->get_latency()
          < elem2->get_step() + elem2->get_operator()->get_latency();
-     });
+     }));
+} // get_last_elem
 
-  // 演算器を使用する場合は +1
-  return (*last_elem)->get_step()
-    + (*last_elem)->get_operator()->get_latency()
-    + (((*last_elem)->get_operator()->get_latency() == 0) ? 0 : 1);
-} // get_last_step
 
 // for debug
 #include <iostream>

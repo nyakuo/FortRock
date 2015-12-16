@@ -50,6 +50,9 @@ private:
   unsigned _get_last_step
   (const std::list<std::shared_ptr<CDFG_Element> > & list);
 
+  std::shared_ptr<CDFG_Element> _get_last_elem
+  (const std::list<std::shared_ptr<CDFG_Element> > & list);
+
   void _show_list // for debug
   (const std::list<std::shared_ptr<CDFG_Element> > & list);
 };

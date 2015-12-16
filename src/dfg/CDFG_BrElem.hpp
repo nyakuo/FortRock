@@ -21,6 +21,10 @@ public:
 
   void set_condition(const std::shared_ptr<CDFG_Node> & tf);
 
+  // Getter
+  const std::shared_ptr<CDFG_Node> & get_condition_node(void) const;
+  bool is_conditional(void) const;
+
   // Override
   virtual std::string other_str(const std::string & indent) override final;
 
