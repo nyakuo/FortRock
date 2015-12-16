@@ -27,6 +27,29 @@ CDFG_BrElem::set_condition
 } // set_condition
 
 /**
+   条件ノードの取得
+   @return 条件ノードの参照
+ */
+const std::shared_ptr<CDFG_Node> &
+CDFG_BrElem::get_condition_node
+(void) const
+{
+  return this->_tf_node;
+} // get_condition_node
+
+/**
+   条件付き分岐かを取得
+   @return true:  条件付き分岐
+           false: 無条件分岐
+ */
+bool
+CDFG_BrElem::is_conditional
+(void) const
+{
+  return this->get_num_input() == 2;
+} // is_conditional
+
+/**
    状態遷移処理のコード(Verilog HDL)の取得
    @param[in] indent インデント
    @return 状態遷移処理のコード(Verilog HDL)
@@ -42,12 +65,12 @@ CDFG_BrElem::other_str
   auto out = this->get_output_at(0)->get_verilog_name();
 
   // 条件付き分岐の場合
-  if (this->get_num_input() == 2)
+  if (this->is_conditional() == true)
       ret_str.assign
         (indent
          + out + " <= ("
          + this->_get_input_str(this->_tf_node)
-         + " ) ? "
+         + ") ? "
          + this->get_input_at(0)->get_verilog_name()
          + " : "
          + this->get_input_at(1)->get_verilog_name()
