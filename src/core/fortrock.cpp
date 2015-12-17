@@ -321,7 +321,7 @@ bool FortRock::runOnModule
   this->_grub_labels(it);
   this->_grub_variables(it);
 
-  // CDebug::output_node_info(this->_module_gen->get_node_list());
+  //  CDebug::output_node_info(this->_module_gen->get_node_list());
 
   // step信号の追加 (各命令が参照を得るために仮登録)
   auto step_node = std::make_shared<CDFG_Reg>
@@ -450,8 +450,7 @@ void FortRock::_add_load_inst
        CDFG_Node::eType::Mem);
 
     a = std::make_shared<CDFG_Addr>
-      ("tmp_addr",
-       array->get_bit_width(),
+      ("tmp_addr", array->get_bit_width(),
        array);
 
     // 読み込むアドレス(配列の添字)の追加
@@ -464,10 +463,9 @@ void FortRock::_add_load_inst
       if (!value->hasName())
         type = CDFG_Node::eType::Param;
 
-      a->add_addr
-        (this->_module_gen->get_node
-         (this->_get_value_name(value),
-          type));
+      a->add_addr(this->_module_gen->get_node
+                  (this->_get_value_name(value),
+                   type));
     } // for : ite
   } // if : isa<GEPOperator>
   else
@@ -547,12 +545,10 @@ void FortRock::_add_store_inst
       if (!value->hasName())
         type = CDFG_Node::eType::Param;
 
-      b->add_addr
-        (this->_module_gen->get_node
-         (this->_get_value_name(value),
-          type));
-    }
-  }
+      b->add_addr(this->_module_gen->get_node
+                  (this->_get_value_name(value), type));
+    } // for : ite
+  } // if : isa<GEPOperator>(p)
   else
     b = std::dynamic_pointer_cast<CDFG_Addr>
       (this->_module_gen->get_node
@@ -1586,7 +1582,7 @@ void FortRock::_grub_variables
     // 引数の変数のインスタンス化
     if (!it->use_empty()) {
       // 命令に対応するオペランド数の指定
-      int getop = 1;
+      int getop = 0;
       switch(it->getOpcode()) {
       case Instruction::Trunc:
       case Instruction::ZExt:
@@ -1637,7 +1633,8 @@ void FortRock::_grub_variables
 
       // Load命令のgetelementptr命令対応
       if (it->getOpcode() == Instruction::Load) {
-        auto vv = dyn_cast<LoadInst>(&*it)->getPointerOperand();
+        auto vv = dyn_cast<LoadInst>
+          (&*it)->getPointerOperand();
 
         if (isa<GEPOperator>(vv)) {
           // getelementptr内の定数のインスタンス化
@@ -1774,16 +1771,75 @@ void FortRock::_grub_variables
 
         case Instruction::Store:
           {
+            auto num_values = 2;
+
+            // Store命令のgetelementptr命令対応
+            auto vv = dyn_cast<StoreInst>(&*it)
+              ->getPointerOperand();
+            if (isa<GEPOperator>(vv)) {
+              num_values = 1; // 最後はgetelementptr
+              auto gepope = dyn_cast<GEPOperator>(vv);
+
+              // getelementptr内の定数のインスタンス化
+              for (auto ite = gepope->idx_begin() + 1; // 最初は無視
+                   ite != gepope->idx_end();
+                   ++ite)
+                {
+                  auto value = ite->get();
+                  auto type  = value->getType();
+                  auto name  = this->_get_value_name(value);
+
+                  std::cout << name << std::endl;
+
+                  // 定数の場合
+                  if (!value->hasName())
+                    {
+                      // 整数
+                      if (type->isIntegerTy())
+                        {
+                          auto int_value
+                            = dyn_cast<ConstantInt>(value);
+
+                          node = std::make_shared<CDFG_Parameter>
+                            (name,
+                             type->getPrimitiveSizeInBits(),
+                             int_value->getValue().getSExtValue());
+                        }
+                      // 単精度浮動小数点
+                      else if (type->isFloatTy())
+                        {
+                          auto fp_value
+                            = dyn_cast<ConstantFP>(value);
+
+                          node
+                            = std::make_shared<CDFG_Parameter>
+                            (name,
+                             (float)fp_value->getValueAPF().convertToFloat());
+                        }
+                      // 倍精度浮動小数点
+                      else if (type->isDoubleTy())
+                        {
+                          auto fp_value
+                            = dyn_cast<ConstantFP>(value);
+
+                          node
+                            = std::make_shared<CDFG_Parameter>
+                            (name,
+                             (float)fp_value->getValueAPF().convertToDouble());
+                        }
+                    }
+
+                  // 未定義のregの追加
+                  if (!this->_module_gen->find_node(node))
+                    this->_module_gen->add_node(node);
+                } // for : ite
+            } // if : isa<GEPOperator>
+
             // 未定義の定数の追加
-            for(auto i=0; i<2; ++i)
+            for(auto i=0; i<num_values; ++i)
               {
                 value = it->getOperand(i);
                 type = value->getType();
-
-                // GetElementPtr が引数の場合はパス
-                if (isa<GEPOperator>(value)) {
-                  break;
-                }
 
                 // 定数
                 if(!value->hasName())

@@ -80,8 +80,8 @@ bool CModuleGenerator::find_node
 (const std::string & node_name,
  const CDFG_Node::eType & type)
 {
-  return this->_module->find_node(node_name,
-                                  type);
+  return this->_module->find_node
+    (node_name, type);
 } // find_node (name, type)
 
 /**
@@ -91,8 +91,8 @@ bool CModuleGenerator::find_node
 bool CModuleGenerator::find_node
 (std::shared_ptr<CDFG_Node> node)
 {
-  return this->_module->find_node(node->get_asm_name(),
-                                  node->get_type());
+  return this->_module->find_node
+    (node->get_asm_name(), node->get_type());
 } // find_node (node)
 
 /**
@@ -106,7 +106,8 @@ CModuleGenerator::get_node
 (const std::string & node_name,
  const CDFG_Node::eType & type)
 {
-  return this->_module->get_node(node_name, type);
+  return this->_module->get_node
+    (node_name, type);
 } // get_node (name, type)
 
 /**
