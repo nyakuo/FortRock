@@ -6,7 +6,7 @@
       <latency>      1      </latency>
       <module_name>  Add  </module_name>
       <instance_name> add    </instance_name>
-      <num_module>   1      </num_module>
+      <num_module>   4      </num_module>
 
       <io>
         <info>
@@ -38,7 +38,7 @@
     </add_int>
 
     <fadd>
-      <use_ip_core> false </use_ip_core>
+      <use_ip_core> true </use_ip_core>
       <latency> 11 </latency>
       <module_name> fadd5 </module_name>
       <instance_name> fadd </instance_name>
@@ -69,7 +69,7 @@
     </fadd>
 
     <sub_int>
-      <use_ip_core>  false  </use_ip_core>
+      <use_ip_core>  true  </use_ip_core>
       <latency>      1      </latency>
       <module_name>  Sub  </module_name>
       <instance_name> sub    </instance_name>
@@ -105,7 +105,7 @@
     </sub_int>
 
     <fsub>
-      <use_ip_core> false </use_ip_core>
+      <use_ip_core> true </use_ip_core>
       <latency> 12 </latency>
       <module_name> fsub </module_name>
       <instance_name> fsub </instance_name>
@@ -173,7 +173,7 @@
     </mul>
 
     <fmul>
-      <use_ip_core>   false  </use_ip_core>
+      <use_ip_core>   true  </use_ip_core>
       <latency>       8    </latency>
       <module_name>   fmul </module_name>
       <instance_name> fmul </instance_name>
@@ -246,7 +246,7 @@
     </s_div>
 
     <fdiv>
-      <use_ip_core>   false </use_ip_core>
+      <use_ip_core>   true </use_ip_core>
       <latency>       28   </latency>
       <module_name>   fdiv </module_name>
       <instance_name> fdiv </instance_name>
@@ -319,7 +319,7 @@
     </s_rem>
 
     <frem>
-      <use_ip_core>   false </use_ip_core>
+      <use_ip_core>   true </use_ip_core>
       <latency>       28   </latency>
       <module_name>   frem </module_name>
       <instance_name> frem </instance_name>
@@ -351,7 +351,7 @@
     </frem>
 
     <fcmp>
-      <use_ip_core>  false </use_ip_core>
+      <use_ip_core>  true </use_ip_core>
       <latency>       2   </latency>
       <module_name>   fcmp </module_name>
       <instance_name> fcmp </instance_name>
@@ -386,8 +386,7 @@
   <!-- RAMの情報 -->
   <ram>
     <module_name>   ram </module_name>
-    <num_read_port>  2  </num_read_port>
-    <num_write_port> 2  </num_write_port>
+    <num_port> 2  </num_port>
   </ram>
 
 </config>
