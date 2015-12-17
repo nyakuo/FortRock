@@ -4,6 +4,8 @@ verilog/*
 document/*
 cpp_test_code/*
 
+*.f
+*.f95
 *.s
 *.v
 *.o
