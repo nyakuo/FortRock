@@ -1789,8 +1789,6 @@ void FortRock::_grub_variables
                   auto type  = value->getType();
                   auto name  = this->_get_value_name(value);
 
-                  std::cout << name << std::endl;
-
                   // 定数の場合
                   if (!value->hasName())
                     {
