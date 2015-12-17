@@ -56,12 +56,13 @@ std::string & CModule::get_name(void)
 std::list<std::shared_ptr<CDFG_Element> > &
 CModule::get_element_list(void)
 {
-  this->_dfg.sort([](const std::shared_ptr<CDFG_Element> & obj1,
-                     const std::shared_ptr<CDFG_Element> & obj2) -> bool
-                  {
-                    return obj1->get_state() < obj2->get_state()
-                      && obj1->get_step() < obj2->get_step();
-                  });
+  this->_dfg.sort
+    ([](const std::shared_ptr<CDFG_Element> & obj1,
+        const std::shared_ptr<CDFG_Element> & obj2) -> bool
+     {
+       return obj1->get_state() < obj2->get_state()
+         && obj1->get_step() < obj2->get_step();
+     });
   return this->_dfg;
 }
 
@@ -95,13 +96,13 @@ std::shared_ptr<CDFG_Node> &
 CModule::get_node
 (const CDFG_Node::eType & type)
 {
-  auto ite =
-    std::find_if(this->_node_list.begin(),
-                 this->_node_list.end(),
-                 [type](const std::shared_ptr<CDFG_Node> & obj) -> bool
-                 {
-                   return obj->get_type() == type;
-                 });
+  auto ite = std::find_if
+    (this->_node_list.begin(),
+     this->_node_list.end(),
+     [type](const std::shared_ptr<CDFG_Node> & obj) -> bool
+     {
+       return obj->get_type() == type;
+     });
   return *ite;
 }
 
@@ -114,15 +115,15 @@ std::shared_ptr<CDFG_Node> &
 CModule::get_node
 (const CDFG_Label::eLabelType & type)
 {
-  auto ite =
-    std::find_if(this->_node_list.begin(),
-                 this->_node_list.end(),
-                 [type](const std::shared_ptr<CDFG_Node> & obj) -> bool
-                 {
-                   return obj->get_type() == CDFG_Node::eType::Label
-                     && std::dynamic_pointer_cast<CDFG_Label>
-                     (obj)->get_type() == type;
-                 });
+  auto ite = std::find_if
+    (this->_node_list.begin(),
+     this->_node_list.end(),
+     [type](const std::shared_ptr<CDFG_Node> & obj) -> bool
+     {
+       return obj->get_type() == CDFG_Node::eType::Label
+         && std::dynamic_pointer_cast<CDFG_Label>
+         (obj)->get_type() == type;
+     });
   return *ite;
 }
 
@@ -135,15 +136,15 @@ std::shared_ptr<CDFG_Node> &
 CModule::get_node
 (const CDFG_Parameter::eParamType & type)
 {
-  auto ite =
-    std::find_if(this->_node_list.begin(),
-                 this->_node_list.end(),
-                 [type](const std::shared_ptr<CDFG_Node> & obj) -> bool
-                 {
-                   return obj->get_type() == CDFG_Node::eType::Param
-                     && std::dynamic_pointer_cast<CDFG_Parameter>
-                     (obj)->get_type() == type;
-                 });
+  auto ite = std::find_if
+    (this->_node_list.begin(),
+     this->_node_list.end(),
+     [type](const std::shared_ptr<CDFG_Node> & obj) -> bool
+     {
+       return obj->get_type() == CDFG_Node::eType::Param
+         && std::dynamic_pointer_cast<CDFG_Parameter>
+         (obj)->get_type() == type;
+     });
   return *ite;
 }
 
@@ -156,15 +157,15 @@ std::shared_ptr<CDFG_Node> &
 CModule::get_node
 (const CDFG_Reg::eRegType & type)
 {
-  auto ite =
-    std::find_if(this->_node_list.begin(),
-                 this->_node_list.end(),
-                 [type](const std::shared_ptr<CDFG_Node> & obj) -> bool
-                 {
-                   return obj->get_type() == CDFG_Node::eType::Reg
-                     && std::dynamic_pointer_cast<CDFG_Reg>
-                     (obj)->get_type() == type;
-                 });
+  auto ite = std::find_if
+    (this->_node_list.begin(),
+     this->_node_list.end(),
+     [type](const std::shared_ptr<CDFG_Node> & obj) -> bool
+     {
+       return obj->get_type() == CDFG_Node::eType::Reg
+         && std::dynamic_pointer_cast<CDFG_Reg>
+         (obj)->get_type() == type;
+     });
   return *ite;
 }
 
@@ -177,15 +178,15 @@ std::shared_ptr<CDFG_Node> &
 CModule::get_node
 (const CDFG_Wire::eWireType & type)
 {
-  auto ite =
-    std::find_if(this->_node_list.begin(),
-                 this->_node_list.end(),
-                 [type](const std::shared_ptr<CDFG_Node> & obj) -> bool
-                 {
-                   return obj->get_type() == CDFG_Node::eType::Wire
-                     && std::dynamic_pointer_cast<CDFG_Wire>
-                     (obj)->get_type() == type;
-                 });
+  auto ite = std::find_if
+    (this->_node_list.begin(),
+     this->_node_list.end(),
+     [type](const std::shared_ptr<CDFG_Node> & obj) -> bool
+     {
+       return obj->get_type() == CDFG_Node::eType::Wire
+         && std::dynamic_pointer_cast<CDFG_Wire>
+         (obj)->get_type() == type;
+     });
   return *ite;
 }
 
@@ -200,17 +201,17 @@ CModule::get_node
 (const std::string & node_name,
  const CDFG_Node::eType & type)
 {
-  auto ite =
-    std::find_if(this->_node_list.begin(),
-                 this->_node_list.end(),
-                 [node_name, type]
-                 (const std::shared_ptr<CDFG_Node> & obj) -> bool
-                 {
-                   return type == obj->get_type()
-                     && obj->get_asm_name() == node_name;
-                 });
+  auto ite = std::find_if
+    (this->_node_list.begin(),
+     this->_node_list.end(),
+     [node_name, type]
+     (const std::shared_ptr<CDFG_Node> & obj) -> bool
+     {
+       return type == obj->get_type()
+         && obj->get_asm_name() == node_name;
+     });
   return *ite;
-}
+} // get_node (name, type)
 
 /**
    指定されたステップに対応するラベルNodeを取得する
@@ -221,17 +222,17 @@ std::shared_ptr<CDFG_Node> &
 CModule::get_label_node
 (const unsigned & state)
 {
-  auto ite =
-    std::find_if(this->_node_list.begin(),
-                 this->_node_list.end(),
-                 [state](const std::shared_ptr<CDFG_Node> & obj) -> bool
-                 {
-                   return (obj->get_type() == CDFG_Node::eType::Label)
-                     && (std::dynamic_pointer_cast<CDFG_Label>
-                         (obj)->get_state() == state);
-                 });
+  auto ite = std::find_if
+    (this->_node_list.begin(),
+     this->_node_list.end(),
+     [state](const std::shared_ptr<CDFG_Node> & obj) -> bool
+     {
+       return (obj->get_type() == CDFG_Node::eType::Label)
+         && (std::dynamic_pointer_cast<CDFG_Label>
+             (obj)->get_state() == state);
+     });
   return *ite;
-}
+} // get_label_node
 
 /**
    モジュール内のノードの検索
@@ -240,20 +241,22 @@ CModule::get_label_node
    @return 検索結果 T/F
  */
 bool
-CModule::find_node(const std::string & asm_name,
-                   const CDFG_Node::eType & type)
+CModule::find_node
+(const std::string & asm_name,
+ const CDFG_Node::eType & type)
 {
-  auto ite =
-    std::find_if(this->_node_list.begin(),
-                 this->_node_list.end(),
-                 [asm_name, type](const std::shared_ptr<CDFG_Node> & obj) -> bool
-                 {
-                   return obj->get_asm_name() == asm_name
-                     && obj->get_type() == type;
-                 });
+  auto ite = std::find_if
+    (this->_node_list.begin(),
+     this->_node_list.end(),
+     [asm_name, type]
+     (const std::shared_ptr<CDFG_Node> & obj) -> bool
+     {
+       return obj->get_type() == type
+         && obj->get_asm_name() == asm_name;
+     });
 
   return ite != this->_node_list.end();
-}
+} // find_node
 
 /**
    モジュールの最大ステップを取得
@@ -262,7 +265,8 @@ CModule::find_node(const std::string & asm_name,
    @return step信号に必要なビット幅
  */
 unsigned
-CModule::get_max_step(void)
+CModule::get_max_step
+(void)
 {
   unsigned max_step = 0;
 
@@ -271,4 +275,4 @@ CModule::get_max_step(void)
       max_step = obj->get_step();
 
   return max_step;
-}
+} // get_max_step
