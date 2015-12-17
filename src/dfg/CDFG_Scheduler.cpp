@@ -118,13 +118,17 @@ CDFG_Scheduler::do_schedule
             // 条件付きか判定
             auto br = std::dynamic_pointer_cast<CDFG_BrElem>(elem);
             if (br->is_conditional() == true) {
+              // 条件ノードが計算されるまで待つ必要があるか
               if (this->_get_last_elem(tmp_dfg)->get_output_at(0)
-                  == br->get_condition_node())
-                elem->set_step(this->_get_last_step(tmp_dfg) + 1);
-              else
-                elem->set_step(this->_get_last_step(tmp_dfg));
-              break;
-            }
+                  == br->get_condition_node()) {
+                elem->set_step(this->_get_last_step(tmp_dfg) + 1); // 末尾+1へ移動
+                break;
+              }
+            } // if : br->is_conditional()
+
+            // br命令をDFGの末尾へ移動
+            elem->set_step(this->_get_last_step(tmp_dfg));
+            break;
           }
 
         // ret命令をDFGの最後に移動
