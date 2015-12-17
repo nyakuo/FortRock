@@ -118,13 +118,17 @@ CDFG_Scheduler::do_schedule
             // 条件付きか判定
             auto br = std::dynamic_pointer_cast<CDFG_BrElem>(elem);
             if (br->is_conditional() == true) {
+              // 条件ノードが計算されるまで待つ必要があるか
               if (this->_get_last_elem(tmp_dfg)->get_output_at(0)
-                  == br->get_condition_node())
-                elem->set_step(this->_get_last_step(tmp_dfg) + 1);
-              else
-                elem->set_step(this->_get_last_step(tmp_dfg));
-              break;
-            }
+                  == br->get_condition_node()) {
+                elem->set_step(this->_get_last_step(tmp_dfg) + 1); // 末尾+1へ移動
+                break;
+              }
+            } // if : br->is_conditional()
+
+            // br命令をDFGの末尾へ移動
+            elem->set_step(this->_get_last_step(tmp_dfg));
+            break;
           }
 
         // ret命令をDFGの最後に移動
@@ -161,7 +165,8 @@ CDFG_Scheduler::_min_step_data
   {
     auto type = target_elem->get_operator()->get_type();
   if (type == CDFG_Operator::eType::Ret ||
-      type == CDFG_Operator::eType::Phi)
+      type == CDFG_Operator::eType::Phi ||
+      type == CDFG_Operator::eType::Br)
     return 0;
   }
 
@@ -426,11 +431,10 @@ CDFG_Scheduler::_get_last_step
 (const std::list<std::shared_ptr<CDFG_Element> > & list)
 {
   auto last_elem = this->_get_last_elem(list);
+  auto latency = last_elem->get_operator()->get_latency();
 
-  // 演算器を使用する場合は +1
-  return last_elem->get_step()
-    + last_elem->get_operator()->get_latency()
-    + ((last_elem->get_operator()->get_latency() == 0) ? 0 : 1);
+  return last_elem->get_step() + latency
+    + ((latency == 0) ? 0 : 1); // 演算器を使用する場合は +1
 } // get_last_step
 
 /**
