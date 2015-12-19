@@ -12,13 +12,18 @@
  */
 class CDFG_LoadElem : public CDFG_Element {
 public:
-  CDFG_LoadElem(const bool & is_gepope,
+  CDFG_LoadElem(const unsigned & port_num,
+                const bool & is_gepope,
                 const unsigned & state,
                 const unsigned & step,
                 const unsigned & latency);
 
   ~CDFG_LoadElem(void) {}
 
+  // setter
+  void set_use_port(const unsigned & port_num);
+
+  // getter
   bool is_gepope(void);
   bool is_mem_load(void);
 
@@ -31,6 +36,7 @@ public:
 
 private:
   const bool _is_gepope; ///< getelementptr命令を含むか否か
+  unsigned _port_num; ///< 使用するアクセスポート
 };
 
 #endif

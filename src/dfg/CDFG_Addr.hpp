@@ -45,6 +45,8 @@ public:
   // setter
   void add_addr(const std::shared_ptr<CDFG_Node> & addr)
   { this->_addr.push_back(addr); }
+  void del_addr(void)
+  { this->_addr.pop_back(); }
   void set_ref(const std::shared_ptr<CDFG_Node> & ref)
   { this->_ref = ref; }
 

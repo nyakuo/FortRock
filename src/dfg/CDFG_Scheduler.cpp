@@ -85,6 +85,13 @@ CDFG_Scheduler::do_schedule
                       }
                   } // for : ope
               } // if : ope_list.size() > 0
+            else if (min_ope->get_type() == CDFG_Operator::eType::Load
+                  || min_ope->get_type() == CDFG_Operator::eType::Store)
+              {
+                // メモリアクセスの場合
+                min_step = this->_min_step_ram
+                         (tmp_dfg, (*elem), data_depend_step);
+              } // if : min_ope->get_type()
             else
               {
                 // 実態の無い演算器の場合
@@ -312,9 +319,7 @@ CDFG_Scheduler::_min_step_operator
     if (tmpope->get_type() != type)
       continue;
 
-    if ((type == CDFG_Operator::eType::Load
-         || type == CDFG_Operator::eType::Store)
-      || elem->get_operator() == ope)
+    if (tmpope  == ope)
       target_elem.emplace_back(elem);
   }
 
@@ -340,6 +345,138 @@ CDFG_Scheduler::_min_step_operator
 
   return last_step;
 } // _min_step_operator
+
+/**
+   指定されたRAMが利用可能となる最小ステップの取得
+   @brief 演算器依存の判定
+   @param[in] list 判定対象のDFG (elemより前の実行ステップのもの)
+   @param[in] elem 判定対象のRAMアクセスを含むElement
+   @param[in] data_depend_step データ依存がない最小実行可能ステップ
+   @return 指定されたRAMの利用可能となる最小ステップ
+*/
+int
+CDFG_Scheduler::_min_step_ram
+(const std::list<std::shared_ptr<CDFG_Element> > & list,
+ const std::shared_ptr<CDFG_Element> &elem,
+ const unsigned & data_depend_step)
+{
+  auto latency = elem->get_operator()->get_latency();
+
+  // 同一RAMを利用するのElementのリスト
+  std::list<std::shared_ptr<CDFG_Element> > target_elem;
+  std::shared_ptr<CDFG_Ram> ram;
+  
+  // 対象のエレメントが使用するメモリ名
+  std::string mem_name("");
+
+  auto type = elem->get_operator()->get_type();
+
+  if (type == CDFG_Operator::eType::Load)
+    {
+      auto load = std::dynamic_pointer_cast<CDFG_LoadElem>(elem);
+
+      if (load->is_mem_load())
+        {
+          auto addr = std::dynamic_pointer_cast<CDFG_Addr>(load->get_input_at(0));
+          auto mem = std::dynamic_pointer_cast<CDFG_Mem>(addr->get_reference());
+
+          if (mem->get_mem_type() == CDFG_Mem::eMemType::Ram)
+            {
+              ram = std::dynamic_pointer_cast<CDFG_Ram>(mem);
+              mem_name = ram->get_verilog_name();
+            } // if : mem->get_mem_type()
+        } // if : load->is_mem_load()
+      else 
+          return data_depend_step;
+    } // if : type
+  else if (type == CDFG_Operator::eType::Store)
+    {
+      auto store = std::dynamic_pointer_cast<CDFG_StoreElem>(elem);
+
+      if (store->is_mem_store())
+        {
+          auto addr = std::dynamic_pointer_cast<CDFG_Addr>(store->get_output_at(0));
+          auto mem = std::dynamic_pointer_cast<CDFG_Mem>(addr->get_reference());
+
+          if (mem->get_mem_type() == CDFG_Mem::eMemType::Ram)
+            {
+              ram = std::dynamic_pointer_cast<CDFG_Ram>(mem);
+              mem_name = ram->get_verilog_name();
+            } // if : mem->get_mem_type()
+        } // if : store->is_mem_store()
+      else 
+          return data_depend_step;
+    } // if : type
+
+  for (auto & pelem : list) {
+    auto pelem_type = pelem->get_operator()->get_type();
+
+    if (pelem_type == CDFG_Operator::eType::Load)
+      {
+        auto pload = std::dynamic_pointer_cast<CDFG_LoadElem>(pelem);
+
+        if (pload->is_mem_load())
+          {
+            auto paddr = std::dynamic_pointer_cast<CDFG_Addr>(pload->get_input_at(0));
+            auto pmem = std::dynamic_pointer_cast<CDFG_Mem>(paddr->get_reference());
+
+            if (pmem->get_mem_type() == CDFG_Mem::eMemType::Ram)
+              {
+                auto pram = std::dynamic_pointer_cast<CDFG_Ram>(pmem);
+                
+                if (pram->get_verilog_name() == mem_name)
+                  target_elem.emplace_back(pelem);
+              } // if : pmem->get_mem_type()
+          } // if : pload->is_mem_load()
+      } // if : pelem_type
+    else if (pelem_type == CDFG_Operator::eType::Store)
+      {
+        auto pstore = std::dynamic_pointer_cast<CDFG_StoreElem>(pelem);
+        
+        if (pstore->is_mem_store())
+          {
+            auto paddr = std::dynamic_pointer_cast<CDFG_Addr>(pstore->get_output_at(0));
+            auto pmem = std::dynamic_pointer_cast<CDFG_Mem>(paddr->get_reference());
+
+            if (pmem->get_mem_type() == CDFG_Mem::eMemType::Ram)
+              {
+                auto pram = std::dynamic_pointer_cast<CDFG_Ram>(pmem);
+
+                if (pram->get_verilog_name() == mem_name)
+                  target_elem.emplace_back(pelem);
+              } // if : pmem->get_mem_type()
+          } // if : pstore->is_mem_store()
+      } // if : : pelem_type
+    else
+      continue;
+  } // for : pelem
+
+  // 他のRAMアクセスが前に存在しない場合
+  if (target_elem.empty())
+    return data_depend_step;
+
+  //_show_list(target_elem);
+
+  // データ依存と同じタイミングで実行できるか判定
+  if (this->_can_use(data_depend_step,
+                     ram,
+                     elem,
+                     target_elem))
+    return data_depend_step;
+
+  auto step = data_depend_step + 1;
+  auto last_step = this->_get_last_step(target_elem);
+
+  for (;step < this->_get_last_step(target_elem);
+       ++step)
+    {
+      if (this->_can_use(step, ram, elem, target_elem))
+        return step;
+    }
+  
+
+  return data_depend_step;
+} // _min_step_ram
 
 /**
    指定されたステップで演算器が使用可能か判定
@@ -369,11 +506,12 @@ CDFG_Scheduler::_can_use
 
   return true;
 } // _can_use
-#if 0
+
 /**
    指定されたステップでRAMが使用可能か判定
    @param[in] step 演算の実行開始ステップ
    @param[in] ram 演算に使用するRAM
+   @param[in] elem 対象のelement
    @parma[in] dfg 演算前のdfg
    @return 指定されたステップでRAMが使用可能か
  */
@@ -381,46 +519,42 @@ bool
 CDFG_Scheduler::_can_use
 (const unsigned & step,
  const std::shared_ptr<CDFG_Ram> & ram,
+ const std::shared_ptr<CDFG_Element> & elem,
  const std::list<std::shared_ptr<CDFG_Element> > & dfg)
 {
   auto latency = ram->get_latency();
   bool can_use = true;
-  auto num_col = 0;
+  int num_col = 0;
 
-  for (auto & elem : dfg)
+  for (auto & pelem : dfg)
     {
-      // 他入力との衝突判定
-      for (auto i=0; i<elem->get_num_input();
-           ++i)
+      auto tmp_step = pelem->get_step();
+
+      // 衝突
+      if (pelem->get_step() == step)
+        ++num_col;
+    }
+
+  if (num_col == 0)
+    return true;
+  else if (num_col < ram->get_num_rw_port()) // 使用ポートの変更
+    {
+      if (elem->get_operator()->get_type() == CDFG_Operator::eType::Load)
         {
-          auto in = elem->get_input_at(i);
-
-          if (in == ram)
-            {
-              auto tmp_step = elem->get_step();
-
-              // 衝突
-              if (tmp_step <= step + ram->get_latency()
-                  && tmp_step + ram->get_latency() >= step)
-                ++num_col;
-            }
-        } // for : i
-
-      auto out = elem->get_output_at(0);
-      if (out == ram)
+          auto load = std::dynamic_pointer_cast<CDFG_LoadElem>(elem);
+          load->set_use_port(num_col);
+        } // if : elem->get_operator()->get_type()
+      else if (elem->get_operator()->get_type() == CDFG_Operator::eType::Store)
         {
-          auto tmp_step = elem->get_step();
-
-          // 衝突
-          if (tmp_step <= step + ram->get_latency()
-              && tmp_step + ram->get_latency() >= step)
-            ++num_col;
-        }
-    } // for : elem
-
-  return can_use;
+          auto store = std::dynamic_pointer_cast<CDFG_StoreElem>(elem);
+          store->set_use_port(num_col);
+        } // if : elem->get_operator()->get_type()
+      return true;
+    } // if : num_cok
+  else
+    return false;
 } // _can_use
-#endif
+
 /**
    最後に実行が完了する命令の実行終了ステップを取得する
    @param[in] list 取得対象のDFG
