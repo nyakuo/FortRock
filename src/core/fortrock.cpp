@@ -498,7 +498,7 @@ void FortRock::_add_load_inst
                CDFG_Node::eType::Reg);
 
   auto elem = std::make_shared<CDFG_LoadElem>
-    (is_gepope, this->_state,
+    (0, is_gepope, this->_state,
      this->_step, latency);
 
   elem->set_input(a, 0);
@@ -572,7 +572,7 @@ void FortRock::_add_store_inst
     }
 
   auto elem = std::make_shared<CDFG_StoreElem>
-    (this->_state, this->_step, latency);
+    (0, this->_state, this->_step, latency);
 
   elem->set_input(a, 0);
   elem->set_output(b, 0);

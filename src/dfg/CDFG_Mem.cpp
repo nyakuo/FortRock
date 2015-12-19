@@ -49,7 +49,7 @@ CDFG_Mem::CDFG_Mem
     }
 
   // 読み出しポートのインスタンス化
-  for (auto i=0; i<num_w_port; ++i)
+  for (auto i=0; i<num_r_port; ++i)
     {
       auto r_port =
         std::make_shared<CDFG_Wire>

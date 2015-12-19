@@ -2,28 +2,49 @@
 
 /**
    コンストラクタ
+   @param[in] port_num 使用するアクセスポート
    @param[in] state 命令実行ステート
    @param[in] step 命令実行ステップ
    @param[in] latency
 */
 CDFG_StoreElem::CDFG_StoreElem
-(const unsigned & state,
+(const unsigned & port_num,
+ const unsigned & state,
  const unsigned & step,
  const unsigned & latency)
-  : CDFG_Element(CDFG_Operator::eType::Store,
+  : _port_num(port_num),
+    CDFG_Element(CDFG_Operator::eType::Store,
                  1, // 入力数
-                 state, step, latency)
-{} // CDFG_StoreElem
+                 state,
+                 step,
+                 latency) {}
 
 /**
-   アクセスに使用するポートの設定
-   @param[in] port_num アクセスに使用するポート
+   使用するアクセスポートの設定
+   @param[in] port_num 使用するアクセスポート
  */
 void
 CDFG_StoreElem::set_use_port
 (const unsigned & port_num)
 {
   this->_port_num = port_num;
+
+  auto addr = std::dynamic_pointer_cast<CDFG_Addr>
+    (this->get_output_at(0));
+
+  // メモリ参照の場合
+  if (addr->is_mem_ref())
+    {
+      auto mem = std::dynamic_pointer_cast<CDFG_Mem>
+        (addr->get_reference());
+
+      if (mem->get_mem_type() == CDFG_Mem::eMemType::Array
+       || mem->get_mem_type() == CDFG_Mem::eMemType::Ram)
+        {
+          addr->del_addr();
+          addr->add_addr(mem->get_write_port(port_num));
+        } // if : mem->get_mem_type()
+    } // if : addr->is_mem_ref()
 } // set_use_port
 
 /**
@@ -124,18 +145,17 @@ CDFG_StoreElem::other_str
       if (mem->get_mem_type() == CDFG_Mem::eMemType::Ram)
         {
           auto ram  = std::dynamic_pointer_cast<CDFG_Ram>(mem);
-          auto port_num = 0;
-
+          
           // rw信号を write mode(1) に
           ret_str.assign
             (indent
-             + ram->get_rw_port(port_num)->get_verilog_name()
+             + ram->get_rw_port(_port_num)->get_verilog_name()
              + " <= 1;\n");
 
           // アドレスポートに書き込むアドレスを指定
           ret_str.append
             (indent
-             + ram->get_address_port(port_num)->get_verilog_name()
+             + ram->get_address_port(_port_num)->get_verilog_name()
              + " <= "
              + addr->get_address(0)->get_verilog_name()
              + ";\n");

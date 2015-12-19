@@ -5,6 +5,7 @@ const std::string CDFG_Ram::_ram_module_name = "ram";
 unsigned CDFG_Ram::_num_instance = 0;
 unsigned CDFG_Ram::_num_r_port = 2;
 unsigned CDFG_Ram::_num_w_port = 2;
+unsigned CDFG_Ram::_num_port = 2;
 
 /**
    コンストラクタ
@@ -31,8 +32,8 @@ CDFG_Ram::CDFG_Ram
     CDFG_Mem(name,
              num_datas,
              word_length,
-             _num_w_port,
-             _num_r_port,
+             _num_port,
+             _num_port,
              CDFG_Mem::eMemType::Ram,
              data_type,
              is_initialized,
@@ -42,7 +43,7 @@ CDFG_Ram::CDFG_Ram
   ++CDFG_Ram::_num_instance;
 
   // アドレスポートのインスタンス化
-  for (auto i=0; i<_num_w_port; ++i)
+  for (auto i=0; i<_num_port; ++i)
     {
       auto a_port =
         std::make_shared<CDFG_Reg>
@@ -55,7 +56,7 @@ CDFG_Ram::CDFG_Ram
     }
 
   // r/wポートのインスタンス化
-  for (auto i=0; i<_num_w_port; ++i)
+  for (auto i=0; i<_num_port; ++i)
     {
       auto rw_port =
         std::make_shared<CDFG_Reg>
@@ -186,15 +187,14 @@ CDFG_Ram::access_string
 
 /**
    入出力ポートの数を設定
-   @param[in] num_r_port 読み出しポート数
-   @param[in] num_w_port 書き込みポート数
+   @param[in] num_port ペアポート数
  */
 void CDFG_Ram::set_num_port
-(const unsigned & num_r_port,
- const unsigned & num_w_port)
+(const unsigned & num_port)
 {
-  _num_r_port = num_r_port;
-  _num_w_port = num_w_port;
+  _num_r_port = num_port;
+  _num_w_port = num_port;
+  _num_port = num_port;
 } // set_num_port
 
 /**

@@ -35,8 +35,7 @@ public:
   (const std::shared_ptr<CDFG_Addr> & addr) override final;
 
   // setter
-  static void set_num_port(const unsigned & num_r_port,
-                           const unsigned & num_w_port);
+  static void set_num_port(const unsigned & num_port);
 
   // getter
   std::shared_ptr<CDFG_Reg> get_address_port(const unsigned & at);
@@ -52,6 +51,7 @@ private:
   static unsigned _num_instance;             ///< インスタンス化されたモジュールの数
   static unsigned _num_r_port;               ///< 読み出しポート数
   static unsigned _num_w_port;               ///< 書き込みポート数
+  static unsigned _num_port;                 ///< ペアポート数
 };
 
 #endif

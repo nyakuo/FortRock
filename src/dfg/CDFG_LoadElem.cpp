@@ -2,6 +2,7 @@
 
 /**
    コンストラクタ
+   @param[in] port_num 使用するアクセスポート
    @param[in] is_gepope getelementptr命令を含むか否か
    @param[in] state 命令の実行ステート
    @param[in] step 命令の実行ステップ
@@ -9,16 +10,47 @@
    @param[in] latency BRAMの読み込みレイテンシ
 */
 CDFG_LoadElem::CDFG_LoadElem
-(const bool & is_gepope,
+(const unsigned & port_num,
+ const bool & is_gepope,
  const unsigned & state,
  const unsigned & step,
  const unsigned & latency)
-  : _is_gepope(is_gepope),
+  : _port_num(port_num),
+    _is_gepope(is_gepope),
     CDFG_Element(CDFG_Operator::eType::Load,
                  1, // 入力数
                  state,
                  step,
                  latency) {}
+
+/**
+   使用するアクセスポートの設定
+   @param[in] port_num 使用するアクセスポート
+*/
+void
+CDFG_LoadElem::set_use_port
+(const unsigned & port_num)
+{
+  this->_port_num = port_num;
+  
+  auto addr = std::dynamic_pointer_cast<CDFG_Addr>
+    (this->get_input_at(0));
+
+  // メモリ参照の場合
+  if (addr->is_mem_ref())
+    {
+      auto mem = std::dynamic_pointer_cast<CDFG_Mem>
+        (addr->get_reference());
+
+      if (mem->get_mem_type() == CDFG_Mem::eMemType::Array
+       || mem->get_mem_type() == CDFG_Mem::eMemType::Ram) 
+        {
+          addr->del_addr();
+          addr->add_addr(mem->get_read_port(port_num));
+        } // if : mem->get_mem_type()
+    } // if : addr->is_mem_ref()
+} // set_use_port
+
 /**
    getelementptr命令を含むか否かを取得
    @return getelementptr命令を含むか否か
@@ -138,19 +170,18 @@ CDFG_LoadElem::other_str
 
       if (mem->get_mem_type() == CDFG_Mem::eMemType::Ram)
         {
-          auto port_num = 0;
           auto ram = std::dynamic_pointer_cast<CDFG_Ram>(mem);
 
           // rw の値を read mode(0) に
           ret_str.append
             (indent
-             + ram->get_rw_port(port_num)->get_verilog_name()
+             + ram->get_rw_port(_port_num)->get_verilog_name()
              + " <= 0;\n");
 
           // アドレスポートに読み出すアドレスを指定
           ret_str.append
             (indent
-             + ram->get_address_port(port_num)->get_verilog_name()
+             + ram->get_address_port(_port_num)->get_verilog_name()
              + " <= "
              + addr->get_address(0)->get_verilog_name()
              + ";\n");

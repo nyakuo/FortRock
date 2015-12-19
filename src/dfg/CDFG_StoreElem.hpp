@@ -1,4 +1,5 @@
 #ifndef _CDFG_STOREELEM_H
+
 #define _CDFG_STOREELEM_H
 
 #include "CDFG_Element.hpp"
@@ -11,12 +12,17 @@
  */
 class CDFG_StoreElem : public CDFG_Element {
 public:
-  CDFG_StoreElem(const unsigned & state,
+  CDFG_StoreElem(const unsigned & port_num,
+                 const unsigned & state,
                  const unsigned & step,
                  const unsigned & latency);
+  
+  ~CDFG_StoreElem(void) {}
 
   // setter
   void set_use_port(const unsigned & port_num);
+  
+  // getter
   bool is_mem_store(void);
 
   // override

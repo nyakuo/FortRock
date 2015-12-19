@@ -230,8 +230,7 @@ CInstancingOperator::_parse_ram_info
   auto cur = node->xmlChildrenNode;
 
   std::string name("");
-  auto num_r_port = 0;
-  auto num_w_port = 0;
+  auto num_port = 0;
 
   while(cur != NULL) {
     auto key
@@ -249,16 +248,12 @@ CInstancingOperator::_parse_ram_info
     if (xmlStrcmp(cur->name, (const xmlChar*)"module_name") == 0)
       name = str;
 
-    else if (xmlStrcmp(cur->name, (const xmlChar*)"num_read_port") == 0)
-      num_r_port = std::stoul(str);
-
-    else if (xmlStrcmp(cur->name, (const xmlChar*)"num_write_port") == 0)
-      num_w_port = std::stoul(str);
+    else if (xmlStrcmp(cur->name, (const xmlChar*)"num_port") == 0)
+      num_port = std::stoul(str);
 
     cur = cur->next;
   }
 
   // RAMに使用する入出力ポート数の設定 (共通)
-  CDFG_Ram::set_num_port(num_r_port,
-                         num_w_port);
+  CDFG_Ram::set_num_port(num_port);
 }
