@@ -1138,6 +1138,7 @@ void CModuleGenerator::_generate_always(void)
           (state, step,
            indent
            + elem->output_to_str()
+           + " <= "
            + elem->output_from_str()
            + ";\n");
         break;
