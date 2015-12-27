@@ -1,25 +1,23 @@
 #include "CDFG_SelectElem.hpp"
 
 /**
-   ¥³¥ó¥¹¥È¥é¥¯¥¿
-   @param[in] state Ì¿Îá¼Â¹Ô³«»Ï¥¹¥Æ¡¼¥È
-   @param[in] step Ì¿Îá¼Â¹Ô³«»Ï¥¹¥Æ¥Ã¥×
+   ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+   @param[in] state å‘½ä»¤å®Ÿè¡Œé–‹å§‹ã‚¹ãƒ†ãƒ¼ãƒˆ
+   @param[in] step å‘½ä»¤å®Ÿè¡Œé–‹å§‹ã‚¹ãƒ†ãƒƒãƒ—
  */
 CDFG_SelectElem::CDFG_SelectElem
-(const std::shared_ptr<CDFG_Node> & tf_node,
- const unsigned & state,
+(const unsigned & state,
  const unsigned & step)
-  : _tf_node(tf_node),
-    CDFG_Element(CDFG_Operator::eType::Select,
-                 2, // num input
+  : CDFG_Element(CDFG_Operator::eType::Select,
+                 3, // num input
                  state, step)
 {} // CDFG_SelelctElem
 
 
 /**
-   ÁªÂò»è¤ÎÃÍ¤Î¥³¡¼¥É(Verilog HDL)¤ò¼èÆÀ
-   @param[in] at ¼èÆÀ¤¹¤ë°ÌÃÖ (0 or 1)
-   @return ÁªÂò»è¤ÎÃÍ¤Î¥³¡¼¥É(Verilog HDL)
+   é¸æŠè‚¢ã®å€¤ã®ã‚³ãƒ¼ãƒ‰(Verilog HDL)ã‚’å–å¾—
+   @param[in] at å–å¾—ã™ã‚‹ä½ç½® (0 or 1)
+   @return é¸æŠè‚¢ã®å€¤ã®ã‚³ãƒ¼ãƒ‰(Verilog HDL)
  */
 std::string
 CDFG_SelectElem::input_from_str
@@ -29,31 +27,32 @@ CDFG_SelectElem::input_from_str
 } // input_from_str
 
 /**
-   ½ĞÎÏÉô¤Î¥³¡¼¥É(Verilog HDL)¤ò¼èÆÀ
-   @return ½ĞÎÏÉô¤Î¥³¡¼¥É(Verilog HDL)
+   å‡ºåŠ›éƒ¨ã®ã‚³ãƒ¼ãƒ‰(Verilog HDL)ã‚’å–å¾—
+   @return å‡ºåŠ›éƒ¨ã®ã‚³ãƒ¼ãƒ‰(Verilog HDL)
  */
 std::string
 CDFG_SelectElem::output_from_str
 (void)
 {
+
   std::string tf;
 
-  if (this->_tf_node->get_type() == CDFG_Node::eType::Elem)
+  if (this->get_input_at(0)->get_type() == CDFG_Node::eType::Elem)
     tf = std::dynamic_pointer_cast<CDFG_Element>
-      (this->_tf_node)->output_from_str();
+      (this->get_input_at(0))->output_from_str();
   else
-    tf = this->_tf_node->get_verilog_name();
+    tf = this->get_input_at(0)->get_verilog_name();
 
   return "(" + tf + " ? "
-    + this->input_from_str(0)
-    + " : "
     + this->input_from_str(1)
+    + " : "
+    + this->input_from_str(2)
     + ")";
 } // output_from_str
 
 /**
-   ½ĞÎÏÉô¤Î¥³¡¼¥É(Verilog HDL)¤Î¼èÆÀ
-   @return ½ĞÎÏÉô¤Î¥³¡¼¥É(Verilog HDL)
+   å‡ºåŠ›éƒ¨ã®ã‚³ãƒ¼ãƒ‰(Verilog HDL)ã‚’å–å¾—
+   @return å‡ºåŠ›éƒ¨ã®ã‚³ãƒ¼ãƒ‰(Verilog HDL)
  */
 std::string
  CDFG_SelectElem::output_to_str
