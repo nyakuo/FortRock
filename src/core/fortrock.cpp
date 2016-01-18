@@ -778,10 +778,11 @@ void FortRock::_add_select_inst
     (inst->getName(), CDFG_Node::eType::Reg);
 
   auto elem = std::make_shared<CDFG_SelectElem>
-    (tf, this->_state, this->_step);
+    (this->_state, this->_step);
 
-  elem->set_input(a0, 0);
-  elem->set_input(a1, 1);
+  elem->set_input(tf, 0);
+  elem->set_input(a0, 1);
+  elem->set_input(a1, 2);
   elem->set_output(b, 0);
 
   this->_module_gen->add_element(elem);
