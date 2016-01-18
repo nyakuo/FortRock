@@ -10,20 +10,17 @@
 
 /**
    @class CDFG_SelectElem
-   @brief SelectÌ¿Îá¤òÉ½¤¹¥¯¥é¥¹
+   @brief Selectå‘½ä»¤ã‚’è¡¨ã™ã‚¯ãƒ©ã‚¹
  */
 class CDFG_SelectElem : public CDFG_Element {
 public:
-  CDFG_SelectElem(const std::shared_ptr<CDFG_Node> & tf_node,
-                  const unsigned & state,
+  CDFG_SelectElem(const unsigned & state,
                   const unsigned & step);
 
   virtual std::string input_from_str(const unsigned & at=0) override final;
   virtual std::string output_from_str(void) override final;
   virtual std::string output_to_str(void) override final;
 
-private:
-  const std::shared_ptr<CDFG_Node> _tf_node; ///< ¾ò·ï¥Î¡¼¥É (True or False)
 };
 
 #endif
